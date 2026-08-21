@@ -902,6 +902,64 @@ function fetchMarketLots() {
 }
 
 updateUI();
+// ... ваш старый код кликера и интерфейса ...
+
+  updateUI();
+
+  // === ВСТАВЛЯТЬ СУДА (НАЧАЛО) ===
+  async function loadUserData() {
+    if (!db) return;
+    const userId = getUserId();
+    
+    try {
+      const { data, error } = await db
+        .from('users')
+        .select('*')
+        .eq('telegram_id', userId)
+        .single();
+
+      if (data) {
+        state.coins = data.coins || 0;
+        state.inventory = data.inventory || [];
+        state.shields = data.shields || 0;
+        state.isVIP = data.is_vip || false;
+        state.stats = data.stats || { clicks: 0, crafts: 0, upgrades: 0 };
+        state.claimedAchievements = data.claimed_achievements || [];
+        updateUI();
+      } else {
+        await saveUserData();
+      }
+    } catch (e) {
+      console.error("Ошибка загрузки:", e);
+    }
+  }
+
+  async function saveUserData() {
+    if (!db) return;
+    const userId = getUserId();
+    
+    await db.from('users').upsert({
+      telegram_id: userId,
+      username: getUserName(),
+      coins: state.coins,
+      inventory: state.inventory,
+      shields: state.shields,
+      is_vip: state.isVIP,
+      stats: state.stats,
+      claimed_achievements: state.claimedAchievements,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'telegram_id' });
+  }
+
+  setInterval(saveUserData, 10000);
+  window.addEventListener('beforeunload', saveUserData);
+
+  loadUserData();
+  // === КОНЕЦ ВСТАВКИ ===
+
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>
