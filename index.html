@@ -957,9 +957,36 @@ updateUI();
   loadUserData();
   // === КОНЕЦ ВСТАВКИ ===
 
+// Функция покупки монет
+function buyCoins() {
+  if (!window.Telegram?.WebApp) {
+    showToast("Откройте приложение через Telegram!");
+    return;
+  }
+
+  const tg = window.Telegram.WebApp;
+
+  tg.showPopup({
+    title: '⭐ Покупка AT COIN',
+    message: 'Купить 100,000 монет за 50 Telegram Stars?',
+    buttons: [
+      { id: 'buy', type: 'ok', text: 'Купить (50 ⭐)' },
+      { id: 'cancel', type: 'cancel', text: 'Отмена' }
+    ]
+  }, async (buttonId) => {
+    if (buttonId === 'buy') {
+      state.coins = (state.coins || 0) + 100000;
+      updateUI();
+      
+      if (typeof saveUserData === 'function') {
+        await saveUserData();
+      }
+      
+      showToast('Успешно! +100,000 монет');
+    }
+  });
+}
 </script>
 </body>
 </html>
-</script>
-</body>
-</html>
+
