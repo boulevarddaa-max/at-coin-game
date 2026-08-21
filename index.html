@@ -521,7 +521,7 @@ function getUserName() {
 }
 
 function calculateClickPower() {
-  let basePower = 1;
+  let basePower = 0.1;
   state.inventory.forEach(item => {
     if (state.equipped.includes(item.instanceId)) {
       const levelBonus = 1 + (item.level || 0) * 0.4;
@@ -578,7 +578,7 @@ document.getElementById('core-btn').addEventListener('pointerdown', (e) => {
 
   if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 
-  if (Math.random() < 0.005) {
+  if (Math.random() < 0.0005) {
     dropLoot();
   }
 
