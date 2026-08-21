@@ -521,7 +521,7 @@ function getUserName() {
 }
 
 function calculateClickPower() {
-  let basePower = 0.1;
+  let basePower = 1;
   state.inventory.forEach(item => {
     if (state.equipped.includes(item.instanceId)) {
       const levelBonus = 1 + (item.level || 0) * 0.4;
