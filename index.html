@@ -330,7 +330,7 @@
       <div id="currency-label">⚡ AT COINS</div>
     </div>
     <div id="mini-stats">
-      <div class="mini-stat">СИЛА ТАПА <span id="stat-click">+1</span></div>
+      <div class="mini-stat">СИЛА ТАПА <span id="stat-click">+0.1</span></div>
       <div class="mini-stat">ПРЕДМЕТОВ <span id="stat-items">0</span></div>
     </div>
   </div>
@@ -521,7 +521,7 @@ function getUserName() {
 }
 
 function calculateClickPower() {
-  let basePower = 1;
+  let basePower = 0.1;
   state.inventory.forEach(item => {
     if (state.equipped.includes(item.instanceId)) {
       const levelBonus = 1 + (item.level || 0) * 0.4;
@@ -929,189 +929,16 @@ async function fetchMarketLots() {
         <div style="font-size:26px;">${lot.item_icon}</div>
         <div style="flex:1;">
           <div style="font-size:12px; font-weight:700;">${lot.item_name} ${isMyLot ? '<span style="color:var(--neon1); font-size:10px;">(Ваш лот)</span>' : ''}</div>
-          <div style="font-size:10px; color:var(--textdim);">Продавец: @${lot.seller_name}</div>
-          <span class="item-rarity-tag tag-${lot.item_rarity}">${lot.item_rarity}</span>
+          <div style="font-size:10px; color:var(--textdim);">Продавец: ${lot.seller_name}</div>
         </div>
         ${actionButtonsHtml}
       `;
       list.appendChild(card);
     });
   } catch(err) {
-    list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Ошибка загрузки биржи</div>`;
+    list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Ошибка загрузки рынка</div>`;
   }
 }
-
-async function editMarketPrice(lotId, oldPrice) {
-  const newPriceStr = prompt("Новая цена лота:", oldPrice);
-  const newPrice = parseInt(newPriceStr);
-
-  if (!newPrice || newPrice <= 0 || newPrice === oldPrice) return;
-
-  try {
-    const { error } = await db.from('marketplace').update({ price: newPrice }).eq('id', lotId);
-    if (error) throw error;
-    showToast('ЦЕНА ИЗМЕНЕНА');
-    fetchMarketLots();
-  } catch(err) {
-    showToast('ОШИБКА ИЗМЕНЕНИЯ ЦЕНЫ');
-  }
-}
-
-async function cancelMarketLot(lotId, itemId, itemName, itemIcon, itemRarity) {
-  try {
-    const { error } = await db.from('marketplace').update({ status: 'cancelled' }).eq('id', lotId);
-    if (error) throw error;
-
-    let lvl = 0;
-    const lvlMatch = itemName.match(/\+(\d+)/);
-    if (lvlMatch) lvl = parseInt(lvlMatch[1]);
-
-    const baseItem = LOOT_ITEMS.find(i => i.id === itemId) || {
-      id: itemId,
-      name: itemName.replace(/\s\+\d+/, ''),
-      icon: itemIcon,
-      rarity: itemRarity,
-      power: 10
-    };
-
-    state.inventory.push({
-      ...baseItem,
-      level: lvl,
-      instanceId: Date.now() + Math.random()
-    });
-
-    showToast('ЛОТ СНЯТ С ПРОДАЖИ');
-    saveData();
-    fetchMarketLots();
-  } catch(err) {
-    showToast('ОШИБКА СНЯТИЯ ЛОТА');
-  }
-}
-
-async function buyMarketLot(lotId, price, itemId, itemName, itemIcon, itemRarity, sellerName) {
-  if (state.coins < price) {
-    showToast(`НЕДОСТАТОЧНО МОНЕТ (${price} ⚡)`);
-    return;
-  }
-
-  try {
-    const { error } = await db.from('marketplace').update({ status: 'sold' }).eq('id', lotId);
-    if (error) throw error;
-
-    state.coins -= price;
-
-    let lvl = 0;
-    const lvlMatch = itemName.match(/\+(\d+)/);
-    if (lvlMatch) lvl = parseInt(lvlMatch[1]);
-
-    const baseItem = LOOT_ITEMS.find(i => i.id === itemId) || {
-      id: itemId,
-      name: itemName.replace(/\s\+\d+/, ''),
-      icon: itemIcon,
-      rarity: itemRarity,
-      power: 10
-    };
-
-    state.inventory.push({
-      ...baseItem,
-      level: lvl,
-      instanceId: Date.now() + Math.random()
-    });
-
-    showToast(`КУПЛЕНО: ${itemName}!`);
-    updateUI();
-    saveData();
-    fetchMarketLots();
-  } catch(err) {
-    showToast('ОШИБКА ПОКУПКИ ЛОТА');
-  }
-}
-
-/* ================= ТАБЛИЦА ЛИДЕРОВ ================= */
-async function fetchLeaderboard() {
-  const list = document.getElementById('lb-list');
-  if (!list) return;
-
-  try {
-    if (!db) {
-      list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">База данных не подключена</div>`;
-      return;
-    }
-
-    const { data, error } = await db.from('users').select('username, clicks').order('clicks', { ascending: false }).limit(20);
-    if (error) throw error;
-
-    list.innerHTML = '';
-    if (!data || data.length === 0) {
-      list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Список игроков пуст</div>`;
-      return;
-    }
-
-    data.forEach((player, idx) => {
-      const card = document.createElement('div');
-      card.className = `upg-card`;
-      
-      let rankBadge = `#${idx + 1}`;
-      if (idx === 0) rankBadge = '🥇';
-      if (idx === 1) rankBadge = '🥈';
-      if (idx === 2) rankBadge = '🥉';
-
-      card.innerHTML = `
-        <div style="font-size:18px; font-weight:900; width:30px; text-align:center;">${rankBadge}</div>
-        <div style="flex:1;">
-          <div style="font-size:12px; font-weight:700;">@${player.username || 'Игрок'}</div>
-        </div>
-        <div style="font-size:12px; font-weight:900; color:var(--gold);">${Number(player.clicks || 0).toLocaleString()} ⚡</div>
-      `;
-      list.appendChild(card);
-    });
-  } catch(err) {
-    list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Ошибка загрузки топа</div>`;
-  }
-}
-
-/* ================= СОХРАНЕНИЕ И ЗАГРУЗКА ИЗ SUPABASE ================= */
-async function loadData() {
-  if (!db) return;
-  const userId = getUserId();
-
-  try {
-    const { data, error } = await db.from('users').select('*').eq('telegram_id', userId).single();
-
-    if (data) {
-      state.coins = Number(data.clicks) || 0;
-      if (data.inventory) state.inventory = data.inventory;
-      if (data.equipped) state.equipped = data.equipped;
-    } else {
-      await db.from('users').insert([{
-        telegram_id: userId,
-        username: getUserName(),
-        clicks: 0,
-        inventory: [],
-        equipped: []
-      }]);
-    }
-  } catch(e) {}
-  updateUI();
-}
-
-function saveData() {
-  if (!db) return;
-  clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(async () => {
-    try {
-      await db.from('users').update({
-        clicks: state.coins,
-        inventory: state.inventory,
-        equipped: state.equipped,
-        username: getUserName(),
-        updated_at: new Date()
-      }).eq('telegram_id', getUserId());
-    } catch(e) {}
-  }, 1000);
-}
-
-loadData();
 </script>
 </body>
 </html>
