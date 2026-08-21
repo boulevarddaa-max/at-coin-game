@@ -986,6 +986,36 @@ function buyCoins() {
     }
   });
 }
+// Настройка шансов
+const DROP_CHANCE = 0.05; // 5% шанс на выпадение любой вещи при клике
+
+function tryDropLoot() {
+  if (Math.random() > DROP_CHANCE) return; // Если не повезло — ничего не выпадает
+
+  // Определение шанса категории (80% Common, 15% Rare, 4% Epic, 1% Legendary)
+  const rand = Math.random();
+  let rarityPool = 'common';
+  if (rand < 0.01) rarityPool = 'legendary';
+  else if (rand < 0.05) rarityPool = 'epic';
+  else if (rand < 0.20) rarityPool = 'rare';
+
+  // Фильтруем предметы из LOOT_ITEMS по категории
+  const availableItems = LOOT_ITEMS.filter(i => i.rarity === rarityPool);
+  if (availableItems.length === 0) return;
+
+  const baseItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+  
+  // Создаем уникальный экземпляр предмета в инвентарь
+  const newItem = {
+    ...baseItem,
+    instanceId: Date.now() + Math.random(),
+    level: 0
+  };
+
+  state.inventory.push(newItem);
+  playSound('success');
+  showToast(`ВЫПАЛ ПРЕДМЕТ: ${newItem.icon} ${newItem.name}!`);
+}
 </script>
 </body>
 </html>
