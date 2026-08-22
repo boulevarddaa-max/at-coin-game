@@ -70,6 +70,31 @@
     background-clip: text;
   }
 
+  .online-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 8px;
+    font-size: 10px;
+    color: var(--textdim);
+  }
+  .online-dot {
+    width: 7px;
+    height: 7px;
+    background-color: var(--neon4);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--neon4);
+    animation: pulse-dot 1.5s infinite;
+  }
+  @keyframes pulse-dot {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 10px var(--neon4); }
+    100% { transform: scale(0.9); opacity: 0.7; }
+  }
+
   #level-badge {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -207,27 +232,10 @@
     padding: 10px 14px;
   }
 
-  .upg-card.my-lot {
-    border-color: var(--neon1);
-    background: rgba(0, 245, 255, 0.05);
-  }
-
   .rarity-common { border-color: #7070a0; }
   .rarity-rare { border-color: var(--neon1); box-shadow: inset 0 0 10px rgba(0,245,255,0.1); }
   .rarity-epic { border-color: var(--neon2); box-shadow: inset 0 0 10px rgba(191,0,255,0.2); }
   .rarity-legendary { border-color: var(--gold); box-shadow: inset 0 0 15px rgba(255,215,0,0.3); }
-
-  .item-rarity-tag {
-    font-size: 9px;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding: 2px 6px;
-    border-radius: 6px;
-  }
-  .tag-common { background: #333; color: #aaa; }
-  .tag-rare { background: rgba(0,245,255,0.2); color: var(--neon1); }
-  .tag-epic { background: rgba(191,0,255,0.2); color: var(--neon2); }
-  .tag-legendary { background: rgba(255,215,0,0.2); color: var(--gold); }
 
   .form-title { font-size: 12px; font-weight: 900; color: var(--neon1); text-transform: uppercase; letter-spacing: 1px; }
 
@@ -245,15 +253,6 @@
 
   .action-btn.star-btn {
     background: linear-gradient(135deg, #ffaa00, #ffdd00);
-    color: #000;
-  }
-
-  .action-btn.cancel-btn {
-    background: linear-gradient(135deg, #ff006e, #bf00ff);
-  }
-
-  .action-btn.edit-btn {
-    background: linear-gradient(135deg, #ff9d00, #ffd700);
     color: #000;
   }
 
@@ -352,6 +351,12 @@
 <div id="app">
   <div id="topbar">
     <div id="game-title">AT COIN</div>
+    
+    <div class="online-indicator" id="online-badge">
+      <div class="online-dot"></div>
+      <span id="online-text">Онлайн</span>
+    </div>
+
     <div style="display:flex;align-items:center;gap:8px;">
       <div id="user-name" style="font-size: 12px; color: var(--neon1);">Игрок</div>
       <div id="level-badge">LVL <span id="lvl-val">1</span></div>
@@ -408,7 +413,7 @@
     <div class="tab-view" id="tab-craft">
       <div class="form-title" style="margin-bottom: 6px;">🔨 ВЕРСТАК КРАФТА</div>
       <div style="font-size:11px; color:var(--textdim); margin-bottom:12px;">
-        Для создания предмета выше рангом нужно <b style="color:var(--neon1);">5 одинаковых</b> предметов + монеты.
+        Создавайте уникальные предметы повышенного качества.
       </div>
       <div class="card-list" id="craft-list"></div>
     </div>
@@ -417,7 +422,7 @@
     <div class="tab-view" id="tab-upgrade">
       <div class="form-title" style="margin-bottom: 6px;">⚡ КУЗНИЦА (ЗАТОЧКА)</div>
       <div style="font-size:11px; color:var(--textdim); margin-bottom:12px;">
-        Увеличивает силу предмета. Высокий уровень может <b style="color:var(--neon3);">сломать</b> вещь!
+        Увеличивает силу предмета и его ценность. Высокий уровень может <b style="color:var(--neon3);">сломать</b> вещь!
       </div>
       <div class="card-list" id="upgrade-list"></div>
     </div>
@@ -431,13 +436,14 @@
     <!-- МАГАЗИН STARS -->
     <div class="tab-view" id="tab-shop">
       <div class="form-title" style="margin-bottom: 8px;">⭐ МАГАЗИН STARS</div>
-      <div style="font-size:11px; color:var(--textdim); margin-bottom:12px;"> Покупайте эксклюзивные ресурсы за Telegram Stars!</div>
+      <div style="font-size:11px; color:var(--textdim); margin-bottom:12px;">Покупайте эксклюзивные ресурсы за Telegram Stars!</div>
       <div class="card-list" id="shop-list"></div>
     </div>
 
     <!-- БИРЖА -->
     <div class="tab-view" id="tab-market">
-      <div class="form-title" style="margin-bottom: 8px;">🏪 РЫНОК ПРЕДМЕТОВ</div>
+      <div class="form-title" style="margin-bottom: 8px;">🏪 РЫНОК И БИРЖА</div>
+      <div style="font-size:11px; color:var(--textdim); margin-bottom:10px;">Выставляйте свои предметы на продажу или покупайте лоты других игроков.</div>
       <div class="card-list" id="market-list">
         <div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка биржи...</div>
       </div>
@@ -495,7 +501,7 @@ const SUPABASE_URL = 'https://jroakbqcautuleqmctau.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Y2hiGcojW9-6b-vZKs2d1g_Yq1WDqkG';
 const db = window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-// ЗВУКОВОЙ ДВИЖОК (Web Audio API - синтезирует звуки на лету без использования внешних файлов)
+// ЗВУКОВОЙ ДВИЖОК
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
 
@@ -511,7 +517,6 @@ function playSound(type) {
     const gain = audioCtx.createGain();
     osc.connect(gain);
     gain.connect(audioCtx.destination);
-
     const now = audioCtx.currentTime;
 
     if (type === 'click') {
@@ -519,40 +524,51 @@ function playSound(type) {
       osc.frequency.exponentialRampToValueAtTime(150, now + 0.05);
       gain.gain.setValueAtTime(0.15, now);
       gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
-      osc.start(now);
-      osc.stop(now + 0.05);
+      osc.start(now); osc.stop(now + 0.05);
     } else if (type === 'crit') {
       osc.frequency.setValueAtTime(600, now);
       osc.frequency.exponentialRampToValueAtTime(900, now + 0.12);
       gain.gain.setValueAtTime(0.3, now);
       gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
-      osc.start(now);
-      osc.stop(now + 0.12);
+      osc.start(now); osc.stop(now + 0.12);
     } else if (type === 'success') {
       osc.frequency.setValueAtTime(400, now);
       osc.frequency.setValueAtTime(600, now + 0.08);
       gain.gain.setValueAtTime(0.2, now);
       gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
-      osc.start(now);
-      osc.stop(now + 0.2);
+      osc.start(now); osc.stop(now + 0.2);
     } else if (type === 'fail') {
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(150, now);
       osc.frequency.linearRampToValueAtTime(60, now + 0.2);
       gain.gain.setValueAtTime(0.25, now);
       gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
-      osc.start(now);
-      osc.stop(now + 0.2);
+      osc.start(now); osc.stop(now + 0.2);
     }
   } catch(e) {}
 }
 
+// БАЗА ПРЕДМЕТОВ
 const LOOT_ITEMS = [
-  { id: 'c1', name: 'Ржавый Болт', icon: '🔩', rarity: 'common', power: 1, craftCost: 500 },
-  { id: 'c2', name: 'Старый Чип', icon: '💾', rarity: 'common', power: 2, craftCost: 600 },
-  { id: 'r1', name: 'Неоновый Акум', icon: '⚡', rarity: 'rare', power: 20, craftCost: 5000 },
-  { id: 'e1', name: 'Кибер Видеокарта', icon: '🖥️', rarity: 'epic', power: 100, craftCost: 50000 },
-  { id: 'core_quantum', name: 'Квантовое Ядро', icon: '💎', rarity: 'legendary', power: 2500, craftCost: 0 }
+  { id: 'c1', name: 'Ржавый Болт', icon: '🔩', rarity: 'common', power: 1, baseValue: 100 },
+  { id: 'c2', name: 'Старый Чип', icon: '💾', rarity: 'common', power: 2, baseValue: 150 },
+  { id: 'c3', name: 'Медная Проволока', icon: '〰️', rarity: 'common', power: 3, baseValue: 200 },
+  { id: 'c4', name: 'Сломанная Шестеренка', icon: '⚙️', rarity: 'common', power: 4, baseValue: 250 },
+  { id: 'c5', name: 'Осколок Стекла', icon: '🔹', rarity: 'common', power: 5, baseValue: 300 },
+
+  { id: 'r1', name: 'Неоновый Акум', icon: '⚡', rarity: 'rare', power: 15, baseValue: 1000 },
+  { id: 'r2', name: 'Плазма-Кабель', icon: '🔌', rarity: 'rare', power: 22, baseValue: 1400 },
+  { id: 'r3', name: 'Кристаллическая Пластина', icon: '🧊', rarity: 'rare', power: 30, baseValue: 1900 },
+  { id: 'r4', name: 'Ускоритель Тактов', icon: '⏱️', rarity: 'rare', power: 40, baseValue: 2500 },
+
+  { id: 'e1', name: 'Кибер Видеокарта', icon: '🖥️', rarity: 'epic', power: 85, baseValue: 7000 },
+  { id: 'e2', name: 'Квантовый Процессор', icon: '🎛️', rarity: 'epic', power: 120, baseValue: 10000 },
+  { id: 'e3', name: 'Антигравитационный Модуль', icon: '🛸', rarity: 'epic', power: 160, baseValue: 14000 },
+  { id: 'e4', name: 'Плазменный Реактор', icon: '🔋', rarity: 'epic', power: 210, baseValue: 19000 },
+
+  { id: 'l1', name: 'Квантовое Ядро', icon: '💎', rarity: 'legendary', power: 500, baseValue: 50000 },
+  { id: 'l2', name: 'Глаз Сингулярности', icon: '👁️', rarity: 'legendary', power: 750, baseValue: 80000 },
+  { id: 'l3', name: 'Сердце Кибервселенной', icon: '🌌', rarity: 'legendary', power: 1200, baseValue: 130000 }
 ];
 
 let state = {
@@ -589,7 +605,7 @@ function calculateClickPower() {
   state.inventory.forEach(item => {
     if (state.equipped.includes(item.instanceId)) {
       const levelBonus = 1 + (item.level || 0) * 0.4;
-      basePower += Math.floor(item.power * levelBonus);
+      basePower += Math.floor(item.power * (item.qualityMultiplier || 1) * levelBonus);
     }
   });
   if (state.isVIP) basePower = Math.floor(basePower * 1.5);
@@ -662,11 +678,40 @@ function switchTab(tabId, btn) {
   if (tabId === 'market') fetchMarketLots();
 }
 
-// КЛИК С АНИМАЦИЕЙ И КРИТОМ
+// УСТАНОВЛЕН ШАНС ВЫПАДЕНИЯ 1% (0.01)
+const DROP_CHANCE = 0.008; 
+
+function tryDropLoot() {
+  if (Math.random() > DROP_CHANCE) return; 
+
+  const rand = Math.random();
+  let rarityPool = 'common';
+  if (rand < 0.005) rarityPool = 'legendary';
+  else if (rand < 0.03) rarityPool = 'epic';
+  else if (rand < 0.18) rarityPool = 'rare';
+
+  const availableItems = LOOT_ITEMS.filter(i => i.rarity === rarityPool);
+  if (availableItems.length === 0) return;
+
+  const baseItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+  const qualityMultiplier = parseFloat((Math.random() * 0.5 + 0.8).toFixed(2));
+  
+  const newItem = {
+    ...baseItem,
+    instanceId: Date.now() + Math.random(),
+    level: 0,
+    qualityMultiplier: qualityMultiplier
+  };
+
+  state.inventory.push(newItem);
+  playSound('success');
+  showToast(`🎁 НАЙДЕН ПРЕДМЕТ: ${newItem.icon} ${newItem.name} (x${qualityMultiplier})!`);
+}
+
 document.getElementById('core-btn').addEventListener('pointerdown', (e) => {
   state.stats.clicks++;
   let clickPower = calculateClickPower();
-  const isCrit = Math.random() < 0.08;
+  const isCrit = Math.random() < 0.008;
 
   if (isCrit) {
     clickPower *= 5;
@@ -678,7 +723,12 @@ document.getElementById('core-btn').addEventListener('pointerdown', (e) => {
   }
 
   state.coins += clickPower;
-  if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+  tryDropLoot();
+
+  // Безопасный вызов вибрации с проверкой версии Telegram
+  if (window.Telegram?.WebApp?.isVersionAtLeast?.('6.1')) {
+    tg.HapticFeedback.impactOccurred('light');
+  }
 
   spawnFloatNum(e.clientX || window.innerWidth / 2, e.clientY || window.innerHeight / 2, `+${clickPower}`, isCrit);
   updateUI();
@@ -755,13 +805,8 @@ function buyStarItem(itemId) {
   const shopItem = STAR_SHOP_ITEMS.find(i => i.id === itemId);
   if (!shopItem) return;
 
-  if (tg?.openInvoice) {
-    showToast('Запрос счета в Telegram...');
-  } else {
-    // Демо-покупка для эмуляции
-    if (confirm(`Купить "${shopItem.name}" за ${shopItem.starsCost} Stars?`)) {
-      applyShopReward(shopItem);
-    }
+  if (confirm(`Купить "${shopItem.name}" за ${shopItem.starsCost} Stars?`)) {
+    applyShopReward(shopItem);
   }
 }
 
@@ -784,7 +829,7 @@ function renderInventory() {
     if (equippedId) {
       const item = state.inventory.find(it => it.instanceId === equippedId);
       if (item) {
-        const currentPower = Math.floor(item.power * (1 + (item.level || 0) * 0.4));
+        const currentPower = Math.floor(item.power * (item.qualityMultiplier || 1) * (1 + (item.level || 0) * 0.4));
         slotEl.className = `equip-slot filled rarity-${item.rarity}`;
         slotEl.innerHTML = `<div class="equip-slot-icon">${item.icon}</div><div class="equip-slot-name" style="color:var(--neon4); font-weight:bold;">+${currentPower}</div>`;
       }
@@ -797,19 +842,33 @@ function renderInventory() {
   const list = document.getElementById('inventory-list');
   list.innerHTML = '';
 
+  if (state.inventory.length === 0) {
+    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:20px;">Инвентарь пуст. Потапайте в шахте!</div>`;
+    return;
+  }
+
   state.inventory.forEach((item, index) => {
     const isEquipped = state.equipped.includes(item.instanceId);
+    const calculatedPower = Math.floor(item.power * (item.qualityMultiplier || 1) * (1 + (item.level || 0) * 0.4));
+    const calculatedValue = Math.floor(item.baseValue * (item.qualityMultiplier || 1) * (1 + (item.level || 0) * 0.5));
+
     const card = document.createElement('div');
     card.className = `upg-card rarity-${item.rarity}`;
     card.innerHTML = `
       <div style="font-size:26px;">${item.icon}</div>
       <div style="flex:1;">
         <div style="font-size:12px; font-weight:700;">${item.name} ${item.level ? `+${item.level}` : ''}</div>
-        <div style="font-size:10px; color:var(--neon4);">Сила: +${Math.floor(item.power * (1 + (item.level || 0) * 0.4))}</div>
+        <div style="font-size:10px; color:var(--neon4);">Сила: +${calculatedPower} | Качество: x${item.qualityMultiplier}</div>
+        <div style="font-size:9px; color:var(--gold);">Ценность: ${calculatedValue} ⚡</div>
       </div>
-      <button class="action-btn ${isEquipped ? 'unequip-btn' : ''}" onclick="toggleEquip(${item.instanceId})">
-        ${isEquipped ? 'СНЯТЬ' : 'НАДЕТЬ'}
-      </button>
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <button class="action-btn ${isEquipped ? 'unequip-btn' : ''}" onclick="toggleEquip(${item.instanceId})">
+          ${isEquipped ? 'СНЯТЬ' : 'НАДЕТЬ'}
+        </button>
+        <button class="action-btn" style="background:linear-gradient(135deg, #ffaa00, #ff5500);" onclick="putItemOnMarket(${index})">
+          НА БИРЖУ
+        </button>
+      </div>
     `;
     list.appendChild(card);
   });
@@ -831,15 +890,20 @@ function unequipBySlotIndex(slotIdx) {
   }
 }
 
-/* ================= КРАФТ И ЗАТОЧКА С СИСТЕМОЙ ЩИТОВ ================= */
+/* ================= КРАФТ И ЗАТОЧКА ================= */
 function renderCraft() {
   const list = document.getElementById('craft-list');
-  list.innerHTML = `<div style="text-align:center; color:var(--textdim);">Система крафта готова.</div>`;
+  list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:10px;">Верстак готов к сборке легендарных чертежей.</div>`;
 }
 
 function renderUpgrade() {
   const list = document.getElementById('upgrade-list');
   list.innerHTML = '';
+
+  if (state.inventory.length === 0) {
+    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:20px;">Нет предметов для заточки</div>`;
+    return;
+  }
 
   state.inventory.forEach((item, index) => {
     const currentLvl = item.level || 0;
@@ -851,7 +915,7 @@ function renderUpgrade() {
       <div style="font-size:26px;">${item.icon}</div>
       <div style="flex:1;">
         <div style="font-size:12px; font-weight:700;">${item.name} +${currentLvl}</div>
-        <div style="font-size:10px; color:var(--gold);">Цена: ${cost} ⚡</div>
+        <div style="font-size:10px; color:var(--gold);">Цена улучшения: ${cost} ⚡</div>
       </div>
       <button class="action-btn" onclick="executeUpgrade(${index})">ЗАТОЧИТЬ</button>
     `;
@@ -897,126 +961,230 @@ function executeUpgrade(index) {
   updateUI();
 }
 
-function fetchMarketLots() {
-  document.getElementById('market-list').innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Биржа свободна</div>`;
-}
+/* ================= БИРЖА (МАРКЕТ) ================= */
+async function fetchMarketLots() {
+  const marketList = document.getElementById('market-list');
+  marketList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка лотов биржи...</div>`;
 
-updateUI();
-// ... ваш старый код кликера и интерфейса ...
-
-  updateUI();
-
-  // === ВСТАВЛЯТЬ СУДА (НАЧАЛО) ===
-  async function loadUserData() {
-    if (!db) return;
-    const userId = getUserId();
-    
-    try {
-      const { data, error } = await db
-        .from('users')
-        .select('*')
-        .eq('telegram_id', userId)
-        .single();
-
-      if (data) {
-        state.coins = data.coins || 0;
-        state.inventory = data.inventory || [];
-        state.shields = data.shields || 0;
-        state.isVIP = data.is_vip || false;
-        state.stats = data.stats || { clicks: 0, crafts: 0, upgrades: 0 };
-        state.claimedAchievements = data.claimed_achievements || [];
-        updateUI();
-      } else {
-        await saveUserData();
-      }
-    } catch (e) {
-      console.error("Ошибка загрузки:", e);
-    }
-  }
-
-  async function saveUserData() {
-    if (!db) return;
-    const userId = getUserId();
-    
-    await db.from('users').upsert({
-      telegram_id: userId,
-      username: getUserName(),
-      coins: state.coins,
-      inventory: state.inventory,
-      shields: state.shields,
-      is_vip: state.isVIP,
-      stats: state.stats,
-      claimed_achievements: state.claimedAchievements,
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'telegram_id' });
-  }
-
-  setInterval(saveUserData, 10000);
-  window.addEventListener('beforeunload', saveUserData);
-
-  loadUserData();
-  // === КОНЕЦ ВСТАВКИ ===
-
-// Функция покупки монет
-function buyCoins() {
-  if (!window.Telegram?.WebApp) {
-    showToast("Откройте приложение через Telegram!");
+  if (!db) {
+    marketList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Биржа недоступна (нет подключения)</div>`;
     return;
   }
 
-  const tg = window.Telegram.WebApp;
+  try {
+    const { data: lots, error } = await db
+      .from('market_lots')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  tg.showPopup({
-    title: '⭐ Покупка AT COIN',
-    message: 'Купить 100,000 монет за 50 Telegram Stars?',
-    buttons: [
-      { id: 'buy', type: 'ok', text: 'Купить (50 ⭐)' },
-      { id: 'cancel', type: 'cancel', text: 'Отмена' }
-    ]
-  }, async (buttonId) => {
-    if (buttonId === 'buy') {
-      state.coins = (state.coins || 0) + 100000;
-      updateUI();
-      
-      if (typeof saveUserData === 'function') {
-        await saveUserData();
-      }
-      
-      showToast('Успешно! +100,000 монет');
+    if (error) throw error;
+
+    marketList.innerHTML = '';
+    if (!lots || lots.length === 0) {
+      marketList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">На бирже пока нет лотов. Выставите свой предмет первым!</div>`;
+      return;
     }
-  });
+
+    const currentUserId = getUserId();
+
+    lots.forEach(lot => {
+      const isMyLot = lot.seller_id === currentUserId;
+      const card = document.createElement('div');
+      card.className = `upg-card rarity-${lot.item.rarity}`;
+      card.innerHTML = `
+        <div style="font-size:26px;">${lot.item.icon}</div>
+        <div style="flex:1;">
+          <div style="font-size:12px; font-weight:700;">${lot.item.name} ${lot.item.level ? `+${lot.item.level}` : ''}</div>
+          <div style="font-size:10px; color:var(--neon4);">Цена: ${lot.price} ⚡</div>
+          <div style="font-size:9px; color:var(--textdim);">Продавец: ${lot.seller_name || 'Игрок'}</div>
+        </div>
+        ${isMyLot ? 
+          `<button class="action-btn unequip-btn" onclick="cancelMarketLot('${lot.id}')">СНЯТЬ</button>` : 
+          `<button class="action-btn" onclick="buyMarketLot('${lot.id}', ${lot.price})">КУПИТЬ</button>`
+        }
+      `;
+      marketList.appendChild(card);
+    });
+  } catch (e) {
+    console.error("Ошибка загрузки биржи:", e);
+    marketList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--neon3);">Ошибка загрузки рынка</div>`;
+  }
 }
-// Настройка шансов
-const DROP_CHANCE = 0.05; // 5% шанс на выпадение любой вещи при клике
 
-function tryDropLoot() {
-  if (Math.random() > DROP_CHANCE) return; // Если не повезло — ничего не выпадает
+async function putItemOnMarket(inventoryIndex) {
+  const item = state.inventory[inventoryIndex];
+  if (state.equipped.includes(item.instanceId)) {
+    showToast('Снимите предмет с экипировки перед продажей!');
+    return;
+  }
 
-  // Определение шанса категории (80% Common, 15% Rare, 4% Epic, 1% Legendary)
-  const rand = Math.random();
-  let rarityPool = 'common';
-  if (rand < 0.01) rarityPool = 'legendary';
-  else if (rand < 0.05) rarityPool = 'epic';
-  else if (rand < 0.20) rarityPool = 'rare';
+  const defaultPrice = Math.floor(item.baseValue * (item.qualityMultiplier || 1) * (1 + (item.level || 0) * 0.5));
+  const priceInput = prompt(`Укажите цену продажи для ${item.name} в монетах:`, defaultPrice);
+  if (!priceInput) return;
 
-  // Фильтруем предметы из LOOT_ITEMS по категории
-  const availableItems = LOOT_ITEMS.filter(i => i.rarity === rarityPool);
-  if (availableItems.length === 0) return;
+  const price = parseInt(priceInput);
+  if (isNaN(price) || price <= 0) {
+    showToast('Некорректная цена!');
+    return;
+  }
 
-  const baseItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+  if (!db) {
+    showToast('База данных не подключена!');
+    return;
+  }
+
+  try {
+    state.inventory.splice(inventoryIndex, 1);
+
+    const { error } = await db.from('market_lots').insert({
+      seller_id: getUserId(),
+      seller_name: getUserName(),
+      price: price,
+      item: item,
+      created_at: new Date().toISOString()
+    });
+
+    if (error) throw error;
+
+    playSound('success');
+    showToast('Предмет успешно выставлен на биржу!');
+    renderInventory();
+    updateUI();
+    saveUserData();
+  } catch (e) {
+    console.error(e);
+    showToast('Ошибка при выставлении на биржу');
+    state.inventory.push(item);
+  }
+}
+
+async function buyMarketLot(lotId, price) {
+  if (state.coins < price) {
+    showToast('Недостаточно монет для покупки!');
+    return;
+  }
+
+  if (!db) return;
+
+  try {
+    const { data: lot, error: fetchErr } = await db
+      .from('market_lots')
+      .select('*')
+      .eq('id', lotId)
+      .single();
+
+    if (fetchErr || !lot) {
+      showToast('Лот уже продан или удален!');
+      fetchMarketLots();
+      return;
+    }
+
+    const { error: delErr } = await db
+      .from('market_lots')
+      .delete()
+      .eq('id', lotId);
+
+    if (delErr) throw delErr;
+
+    state.coins -= price;
+    state.inventory.push(lot.item);
+
+    playSound('success');
+    showToast(`Предмет ${lot.item.name} куплен!`);
+    fetchMarketLots();
+    updateUI();
+    saveUserData();
+  } catch (e) {
+    console.error(e);
+    showToast('Ошибка при покупке лота');
+  }
+}
+
+async function cancelMarketLot(lotId) {
+  if (!db) return;
+
+  try {
+    const { data: lot, error: fetchErr } = await db
+      .from('market_lots')
+      .select('*')
+      .eq('id', lotId)
+      .single();
+
+    if (fetchErr || !lot) {
+      showToast('Лот не найден!');
+      fetchMarketLots();
+      return;
+    }
+
+    const { error: delErr } = await db
+      .from('market_lots')
+      .delete()
+      .eq('id', lotId);
+
+    if (delErr) throw delErr;
+
+    state.inventory.push(lot.item);
+
+    playSound('success');
+    showToast('Лот снят с продажи, предмет возвращен в инвентарь!');
+    fetchMarketLots();
+    renderInventory();
+    saveUserData();
+  } catch (e) {
+    console.error(e);
+    showToast('Ошибка при снятии лота');
+  }
+}
+
+async function loadUserData() {
+  if (!db) return;
+  const userId = getUserId();
   
-  // Создаем уникальный экземпляр предмета в инвентарь
-  const newItem = {
-    ...baseItem,
-    instanceId: Date.now() + Math.random(),
-    level: 0
-  };
+  try {
+    const { data, error } = await db
+      .from('users')
+      .select('*')
+      .eq('telegram_id', userId)
+      .single();
 
-  state.inventory.push(newItem);
-  playSound('success');
-  showToast(`ВЫПАЛ ПРЕДМЕТ: ${newItem.icon} ${newItem.name}!`);
+    if (data) {
+      state.coins = data.coins || 0;
+      state.inventory = data.inventory || [];
+      state.shields = data.shields || 0;
+      state.isVIP = data.is_vip || false;
+      state.stats = data.stats || { clicks: 0, crafts: 0, upgrades: 0 };
+      state.claimedAchievements = data.claimed_achievements || [];
+      updateUI();
+    } else {
+      await saveUserData();
+    }
+  } catch (e) {
+    console.error("Ошибка загрузки:", e);
+  }
 }
+
+async function saveUserData() {
+  if (!db) return;
+  const userId = getUserId();
+  
+  await db.from('users').upsert({
+    telegram_id: userId,
+    username: getUserName(),
+    coins: state.coins,
+    inventory: state.inventory,
+    shields: state.shields,
+    is_vip: state.isVIP,
+    stats: state.stats,
+    claimed_achievements: state.claimedAchievements,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'telegram_id' });
+}
+
+setInterval(saveUserData, 10000);
+window.addEventListener('beforeunload', saveUserData);
+
+loadUserData();
+updateUI();
 </script>
 </body>
 </html>
-
