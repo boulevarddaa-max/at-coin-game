@@ -406,9 +406,9 @@
 
     <!-- КРАФТ -->
     <div class="tab-view" id="tab-craft">
-      <div class="form-title" style="margin-bottom: 6px;">🔨 ВЕРСТАК КРАФТА</div>
+      <div class="form-title" style="margin-bottom: 6px;">🔨 СЛОЖНЫЙ ВЕРСТАК КРАФТА</div>
       <div style="font-size:11px; color:var(--textdim); margin-bottom:12px;">
-        Создавайте уникальные предметы повышенного качества.
+        Для создания продвинутых вещей требуются конкретные компоненты и вложения энергии.
       </div>
       <div class="card-list" id="craft-list"></div>
     </div>
@@ -431,7 +431,7 @@
     <!-- БИРЖА -->
     <div class="tab-view" id="tab-market">
       <div class="form-title" style="margin-bottom: 8px;">🏪 РЫНОК И БИРЖА</div>
-      <div style="font-size:11px; color:var(--textdim); margin-bottom:10px;">Выставляйте свои предметы на продажу или покупайте лоты других игроков.</div>
+      <div style="font-size:11px; color:var(--textdim); margin-bottom:10px;">Выставляйте свои редкие предметы или покупайте лоты других игроков.</div>
       <div class="card-list" id="market-list">
         <div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка биржи...</div>
       </div>
@@ -560,6 +560,84 @@ const LOOT_ITEMS = [
   { id: 'l3', name: 'Сердце Кибервселенной', icon: '🌌', rarity: 'legendary', power: 1200, baseValue: 130000 }
 ];
 
+// СЛОЖНЫЕ РЕЦЕПТЫ КРАФТА
+const CRAFT_RECIPES = [
+  {
+    id: 'cr_r1',
+    resultId: 'r1',
+    costCoins: 2500,
+    reqName: '1х Болт + 1х Чип + 1х Проволока',
+    check: (inv) => {
+      const c1 = inv.filter(i => i.id === 'c1').length >= 1;
+      const c2 = inv.filter(i => i.id === 'c2').length >= 1;
+      const c3 = inv.filter(i => i.id === 'c3').length >= 1;
+      return c1 && c2 && c3;
+    },
+    consume: (inv) => {
+      removeItemsById(inv, 'c1', 1);
+      removeItemsById(inv, 'c2', 1);
+      removeItemsById(inv, 'c3', 1);
+    }
+  },
+  {
+    id: 'cr_r2',
+    resultId: 'r3',
+    costCoins: 4000,
+    reqName: '2х Шестеренка + 2х Осколок стекла',
+    check: (inv) => {
+      const c4 = inv.filter(i => i.id === 'c4').length >= 2;
+      const c5 = inv.filter(i => i.id === 'c5').length >= 2;
+      return c4 && c5;
+    },
+    consume: (inv) => {
+      removeItemsById(inv, 'c4', 2);
+      removeItemsById(inv, 'c5', 2);
+    }
+  },
+  {
+    id: 'cr_e1',
+    resultId: 'e1',
+    costCoins: 25000,
+    reqName: '2х Неоновый акум + 1х Плазма-кабель',
+    check: (inv) => {
+      const r1 = inv.filter(i => i.id === 'r1').length >= 2;
+      const r2 = inv.filter(i => i.id === 'r2').length >= 1;
+      return r1 && r2;
+    },
+    consume: (inv) => {
+      removeItemsById(inv, 'r1', 2);
+      removeItemsById(inv, 'r2', 1);
+    }
+  },
+  {
+    id: 'cr_l1',
+    resultId: 'l1',
+    costCoins: 150000,
+    reqName: '1х Кибер Видеокарта + 1х Квантовый Процессор',
+    check: (inv) => {
+      const e1 = inv.filter(i => i.id === 'e1').length >= 1;
+      const e2 = inv.filter(i => i.id === 'e2').length >= 1;
+      return e1 && e2;
+    },
+    consume: (inv) => {
+      removeItemsById(inv, 'e1', 1);
+      removeItemsById(inv, 'e2', 1);
+    }
+  }
+];
+
+function removeItemsById(inv, itemId, count) {
+  let removed = 0;
+  for (let i = inv.length - 1; i >= 0 && removed < count; i--) {
+    if (inv[i].id === itemId) {
+      const eqIdx = state.equipped.indexOf(inv[i].instanceId);
+      if (eqIdx !== -1) state.equipped.splice(eqIdx, 1);
+      inv.splice(i, 1);
+      removed++;
+    }
+  }
+}
+
 let state = {
   coins: 0,
   inventory: [],
@@ -588,6 +666,46 @@ function getUserName() {
   return tg?.initDataUnsafe?.user ? (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name) : 'Игрок';
 }
 
+let saveTimeout = null;
+function saveData() {
+  if (!db) return;
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(async () => {
+    try {
+      await db.from('users').upsert({
+        telegram_id: getUserId(),
+        username: getUserName(),
+        coins: Math.floor(state.coins),
+        inventory: state.inventory,
+        shields: state.shields,
+        stats: state.stats,
+        claimed_achievements: state.claimedAchievements,
+        updated_at: new Date()
+      });
+    } catch(e) { console.error('Ошибка сохранения:', e); }
+  }, 1000);
+}
+
+async function loadData() {
+  if (!db) return;
+  try {
+    const { data } = await db
+      .from('users')
+      .select('*')
+      .eq('telegram_id', getUserId())
+      .single();
+
+    if (data) {
+      state.coins = data.coins || 0;
+      state.inventory = data.inventory || [];
+      state.shields = data.shields || 0;
+      state.stats = data.stats || { clicks: 0, crafts: 0, upgrades: 0 };
+      state.claimedAchievements = data.claimed_achievements || [];
+    }
+  } catch(e) {}
+  updateUI();
+}
+
 function calculateClickPower() {
   let basePower = 0.1;
   state.inventory.forEach(item => {
@@ -608,6 +726,7 @@ function updateUI() {
   
   const level = Math.floor(Math.log10(state.coins + 1)) + 1;
   document.getElementById('lvl-val').innerText = level;
+  saveData();
 }
 
 function showToast(msg) {
@@ -665,17 +784,17 @@ function switchTab(tabId, btn) {
   if (tabId === 'leaderboard') fetchLeaderboard();
 }
 
-// ШАНС ВЫПАДЕНИЯ 1% (0.01)
-const DROP_CHANCE = 0.01; 
+// ШАНС ВЫПАДЕНИЯ УМЕНЬШЕН В 3 РАЗА (0.33% вместо 1%)
+const DROP_CHANCE = 0.0033; 
 
 function tryDropLoot() {
   if (Math.random() > DROP_CHANCE) return; 
 
   const rand = Math.random();
   let rarityPool = 'common';
-  if (rand < 0.005) rarityPool = 'legendary';
-  else if (rand < 0.03) rarityPool = 'epic';
-  else if (rand < 0.18) rarityPool = 'rare';
+  if (rand < 0.001) rarityPool = 'legendary';
+  else if (rand < 0.01) rarityPool = 'epic';
+  else if (rand < 0.10) rarityPool = 'rare';
 
   const availableItems = LOOT_ITEMS.filter(i => i.rarity === rarityPool);
   if (availableItems.length === 0) return;
@@ -692,7 +811,8 @@ function tryDropLoot() {
 
   state.inventory.push(newItem);
   playSound('success');
-  showToast(`🎁 НАЙДЕН ПРЕДМЕТ: ${newItem.icon} ${newItem.name} (x${qualityMultiplier})!`);
+  showToast(`🎁 РЕДКАЯ НАХОДКА: ${newItem.icon} ${newItem.name}!`);
+  updateUI();
 }
 
 document.getElementById('core-btn').addEventListener('pointerdown', (e) => {
@@ -773,6 +893,10 @@ function renderInventory() {
         const currentPower = Math.floor(item.power * (item.qualityMultiplier || 1) * (1 + (item.level || 0) * 0.4));
         slotEl.className = `equip-slot filled rarity-${item.rarity}`;
         slotEl.innerHTML = `<div class="equip-slot-icon">${item.icon}</div><div class="equip-slot-name" style="color:var(--neon4); font-weight:bold;">+${currentPower}</div>`;
+      } else {
+        state.equipped.splice(i, 1);
+        slotEl.className = 'equip-slot';
+        slotEl.innerHTML = `<div class="equip-slot-icon">➕</div><div class="equip-slot-name">Пусто</div>`;
       }
     } else {
       slotEl.className = 'equip-slot';
@@ -817,8 +941,14 @@ function renderInventory() {
 
 function toggleEquip(instanceId) {
   const index = state.equipped.indexOf(instanceId);
-  if (index !== -1) state.equipped.splice(index, 1);
-  else if (state.equipped.length < 3) state.equipped.push(instanceId);
+  if (index !== -1) {
+    state.equipped.splice(index, 1);
+  } else if (state.equipped.length < 3) {
+    state.equipped.push(instanceId);
+  } else {
+    showToast('Максимум 3 предмета экипировки!');
+    return;
+  }
   renderInventory();
   updateUI();
 }
@@ -831,12 +961,65 @@ function unequipBySlotIndex(slotIdx) {
   }
 }
 
-/* ================= КРАФТ И ЗАТОЧКА ================= */
+/* ================= КРАФТ ================= */
 function renderCraft() {
   const list = document.getElementById('craft-list');
-  list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:10px;">Верстак готов к сборке легендарных чертежей.</div>`;
+  list.innerHTML = '';
+
+  CRAFT_RECIPES.forEach(recipe => {
+    const targetItemBase = LOOT_ITEMS.find(i => i.id === recipe.resultId);
+    if (!targetItemBase) return;
+
+    const canCraft = recipe.check(state.inventory) && state.coins >= recipe.costCoins;
+
+    const card = document.createElement('div');
+    card.className = `upg-card rarity-${targetItemBase.rarity}`;
+    card.innerHTML = `
+      <div style="font-size:26px;">${targetItemBase.icon}</div>
+      <div style="flex:1;">
+        <div style="font-size:12px; font-weight:700;">Создать: ${targetItemBase.name}</div>
+        <div style="font-size:10px; color:var(--textdim);">Требуется: ${recipe.reqName}</div>
+        <div style="font-size:10px; color:var(--gold);">Цена: ${recipe.costCoins.toLocaleString()} ⚡</div>
+      </div>
+      <button class="action-btn" ${!canCraft ? 'style="opacity:0.4;" disabled' : ''} onclick="executeCraft('${recipe.id}')">
+        СКРАФТИТЬ
+      </button>
+    `;
+    list.appendChild(card);
+  });
 }
 
+function executeCraft(recipeId) {
+  const recipe = CRAFT_RECIPES.find(r => r.id === recipeId);
+  if (!recipe) return;
+
+  if (state.coins < recipe.costCoins || !recipe.check(state.inventory)) {
+    showToast('Недостаточно ресурсов или монет!');
+    return;
+  }
+
+  state.coins -= recipe.costCoins;
+  recipe.consume(state.inventory);
+  state.stats.crafts++;
+
+  const targetItemBase = LOOT_ITEMS.find(i => i.id === recipe.resultId);
+  const qualityMultiplier = parseFloat((Math.random() * 0.4 + 1.2).toFixed(2));
+
+  const newItem = {
+    ...targetItemBase,
+    instanceId: Date.now() + Math.random(),
+    level: 0,
+    qualityMultiplier: qualityMultiplier
+  };
+
+  state.inventory.push(newItem);
+  playSound('success');
+  showToast(`УСПЕШНЫЙ КРАФТ: ${newItem.icon} ${newItem.name}!`);
+  renderCraft();
+  updateUI();
+}
+
+/* ================= ЗАТОЧКА ================= */
 function renderUpgrade() {
   const list = document.getElementById('upgrade-list');
   list.innerHTML = '';
@@ -856,7 +1039,7 @@ function renderUpgrade() {
       <div style="font-size:26px;">${item.icon}</div>
       <div style="flex:1;">
         <div style="font-size:12px; font-weight:700;">${item.name} +${currentLvl}</div>
-        <div style="font-size:10px; color:var(--gold);">Цена улучшения: ${cost} ⚡</div>
+        <div style="font-size:10px; color:var(--gold);">Цена улучшения: ${cost.toLocaleString()} ⚡</div>
       </div>
       <button class="action-btn" onclick="executeUpgrade(${index})">ЗАТОЧИТЬ</button>
     `;
@@ -870,7 +1053,7 @@ function executeUpgrade(index) {
   const cost = Math.floor((currentLvl + 1) * 500 * (item.power * 0.5));
 
   if (state.coins < cost) {
-    showToast(`НУЖНО ${cost} МОНЕТ`);
+    showToast(`НУЖНО ${cost.toLocaleString()} МОНЕТ`);
     return;
   }
 
@@ -936,7 +1119,7 @@ async function fetchMarketLots() {
         <div style="font-size:26px;">${lot.item.icon}</div>
         <div style="flex:1;">
           <div style="font-size:12px; font-weight:700;">${lot.item.name} ${lot.item.level ? `+${lot.item.level}` : ''}</div>
-          <div style="font-size:10px; color:var(--neon4);">Цена: ${lot.price} ⚡</div>
+          <div style="font-size:10px; color:var(--neon4);">Цена: ${lot.price.toLocaleString()} ⚡</div>
           <div style="font-size:9px; color:var(--textdim);">Продавец: ${lot.seller_name || 'Игрок'}</div>
         </div>
         ${isMyLot ? 
@@ -965,37 +1148,33 @@ async function putItemOnMarket(inventoryIndex) {
 
   const price = parseInt(priceInput);
   if (isNaN(price) || price <= 0) {
-    showToast('Некорректная цена!');
+    showToast('Укажите корректную цену!');
     return;
   }
 
   if (!db) {
-    showToast('База данных не подключена!');
+    showToast('Биржа недоступна');
     return;
   }
 
   try {
-    state.inventory.splice(inventoryIndex, 1);
-
     const { error } = await db.from('market_lots').insert({
       seller_id: getUserId(),
       seller_name: getUserName(),
-      price: price,
       item: item,
-      created_at: new Date().toISOString()
+      price: price
     });
 
     if (error) throw error;
 
+    state.inventory.splice(inventoryIndex, 1);
     playSound('success');
     showToast('Предмет успешно выставлен на биржу!');
     renderInventory();
     updateUI();
-    saveUserData();
   } catch (e) {
     console.error(e);
-    showToast('Ошибка при выставлении на биржу');
-    state.inventory.push(item);
+    showToast('Ошибка при выставлении лота');
   }
 }
 
@@ -1020,21 +1199,15 @@ async function buyMarketLot(lotId, price) {
       return;
     }
 
-    const { error: delErr } = await db
-      .from('market_lots')
-      .delete()
-      .eq('id', lotId);
-
-    if (delErr) throw delErr;
-
     state.coins -= price;
     state.inventory.push(lot.item);
 
+    await db.from('market_lots').delete().eq('id', lotId);
+
     playSound('success');
-    showToast(`Предмет ${lot.item.name} куплен!`);
+    showToast(`Вы купили ${lot.item.name}!`);
     fetchMarketLots();
     updateUI();
-    saveUserData();
   } catch (e) {
     console.error(e);
     showToast('Ошибка при покупке лота');
@@ -1043,7 +1216,6 @@ async function buyMarketLot(lotId, price) {
 
 async function cancelMarketLot(lotId) {
   if (!db) return;
-
   try {
     const { data: lot, error: fetchErr } = await db
       .from('market_lots')
@@ -1052,28 +1224,20 @@ async function cancelMarketLot(lotId) {
       .single();
 
     if (fetchErr || !lot) {
-      showToast('Лот не найден!');
-      fetchMarketLots();
+      showToast('Лот не найден');
       return;
     }
 
-    const { error: delErr } = await db
-      .from('market_lots')
-      .delete()
-      .eq('id', lotId);
-
-    if (delErr) throw delErr;
-
     state.inventory.push(lot.item);
+    await db.from('market_lots').delete().eq('id', lotId);
 
     playSound('success');
-    showToast('Лот снят с продажи, предмет возвращен в инвентарь!');
+    showToast('Лот снят с продажи');
     fetchMarketLots();
-    renderInventory();
-    saveUserData();
+    updateUI();
   } catch (e) {
     console.error(e);
-    showToast('Ошибка при снятии лота');
+    showToast('Не удалось снять лот');
   }
 }
 
@@ -1090,86 +1254,48 @@ async function fetchLeaderboard() {
   try {
     const { data: users, error } = await db
       .from('users')
-      .select('username, coins')
+      .select('username, coins, telegram_id')
       .order('coins', { ascending: false })
-      .limit(10);
+      .limit(20);
 
     if (error) throw error;
 
     lbList.innerHTML = '';
     if (!users || users.length === 0) {
-      lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Список лидеров пуст</div>`;
+      lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Пока нет игроков в топе.</div>`;
       return;
     }
 
-    users.forEach((user, index) => {
-      const medals = ['🥇', '🥈', '🥉'];
-      const rankIcon = medals[index] || `#${index + 1}`;
-
+    users.forEach((u, index) => {
+      const isMe = u.telegram_id === getUserId();
       const card = document.createElement('div');
       card.className = 'upg-card';
+      if (isMe) card.style.borderColor = 'var(--neon1)';
+
+      let medal = `#${index + 1}`;
+      if (index === 0) medal = '🥇';
+      if (index === 1) medal = '🥈';
+      if (index === 2) medal = '🥉';
+
       card.innerHTML = `
-        <div style="font-size:20px; width:30px; text-align:center; font-weight:bold;">${rankIcon}</div>
+        <div style="font-size:18px; font-weight:900; width:30px; text-align:center;">${medal}</div>
         <div style="flex:1;">
-          <div style="font-size:12px; font-weight:700;">${user.username || 'Игрок'}</div>
+          <div style="font-size:12px; font-weight:700; color:${isMe ? 'var(--neon1)' : 'var(--text);'}">${u.username || 'Игрок'} ${isMe ? '(Вы)' : ''}</div>
         </div>
-        <div style="font-size:12px; font-weight:900; color:var(--gold);">${Math.floor(user.coins || 0).toLocaleString()} ⚡</div>
+        <div style="font-size:12px; font-weight:900; color:var(--gold);">${Math.floor(u.coins).toLocaleString()} ⚡</div>
       `;
       lbList.appendChild(card);
     });
   } catch (e) {
-    console.error("Ошибка загрузки топа:", e);
-    lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--neon3);">Ошибка загрузки лидеров</div>`;
+    console.error(e);
+    lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--neon3);">Ошибка загрузки топа</div>`;
   }
 }
 
-async function loadUserData() {
-  if (!db) return;
-  const userId = getUserId();
-  
-  try {
-    const { data, error } = await db
-      .from('users')
-      .select('*')
-      .eq('telegram_id', userId)
-      .single();
-
-    if (data) {
-      state.coins = data.coins || 0;
-      state.inventory = data.inventory || [];
-      state.shields = data.shields || 0;
-      state.stats = data.stats || { clicks: 0, crafts: 0, upgrades: 0 };
-      state.claimedAchievements = data.claimed_achievements || [];
-      updateUI();
-    } else {
-      await saveUserData();
-    }
-  } catch (e) {
-    console.error("Ошибка загрузки:", e);
-  }
-}
-
-async function saveUserData() {
-  if (!db) return;
-  const userId = getUserId();
-  
-  await db.from('users').upsert({
-    telegram_id: userId,
-    username: getUserName(),
-    coins: state.coins,
-    inventory: state.inventory,
-    shields: state.shields,
-    stats: state.stats,
-    claimed_achievements: state.claimedAchievements,
-    updated_at: new Date().toISOString()
-  }, { onConflict: 'telegram_id' });
-}
-
-setInterval(saveUserData, 10000);
-window.addEventListener('beforeunload', saveUserData);
-
-loadUserData();
-updateUI();
+window.addEventListener('load', async () => {
+  await loadData();
+  updateUI();
+});
 </script>
 </body>
 </html>
