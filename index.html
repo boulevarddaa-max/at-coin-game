@@ -251,11 +251,6 @@
     touch-action: manipulation;
   }
 
-  .action-btn.star-btn {
-    background: linear-gradient(135deg, #ffaa00, #ffdd00);
-    color: #000;
-  }
-
   .action-btn.unequip-btn {
     background: linear-gradient(135deg, #ff006e, #bf00ff);
   }
@@ -433,13 +428,6 @@
       <div class="card-list" id="achievements-list"></div>
     </div>
 
-    <!-- МАГАЗИН STARS -->
-    <div class="tab-view" id="tab-shop">
-      <div class="form-title" style="margin-bottom: 8px;">⭐ МАГАЗИН STARS</div>
-      <div style="font-size:11px; color:var(--textdim); margin-bottom:12px;">Покупайте эксклюзивные ресурсы за Telegram Stars!</div>
-      <div class="card-list" id="shop-list"></div>
-    </div>
-
     <!-- БИРЖА -->
     <div class="tab-view" id="tab-market">
       <div class="form-title" style="margin-bottom: 8px;">🏪 РЫНОК И БИРЖА</div>
@@ -452,6 +440,7 @@
     <!-- ТОП -->
     <div class="tab-view" id="tab-leaderboard">
       <div class="form-title" style="margin-bottom: 8px;">🏆 ТОП ИГРОКОВ</div>
+      <div style="font-size:11px; color:var(--textdim); margin-bottom:12px;">Самые богатые шахтеры этой вселенной.</div>
       <div class="card-list" id="lb-list">
         <div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>
       </div>
@@ -480,13 +469,13 @@
       <span class="nav-btn-icon">🏅</span>
       <span>Ачивки</span>
     </button>
-    <button class="nav-btn" onclick="switchTab('shop', this)">
-      <span class="nav-btn-icon">⭐</span>
-      <span>Магазин</span>
-    </button>
     <button class="nav-btn" onclick="switchTab('market', this)">
       <span class="nav-btn-icon">🏪</span>
       <span>Биржа</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('leaderboard', this)">
+      <span class="nav-btn-icon">🏆</span>
+      <span>Топ</span>
     </button>
   </div>
 </div>
@@ -576,7 +565,6 @@ let state = {
   inventory: [],
   equipped: [],
   shields: 0,
-  isVIP: false,
   stats: {
     clicks: 0,
     crafts: 0,
@@ -608,7 +596,6 @@ function calculateClickPower() {
       basePower += Math.floor(item.power * (item.qualityMultiplier || 1) * levelBonus);
     }
   });
-  if (state.isVIP) basePower = Math.floor(basePower * 1.5);
   return basePower;
 }
 
@@ -617,7 +604,7 @@ function updateUI() {
   document.getElementById('stat-click').innerText = '+' + calculateClickPower();
   document.getElementById('stat-items').innerText = state.inventory.length;
   document.getElementById('stat-shields').innerText = `${state.shields} 🛡️`;
-  document.getElementById('user-name').innerText = getUserName() + (state.isVIP ? ' ★' : '');
+  document.getElementById('user-name').innerText = getUserName();
   
   const level = Math.floor(Math.log10(state.coins + 1)) + 1;
   document.getElementById('lvl-val').innerText = level;
@@ -674,12 +661,12 @@ function switchTab(tabId, btn) {
   if (tabId === 'craft') renderCraft();
   if (tabId === 'upgrade') renderUpgrade();
   if (tabId === 'achievements') renderAchievements();
-  if (tabId === 'shop') renderShop();
   if (tabId === 'market') fetchMarketLots();
+  if (tabId === 'leaderboard') fetchLeaderboard();
 }
 
-// УСТАНОВЛЕН ШАНС ВЫПАДЕНИЯ 1% (0.01)
-const DROP_CHANCE = 0.008; 
+// ШАНС ВЫПАДЕНИЯ 1% (0.01)
+const DROP_CHANCE = 0.01; 
 
 function tryDropLoot() {
   if (Math.random() > DROP_CHANCE) return; 
@@ -711,7 +698,7 @@ function tryDropLoot() {
 document.getElementById('core-btn').addEventListener('pointerdown', (e) => {
   state.stats.clicks++;
   let clickPower = calculateClickPower();
-  const isCrit = Math.random() < 0.008;
+  const isCrit = Math.random() < 0.08;
 
   if (isCrit) {
     clickPower *= 5;
@@ -725,7 +712,6 @@ document.getElementById('core-btn').addEventListener('pointerdown', (e) => {
   state.coins += clickPower;
   tryDropLoot();
 
-  // Безопасный вызов вибрации с проверкой версии Telegram
   if (window.Telegram?.WebApp?.isVersionAtLeast?.('6.1')) {
     tg.HapticFeedback.impactOccurred('light');
   }
@@ -772,51 +758,6 @@ function claimAchievement(id, reward) {
   playSound('success');
   showToast(`НАГРАДА ПОЛУЧЕНА: +${reward} ⚡`);
   renderAchievements();
-  updateUI();
-}
-
-/* ================= МАГАЗИН STARS ================= */
-const STAR_SHOP_ITEMS = [
-  { id: 'stars_100k', name: '100 000 AT COINS', icon: '💰', starsCost: 50, type: 'coins', amount: 100000 },
-  { id: 'stars_shield', name: 'Щит от поломки (x3)', icon: '🛡️', starsCost: 100, type: 'shield', amount: 3 },
-  { id: 'stars_vip', name: 'Премиум (+50% к тапу)', icon: '⭐', starsCost: 250, type: 'vip', amount: 1 }
-];
-
-function renderShop() {
-  const list = document.getElementById('shop-list');
-  list.innerHTML = '';
-
-  STAR_SHOP_ITEMS.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'upg-card rarity-legendary';
-    card.innerHTML = `
-      <div style="font-size:26px;">${item.icon}</div>
-      <div style="flex:1;">
-        <div style="font-size:12px; font-weight:700;">${item.name}</div>
-        <div style="font-size:10px; color:var(--gold);">Эксклюзивный предмет</div>
-      </div>
-      <button class="action-btn star-btn" onclick="buyStarItem('${item.id}')">${item.starsCost} ⭐</button>
-    `;
-    list.appendChild(card);
-  });
-}
-
-function buyStarItem(itemId) {
-  const shopItem = STAR_SHOP_ITEMS.find(i => i.id === itemId);
-  if (!shopItem) return;
-
-  if (confirm(`Купить "${shopItem.name}" за ${shopItem.starsCost} Stars?`)) {
-    applyShopReward(shopItem);
-  }
-}
-
-function applyShopReward(shopItem) {
-  playSound('success');
-  if (shopItem.type === 'coins') state.coins += shopItem.amount;
-  if (shopItem.type === 'shield') state.shields += shopItem.amount;
-  if (shopItem.type === 'vip') state.isVIP = true;
-  
-  showToast(`УСПЕШНО КУПЛЕНО: ${shopItem.name}`);
   updateUI();
 }
 
@@ -967,7 +908,7 @@ async function fetchMarketLots() {
   marketList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка лотов биржи...</div>`;
 
   if (!db) {
-    marketList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Биржа недоступна (нет подключения)</div>`;
+    marketList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Биржа недоступна</div>`;
     return;
   }
 
@@ -1136,6 +1077,52 @@ async function cancelMarketLot(lotId) {
   }
 }
 
+/* ================= ТОП ИГРОКОВ ================= */
+async function fetchLeaderboard() {
+  const lbList = document.getElementById('lb-list');
+  lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>`;
+
+  if (!db) {
+    lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Топ недоступен</div>`;
+    return;
+  }
+
+  try {
+    const { data: users, error } = await db
+      .from('users')
+      .select('username, coins')
+      .order('coins', { ascending: false })
+      .limit(10);
+
+    if (error) throw error;
+
+    lbList.innerHTML = '';
+    if (!users || users.length === 0) {
+      lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Список лидеров пуст</div>`;
+      return;
+    }
+
+    users.forEach((user, index) => {
+      const medals = ['🥇', '🥈', '🥉'];
+      const rankIcon = medals[index] || `#${index + 1}`;
+
+      const card = document.createElement('div');
+      card.className = 'upg-card';
+      card.innerHTML = `
+        <div style="font-size:20px; width:30px; text-align:center; font-weight:bold;">${rankIcon}</div>
+        <div style="flex:1;">
+          <div style="font-size:12px; font-weight:700;">${user.username || 'Игрок'}</div>
+        </div>
+        <div style="font-size:12px; font-weight:900; color:var(--gold);">${Math.floor(user.coins || 0).toLocaleString()} ⚡</div>
+      `;
+      lbList.appendChild(card);
+    });
+  } catch (e) {
+    console.error("Ошибка загрузки топа:", e);
+    lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--neon3);">Ошибка загрузки лидеров</div>`;
+  }
+}
+
 async function loadUserData() {
   if (!db) return;
   const userId = getUserId();
@@ -1151,7 +1138,6 @@ async function loadUserData() {
       state.coins = data.coins || 0;
       state.inventory = data.inventory || [];
       state.shields = data.shields || 0;
-      state.isVIP = data.is_vip || false;
       state.stats = data.stats || { clicks: 0, crafts: 0, upgrades: 0 };
       state.claimedAchievements = data.claimed_achievements || [];
       updateUI();
@@ -1173,7 +1159,6 @@ async function saveUserData() {
     coins: state.coins,
     inventory: state.inventory,
     shields: state.shields,
-    is_vip: state.isVIP,
     stats: state.stats,
     claimed_achievements: state.claimedAchievements,
     updated_at: new Date().toISOString()
