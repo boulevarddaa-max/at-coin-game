@@ -347,9 +347,50 @@
 
   .nav-btn:active { transform: scale(.96); }
   .nav-btn-icon { font-size: 25px; line-height: 1; }
-@media (max-width: 360px) {
+
+  #side-nav {
+    position: absolute;
+    right: 10px;
+    top: 118px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 25;
+  }
+
+  .side-nav-btn {
+    width: 58px;
+    min-height: 58px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: rgba(26,26,46,0.92);
+    color: var(--textdim);
+    box-shadow: 0 8px 24px rgba(0,0,0,.28);
+    backdrop-filter: blur(8px);
+    font-size: 9px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .side-nav-btn .nav-btn-icon { font-size: 23px; }
+  .side-nav-btn.active {
+    color: var(--neon1);
+    border-color: rgba(0,245,255,.45);
+    background: rgba(0,245,255,.09);
+    box-shadow: 0 0 16px rgba(0,245,255,.12);
+  }
+
+  @media (max-width: 360px) {
     .nav-btn { font-size: 11px; min-height: 52px; }
     .nav-btn-icon { font-size: 23px; }
+    #side-nav { right: 7px; top: 110px; }
+    .side-nav-btn { width: 52px; min-height: 52px; }
   }
 
   .float-num {
@@ -453,876 +494,324 @@
   }
 </style>
 
-<style id="compact-ui-rework">
-/* Compact inventory / craft / market / upgrade cards */
-#tab-inventory .item-card,
-#tab-craft .craft-card,
-#tab-market .upg-card,
-#tab-upgrade .upg-card {
-  padding: 10px !important;
-  min-height: 0 !important;
-  gap: 8px !important;
-  margin-bottom: 8px !important;
+<style id="mobile-layout-fix">
+/* ===== Clean responsive layout ===== */
+html, body { min-height: 100%; }
+
+#app {
+  width: 100%;
+  height: 100dvh;
+  max-width: 480px;
+  min-height: 0;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
 }
 
-#tab-inventory .item-card > div:first-child,
-#tab-craft .craft-card > div:first-child,
-#tab-market .upg-card > div:first-child,
-#tab-upgrade .upg-card > div:first-child {
-  font-size: 23px !important;
+/* Header: fixed three-zone layout so usernames never push the logo to a new line. */
+#topbar {
+  display: grid !important;
+  grid-template-columns: minmax(82px, 1fr) auto minmax(82px, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 12px 12px 8px !important;
+  min-height: 56px;
+}
+
+#game-title {
+  min-width: 0;
+  white-space: nowrap;
+  font-size: 20px !important;
+  letter-spacing: 3px !important;
   line-height: 1 !important;
 }
 
-#tab-inventory .item-card h3,
-#tab-inventory .item-card .item-name,
-#tab-craft .craft-card h3,
-#tab-craft .craft-card .craft-name,
-#tab-market .upg-card h3,
-#tab-upgrade .upg-card h3 {
-  font-size: 13px !important;
-  line-height: 1.15 !important;
-  margin: 0 0 2px !important;
+#online-badge {
+  justify-self: center;
+  white-space: nowrap;
+  padding: 5px 9px !important;
+  font-size: 11px !important;
 }
 
-#tab-inventory .item-card p,
-#tab-inventory .item-card .item-desc,
-#tab-craft .craft-card p,
-#tab-craft .craft-card .craft-desc,
-#tab-market .upg-card p,
-#tab-upgrade .upg-card p {
-  font-size: 10px !important;
-  line-height: 1.25 !important;
-  margin: 2px 0 !important;
-}
-
-#tab-inventory .action-btn,
-#tab-craft .action-btn,
-#tab-market .action-btn,
-#tab-upgrade .action-btn {
-  padding: 6px 9px !important;
-  font-size: 10px !important;
-  min-height: 30px !important;
-}
-
-#tab-inventory .item-card .item-stats,
-#tab-craft .craft-card .craft-cost,
-#tab-market .upg-card .market-meta,
-#tab-upgrade .upg-card .upgrade-meta {
-  font-size: 10px !important;
-}
-
-/* Compact grids without making them cramped */
-#tab-inventory .inventory-grid,
-#tab-craft .craft-grid,
-#tab-market .market-grid,
-#tab-upgrade .upgrade-grid {
-  gap: 8px !important;
-}
-
-/* Generic fallback for the app's card containers */
-#tab-inventory [class*="card"],
-#tab-craft [class*="card"],
-#tab-market [class*="card"],
-#tab-upgrade [class*="card"] {
-  box-sizing: border-box;
-}
-
-/* Keep the main content airy */
-#tab-inventory .section,
-#tab-craft .section,
-#tab-market .section,
-#tab-upgrade .section {
-  margin-bottom: 10px !important;
-}
-</style>
-
-
-<style id="compact-ui-v2">
-/* Additional 10–15% compaction */
-#tab-inventory .item-card,
-#tab-craft .craft-card,
-#tab-market .upg-card,
-#tab-upgrade .upg-card {
-  padding: 8px !important;
+#topbar > div:last-child {
+  min-width: 0;
+  justify-self: end;
+  display: flex !important;
+  align-items: center !important;
   gap: 6px !important;
-  margin-bottom: 6px !important;
 }
 
-#tab-inventory .item-card > div:first-child,
-#tab-craft .craft-card > div:first-child,
-#tab-market .upg-card > div:first-child,
-#tab-upgrade .upg-card > div:first-child {
-  font-size: 20px !important;
-}
-
-#tab-inventory .item-card h3,
-#tab-inventory .item-card .item-name,
-#tab-craft .craft-card h3,
-#tab-craft .craft-card .craft-name,
-#tab-market .upg-card h3,
-#tab-upgrade .upg-card h3 {
+#user-name {
+  max-width: 82px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 12px !important;
 }
 
-#tab-inventory .item-card p,
-#tab-inventory .item-card .item-desc,
-#tab-craft .craft-card p,
-#tab-craft .craft-card .craft-desc,
-#tab-market .upg-card p,
-#tab-upgrade .upg-card p {
-  font-size: 9px !important;
-  line-height: 1.2 !important;
+#level-badge {
+  flex: 0 0 auto;
+  padding: 6px 9px !important;
+  font-size: 12px !important;
+  letter-spacing: .5px !important;
 }
 
-#tab-inventory .action-btn,
-#tab-craft .action-btn,
-#tab-market .action-btn,
-#tab-upgrade .action-btn {
-  padding: 5px 8px !important;
-  font-size: 9px !important;
-  min-height: 27px !important;
+/* Stats are slightly tighter on phones. */
+#stats-area {
+  padding: 6px 10px 0 !important;
 }
 
-#tab-inventory .inventory-grid,
-#tab-craft .craft-grid,
-#tab-market .market-grid,
-#tab-upgrade .upgrade-grid {
+#currency-display { margin-bottom: 9px !important; }
+#currency-value { font-size: 38px !important; }
+#currency-label { font-size: 11px !important; letter-spacing: 2.5px !important; }
+
+#mini-stats {
   gap: 6px !important;
-}
-
-#tab-inventory .section,
-#tab-craft .section,
-#tab-market .section,
-#tab-upgrade .section {
   margin-bottom: 8px !important;
 }
-</style>
 
-
-<style id="mine-visual-rework">
-/* Mine visual refresh: calmer, deeper, more atmospheric */
-#tab-mine {
-  position: relative;
-  overflow: hidden;
-  border-radius: 18px;
-  background:
-    radial-gradient(circle at 50% 28%, rgba(80,220,255,.10), transparent 34%),
-    radial-gradient(circle at 15% 80%, rgba(120,70,255,.08), transparent 30%),
-    linear-gradient(180deg, rgba(8,14,25,.96), rgba(4,8,16,.98));
-}
-
-#tab-mine::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: .35;
-  background-image:
-    radial-gradient(circle at 20% 25%, rgba(255,255,255,.7) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 70% 15%, rgba(255,255,255,.5) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 85% 65%, rgba(255,255,255,.45) 0 1px, transparent 1.5px);
-  background-size: 90px 90px, 130px 130px, 170px 170px;
-}
-
-#tab-mine > * {
-  position: relative;
-  z-index: 1;
-}
-
-#tab-mine .mine-title,
-#tab-mine h1,
-#tab-mine h2 {
-  letter-spacing: .02em;
-}
-
-#tab-mine #core-btn {
-  width: min(72vw, 310px) !important;
-  height: min(72vw, 310px) !important;
-  max-width: 310px !important;
-  max-height: 310px !important;
-  border-radius: 50% !important;
-  border: 2px solid rgba(90,220,255,.42) !important;
-  box-shadow:
-    0 0 0 8px rgba(80,190,255,.035),
-    0 0 35px rgba(70,210,255,.16),
-    inset 0 0 45px rgba(40,120,180,.12) !important;
-  background:
-    radial-gradient(circle at 45% 38%, rgba(70,180,220,.20), transparent 25%),
-    radial-gradient(circle, rgba(12,27,45,.98), rgba(4,10,18,1)) !important;
-  transition: transform .12s ease, box-shadow .18s ease, filter .18s ease !important;
-}
-
-#tab-mine #core-btn:hover {
-  filter: brightness(1.08);
-  box-shadow:
-    0 0 0 9px rgba(80,190,255,.045),
-    0 0 45px rgba(70,210,255,.22),
-    inset 0 0 50px rgba(40,120,180,.16) !important;
-}
-
-#tab-mine #core-btn:active {
-  transform: scale(.965) !important;
-}
-
-#tab-mine .mine-panel,
-#tab-mine .stats-card,
-#tab-mine .stat-card {
-  background: rgba(8,16,29,.72) !important;
-  border-color: rgba(100,190,230,.12) !important;
-  box-shadow: 0 8px 28px rgba(0,0,0,.20) !important;
-  backdrop-filter: blur(8px);
-}
-
-#tab-mine .mine-stat,
-#tab-mine .stat-card {
-  border-radius: 12px !important;
-}
-
-#tab-mine .mine-hint {
-  opacity: .72;
-  font-size: 11px;
-  letter-spacing: .03em;
-}
-
-#tab-mine .float-num {
-  text-shadow: 0 2px 10px rgba(0,0,0,.75);
-}
-</style>
-
-
-<style id="full-page-visual-rework">
-/* === FULL APP VISUAL REWORK: header + navigation + mine + all pages === */
-:root {
-  --app-radius: 14px;
-}
-
-/* App shell / background */
-body {
-  background:
-    radial-gradient(circle at 50% -10%, rgba(54,180,220,.10), transparent 34%),
-    linear-gradient(180deg, #060b13 0%, #050912 48%, #03060d 100%) !important;
-}
-
-body::before {
-  opacity: .18 !important;
-}
-
-/* Top brand/header */
-header,
-.topbar,
-.app-header,
-#header {
-  background:
-    linear-gradient(180deg, rgba(10,19,32,.96), rgba(5,11,20,.94)) !important;
-  border-bottom: 1px solid rgba(90,190,225,.14) !important;
-  box-shadow: 0 8px 30px rgba(0,0,0,.24) !important;
-  backdrop-filter: blur(12px);
-}
-
-header h1,
-.topbar h1,
-.app-header h1,
-#header h1 {
-  font-size: 19px !important;
-  letter-spacing: .04em !important;
-  text-shadow: 0 0 18px rgba(70,210,255,.16);
-}
-
-header small,
-.topbar small,
-.app-header small,
-#header small {
-  font-size: 9px !important;
-  opacity: .65;
-}
-
-/* Coin balance / top status */
-#currency-value {
-  font-size: 16px !important;
-  text-shadow: 0 0 14px rgba(255,190,60,.16);
-}
-
-/* Navigation */
-nav,
-.navbar,
-.bottom-nav,
-#bottom-nav {
-  background: rgba(5,11,20,.94) !important;
-  border-color: rgba(100,190,225,.12) !important;
-  box-shadow: 0 -8px 28px rgba(0,0,0,.20) !important;
-  backdrop-filter: blur(12px);
-}
-
-.nav-btn {
-  border-radius: 11px !important;
-  padding: 7px 8px !important;
-  font-size: 10px !important;
-  transition: background .18s ease, transform .12s ease, border-color .18s ease !important;
-}
-
-.nav-btn.active {
-  background: rgba(55,190,230,.09) !important;
-  border-color: rgba(75,210,240,.22) !important;
-  box-shadow: inset 0 0 18px rgba(50,190,230,.05) !important;
-}
-
-.nav-btn:active {
-  transform: scale(.96);
-}
-
-/* Main content spacing */
-.tab-view {
-  padding-top: 10px !important;
-}
-
-/* Unified cards */
-.card,
-.panel,
-.section,
-.stat-card,
-.upg-card,
-.item-card,
-.craft-card,
-.market-card {
-  border-radius: var(--app-radius) !important;
-  border-color: rgba(100,190,225,.11) !important;
-  background: rgba(8,16,29,.68) !important;
-  box-shadow: 0 7px 24px rgba(0,0,0,.18) !important;
-  backdrop-filter: blur(7px);
-}
-
-/* Headings */
-.tab-view h1,
-.tab-view h2,
-.tab-view h3 {
-  letter-spacing: .015em;
-}
-
-/* Inputs/selects/buttons */
-button,
-select,
-input {
-  border-radius: 10px !important;
-}
-
-button {
-  transition: transform .12s ease, filter .15s ease, box-shadow .15s ease !important;
-}
-
-button:active {
-  transform: scale(.97);
-}
-
-/* Mine header / title area */
-#tab-mine {
-  background:
-    radial-gradient(circle at 50% 18%, rgba(65,210,245,.09), transparent 30%),
-    linear-gradient(180deg, rgba(7,15,27,.96), rgba(3,7,14,.98)) !important;
-  border-radius: 18px !important;
-}
-
-/* Give the mine top title a cleaner hierarchy */
-#tab-mine h1,
-#tab-mine h2 {
-  text-shadow: 0 0 20px rgba(60,205,240,.13);
-}
-
-/* Mine stats */
-#tab-mine .stat-card,
-#tab-mine .mine-panel,
-#tab-mine .stats-card {
-  border-radius: 12px !important;
-  background: rgba(9,18,31,.72) !important;
-}
-
-/* Inventory / craft / market / upgrade compact but cleaner */
-#tab-inventory .item-card,
-#tab-craft .craft-card,
-#tab-market .upg-card,
-#tab-upgrade .upg-card {
-  border-radius: 12px !important;
-  background: linear-gradient(135deg, rgba(10,20,34,.78), rgba(6,13,24,.72)) !important;
-}
-
-#tab-inventory .item-card:hover,
-#tab-craft .craft-card:hover,
-#tab-market .upg-card:hover,
-#tab-upgrade .upg-card:hover {
-  border-color: rgba(80,205,235,.20) !important;
-  filter: brightness(1.035);
-}
-
-/* Rarity shouldn't overwhelm the interface */
-.rarity-common { box-shadow: inset 2px 0 rgba(160,170,185,.22), 0 6px 20px rgba(0,0,0,.16) !important; }
-.rarity-rare { box-shadow: inset 2px 0 rgba(70,150,255,.34), 0 6px 20px rgba(0,0,0,.16) !important; }
-.rarity-epic { box-shadow: inset 2px 0 rgba(170,90,255,.34), 0 6px 20px rgba(0,0,0,.16) !important; }
-.rarity-legendary { box-shadow: inset 2px 0 rgba(255,190,55,.42), 0 6px 20px rgba(0,0,0,.16) !important; }
-
-/* Toast */
-#toast {
-  border-radius: 12px !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,.32) !important;
-  backdrop-filter: blur(10px);
-}
-
-/* Scrollbar */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(90,190,225,.24) transparent;
-}
-
-*::-webkit-scrollbar { width: 6px; height: 6px; }
-*::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb {
-  background: rgba(90,190,225,.24);
-  border-radius: 99px;
-}
-</style>
-
-
-<style id="my-visual-concept">
-/* =========================================================
-   AT COIN — Industrial Mining Terminal visual concept
-   Visual-only layer: economy/game logic untouched.
-   ========================================================= */
-
-:root {
-  --it-bg: #070a0e;
-  --it-panel: #0d1218;
-  --it-panel2: #111820;
-  --it-line: rgba(210,225,235,.10);
-  --it-muted: #77838d;
-  --it-text: #dce5ea;
-  --it-cyan: #68c9dc;
-  --it-cyan-soft: rgba(104,201,220,.12);
-  --it-amber: #e5ae52;
-  --it-green: #73c7a0;
-}
-
-/* Overall atmosphere */
-body {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(100,150,170,.08), transparent 32%),
-    linear-gradient(180deg, #080b0f 0%, #05070a 100%) !important;
-  color: var(--it-text) !important;
-}
-
-/* Hide overly decorative backgrounds from previous theme */
-body::before {
-  opacity: .05 !important;
-}
-
-/* Header */
-header, .topbar, .app-header, #header {
-  background: rgba(8,11,15,.96) !important;
-  border-bottom: 1px solid var(--it-line) !important;
-  box-shadow: none !important;
-  backdrop-filter: blur(14px);
-}
-
-header h1, .topbar h1, .app-header h1, #header h1 {
-  font-size: 17px !important;
-  font-weight: 800 !important;
-  letter-spacing: .10em !important;
-  text-transform: uppercase;
-  text-shadow: none !important;
-}
-
-header small, .topbar small, .app-header small, #header small {
-  color: var(--it-muted) !important;
-  letter-spacing: .08em;
-}
-
-/* Balance */
-#currency-value {
-  color: var(--it-amber) !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  text-shadow: none !important;
-}
-
-/* Main surfaces */
-.tab-view {
-  background: transparent !important;
-}
-
-/* Navigation */
-nav, .navbar, .bottom-nav, #bottom-nav {
-  background: rgba(7,10,14,.97) !important;
-  border-color: var(--it-line) !important;
-  box-shadow: none !important;
-}
-
-.nav-btn {
-  color: #7f8b94 !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  border-radius: 9px !important;
-}
-
-.nav-btn.active {
-  color: var(--it-text) !important;
-  background: var(--it-cyan-soft) !important;
-  border-color: rgba(104,201,220,.16) !important;
-  box-shadow: none !important;
-}
-
-.nav-btn.active::after {
-  background: var(--it-cyan) !important;
-}
-
-/* Generic cards */
-.card, .panel, .section, .stat-card, .upg-card, .item-card, .craft-card, .market-card {
-  background: linear-gradient(180deg, rgba(16,22,29,.92), rgba(11,16,21,.92)) !important;
-  border: 1px solid var(--it-line) !important;
-  border-radius: 11px !important;
-  box-shadow: 0 10px 28px rgba(0,0,0,.16) !important;
-}
-
-/* =========================================================
-   MINE — central industrial terminal
-   ========================================================= */
-
-#tab-mine {
-  background:
-    linear-gradient(180deg, rgba(10,15,20,.95), rgba(5,8,12,.98)) !important;
-  border: 1px solid rgba(210,225,235,.07) !important;
-  border-radius: 16px !important;
-  overflow: hidden;
-}
-
-/* Subtle grid */
-#tab-mine::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: .10;
-  background-image:
-    linear-gradient(rgba(180,210,220,.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(180,210,220,.12) 1px, transparent 1px);
-  background-size: 34px 34px;
-  mask-image: linear-gradient(to bottom, black, transparent 72%);
-}
-
-/* Mine title */
-#tab-mine h1, #tab-mine h2 {
-  color: #e2eaee !important;
-  letter-spacing: .08em !important;
-  text-transform: uppercase;
-  text-shadow: none !important;
-}
-
-/* Central mining button: solid industrial core */
-#tab-mine #core-btn {
-  width: min(66vw, 285px) !important;
-  height: min(66vw, 285px) !important;
-  border-radius: 50% !important;
-  border: 1px solid rgba(200,215,220,.22) !important;
-  background:
-    radial-gradient(circle at 50% 46%, rgba(88,133,145,.20), transparent 25%),
-    radial-gradient(circle at 50% 50%, #17232b 0%, #0b1117 62%, #070b0f 100%) !important;
-  box-shadow:
-    inset 0 0 0 8px rgba(0,0,0,.18),
-    inset 0 0 50px rgba(90,150,165,.08),
-    0 18px 50px rgba(0,0,0,.38) !important;
-  color: #dfe9ed !important;
-  position: relative;
-}
-
-#tab-mine #core-btn::before {
-  content: "";
-  position: absolute;
-  inset: 13px;
-  border-radius: 50%;
-  border: 1px dashed rgba(180,205,215,.14);
-}
-
-#tab-mine #core-btn:hover {
-  filter: brightness(1.08);
-  box-shadow:
-    inset 0 0 0 8px rgba(0,0,0,.18),
-    inset 0 0 60px rgba(90,150,165,.12),
-    0 18px 55px rgba(0,0,0,.42) !important;
-}
-
-#tab-mine #core-btn:active {
-  transform: scale(.965) !important;
-}
-
-/* Mine metrics: terminal readouts */
-#tab-mine .stat-card,
-#tab-mine .mine-panel,
-#tab-mine .stats-card {
-  background: rgba(10,15,20,.86) !important;
-  border: 1px solid rgba(210,225,235,.08) !important;
-  box-shadow: none !important;
-  border-radius: 9px !important;
-}
-
-/* Accent values */
-#tab-mine [id*="stat"],
-#tab-mine [id*="lvl"] {
-  text-shadow: none !important;
-}
-
-/* =========================================================
-   INVENTORY / CRAFT / MARKET / UPGRADE
-   ========================================================= */
-
-#tab-inventory .item-card,
-#tab-craft .craft-card,
-#tab-market .upg-card,
-#tab-upgrade .upg-card {
-  background: #0c1218 !important;
-  border-color: rgba(210,225,235,.08) !important;
-  box-shadow: none !important;
-}
-
-#tab-inventory .item-card:hover,
-#tab-craft .craft-card:hover,
-#tab-market .upg-card:hover,
-#tab-upgrade .upg-card:hover {
-  border-color: rgba(104,201,220,.22) !important;
-  background: #101820 !important;
-  filter: none !important;
-}
-
-/* Item icon container */
-#tab-inventory .item-card > div:first-child,
-#tab-craft .craft-card > div:first-child,
-#tab-market .upg-card > div:first-child,
-#tab-upgrade .upg-card > div:first-child {
-  filter: saturate(.82);
-}
-
-/* Buttons */
-button {
-  box-shadow: none !important;
-}
-
-.action-btn {
-  background: #16212a !important;
-  border: 1px solid rgba(210,225,235,.11) !important;
-  color: #d5e0e5 !important;
-}
-
-.action-btn:hover {
-  background: #1b2a34 !important;
-  border-color: rgba(104,201,220,.24) !important;
-}
-
-/* Rarity: restrained color accents */
-.rarity-common { box-shadow: inset 2px 0 rgba(150,160,170,.22) !important; }
-.rarity-rare { box-shadow: inset 2px 0 rgba(70,145,210,.45) !important; }
-.rarity-epic { box-shadow: inset 2px 0 rgba(150,90,205,.45) !important; }
-.rarity-legendary { box-shadow: inset 2px 0 rgba(220,165,65,.55) !important; }
-
-/* Toast */
-#toast {
-  background: #101820 !important;
-  border: 1px solid rgba(210,225,235,.12) !important;
-  box-shadow: 0 12px 35px rgba(0,0,0,.38) !important;
-}
-
-/* Inputs */
-input, select {
-  background: #0b1117 !important;
-  border: 1px solid rgba(210,225,235,.10) !important;
-  color: #dce5ea !important;
-}
-
-input:focus, select:focus {
-  border-color: rgba(104,201,220,.35) !important;
-  outline: none !important;
-}
-
-/* Scrollbar */
-* {
-  scrollbar-color: rgba(180,200,210,.18) transparent !important;
-}
-</style>
-
-
-<style id="atc-features-css">
-#tab-collection .card-list,
-#tab-season .card-list { gap: 6px !important; }
-
-#tab-collection .upg-card,
-#tab-season .upg-card {
-  padding: 8px !important;
-  min-height: 0 !important;
-}
-
-#market-analytics {
-  background: linear-gradient(180deg,#0b1117,#090e13) !important;
-}
-
-#tab-season {
-  background:
-    radial-gradient(circle at 80% 0%, rgba(104,201,220,.06), transparent 34%),
-    transparent !important;
-}
-
-#tab-collection .upg-card {
-  display:flex;
-  align-items:center;
-}
-
-#tab-collection .upg-card:hover,
-#tab-season .upg-card:hover {
-  transform: translateY(-1px);
-}
-</style>
-
-
-<style id="multidimensional-leaderboard-css">
-#leaderboard-tabs .lb-filter {
-  padding:6px 5px !important;
-  font-size:9px !important;
-  min-height:29px !important;
-}
-#leaderboard-tabs .lb-filter.active {
-  color:var(--it-text) !important;
-  background:var(--it-cyan-soft) !important;
-  border-color:rgba(104,201,220,.22) !important;
-}
-#tab-leaderboard .upg-card {
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-</style>
-
-<style id="utility-menu-fix">
-/* ===== Navigation fix: no floating controls over content ===== */
-#topbar { position: relative; }
-#topbar > div:last-child { min-width: 0; }
-#utility-menu-btn {
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
-  margin-left: 2px;
-  border: 1px solid rgba(104,201,220,.16) !important;
-  border-radius: 9px !important;
-  background: rgba(13,20,27,.88) !important;
-  color: #b8c8cf !important;
-  font-size: 20px !important;
-  line-height: 1 !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-}
-#utility-menu-btn:hover { border-color: rgba(104,201,220,.32) !important; }
-#utility-menu {
-  position: absolute;
-  top: 54px;
-  right: 12px;
-  z-index: 60;
-  display: none;
-  width: 154px;
-  padding: 5px;
-  gap: 4px;
-  flex-direction: column;
-  background: rgba(10,15,20,.98);
-  border: 1px solid rgba(210,225,235,.12);
-  border-radius: 11px;
-  box-shadow: 0 16px 34px rgba(0,0,0,.42);
-  backdrop-filter: blur(14px);
-}
-#utility-menu.open { display: flex; }
-#utility-menu button {
-  display:flex;
-  align-items:center;
-  gap:8px;
-  width:100%;
-  min-height:34px;
-  padding:6px 8px !important;
-  border:1px solid transparent !important;
-  border-radius:8px !important;
-  background:transparent !important;
-  color:#c7d3d8 !important;
-  font-size:10px !important;
-  text-align:left;
-  box-shadow:none !important;
-}
-#utility-menu button:hover {
-  background:rgba(104,201,220,.08) !important;
-  border-color:rgba(104,201,220,.14) !important;
-}
-/* Content gets the full width; no right-side obstruction. */
-.tab-view { padding-left: 12px !important; padding-right: 12px !important; }
-/* Compact utility pages keep the same visual rhythm as the primary tabs. */
-#tab-achievements, #tab-leaderboard, #tab-collection { padding-top: 12px !important; }
-</style>
-
-<style id="final-nav-position-fix">
-#app { min-height: 100%; }
-
-#bottom-nav {
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100% !important;
-  height: 76px !important;
-  min-height: 76px !important;
-  flex-shrink: 0 !important;
-  padding: 8px 6px max(8px, env(safe-area-inset-bottom)) !important;
-  z-index: 80 !important;
-}
-
-.tab-view {
-  padding-bottom: 92px !important;
-}
-
-#floating-side-nav {
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 52px;
-  z-index: 90;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-}
-
-#floating-side-nav .floating-nav-btn {
-  width: 48px;
-  min-height: 48px;
-  padding: 5px 2px !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.mini-stat {
+  flex: 1 1 0;
+  min-width: 0;
   justify-content: center;
-  gap: 2px;
-  border: 1px solid rgba(210,225,235,.09) !important;
-  border-radius: 10px !important;
-  background: rgba(8,13,18,.86) !important;
-  color: #8d9aa2 !important;
-  box-shadow: 0 8px 18px rgba(0,0,0,.28) !important;
-  backdrop-filter: blur(10px);
+  padding: 7px 6px !important;
+  font-size: 10px !important;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.mini-stat span { font-size: 12px !important; }
+
+/* Main content must fill the space between stats and bottom dock. */
+#views-container {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-view {
+  inset: 0 !important;
+  padding: 12px !important;
+  padding-bottom: 12px !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mine screen: center the core cleanly in the available area. */
+#tab-mine {
+  padding: 0 !important;
+}
+
+#click-zone {
+  min-height: 0;
+  padding: 12px 62px 16px 12px;
+}
+
+#core-btn {
+  width: min(230px, 62vw) !important;
+  height: min(230px, 62vw) !important;
+}
+
+.core-icon { font-size: clamp(54px, 13vw, 72px) !important; }
+
+/* Bottom navigation stays in normal flex flow, therefore it is always at the bottom. */
+#bottom-nav {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  flex: 0 0 auto !important;
+  min-height: 72px !important;
+  height: 72px !important;
+  padding: 6px 5px max(6px, env(safe-area-inset-bottom)) !important;
+  gap: 3px !important;
+  z-index: 40 !important;
+}
+
+.nav-btn {
+  min-height: 58px !important;
+  padding: 4px 2px !important;
+  gap: 3px !important;
+  border-radius: 12px !important;
+  font-size: 10px !important;
+}
+
+.nav-btn-icon { font-size: 22px !important; }
+
+/* Floating utility navigation remains floating, but no longer covers the header/stats. */
+#side-nav {
+  position: absolute !important;
+  right: 5px !important;
+  top: 46% !important;
+  transform: translateY(-50%);
+  gap: 6px !important;
+  z-index: 50 !important;
+}
+
+.side-nav-btn {
+  width: 50px !important;
+  min-height: 50px !important;
+  padding: 5px 3px !important;
+  border-radius: 11px !important;
   font-size: 8px !important;
-  line-height: 1.05 !important;
+  background: rgba(10,16,23,.9) !important;
 }
 
-#floating-side-nav .floating-nav-btn:hover,
-#floating-side-nav .floating-nav-btn.active {
-  color: #dce5ea !important;
-  background: rgba(18,31,39,.94) !important;
-  border-color: rgba(104,201,220,.24) !important;
+.side-nav-btn .nav-btn-icon { font-size: 20px !important; }
+
+/* Inventory/equipment stays compact instead of stretching on mobile. */
+#equip-slots-container {
+  gap: 6px !important;
+  padding: 8px !important;
+  margin-bottom: 10px !important;
 }
 
-#floating-side-nav .floating-nav-icon {
-  font-size: 20px;
-  line-height: 1;
+.equip-slot {
+  height: 68px !important;
+  border-radius: 11px !important;
 }
+
+.equip-slot-icon { font-size: 23px !important; }
+.equip-slot-name { font-size: 9px !important; }
+
+.upg-card, .craft-card {
+  border-radius: 14px !important;
+  padding: 10px 12px !important;
+}
+
+.card-list { gap: 8px !important; }
 
 @media (max-width: 390px) {
-  #floating-side-nav { right: 3px; width: 46px; gap: 5px; }
-  #floating-side-nav .floating-nav-btn { width: 43px; min-height: 44px; }
-  #floating-side-nav .floating-nav-icon { font-size: 18px; }
+  #topbar {
+    grid-template-columns: 76px auto minmax(76px, 1fr);
+    gap: 5px;
+    padding-left: 9px !important;
+    padding-right: 9px !important;
+  }
+
+  #game-title { font-size: 18px !important; letter-spacing: 2.5px !important; }
+  #online-badge { font-size: 10px !important; padding: 4px 7px !important; }
+  #user-name { max-width: 58px; font-size: 10px !important; }
+  #level-badge { padding: 5px 7px !important; font-size: 11px !important; }
+
+  #currency-value { font-size: 34px !important; }
+
+  .mini-stat {
+    padding: 6px 3px !important;
+    font-size: 9px !important;
+  }
+
+  .mini-stat span { font-size: 11px !important; }
+
+  #click-zone { padding-right: 56px; }
+  #core-btn { width: 205px !important; height: 205px !important; }
+
+  #side-nav { right: 3px !important; }
+  .side-nav-btn { width: 46px !important; min-height: 46px !important; }
+  .side-nav-btn .nav-btn-icon { font-size: 18px !important; }
+
+  #bottom-nav { height: 68px !important; min-height: 68px !important; }
+  .nav-btn { min-height: 55px !important; font-size: 9px !important; }
+  .nav-btn-icon { font-size: 20px !important; }
+}
+
+/* Telegram/Android devices with a very short viewport. */
+@media (max-height: 700px) {
+  #topbar { padding-top: 7px !important; min-height: 48px; }
+  #stats-area { padding-top: 2px !important; }
+  #currency-display { margin-bottom: 5px !important; }
+  #currency-value { font-size: 32px !important; }
+  #mini-stats { margin-bottom: 4px !important; }
+  #bottom-nav { height: 64px !important; min-height: 64px !important; }
+  .nav-btn { min-height: 52px !important; }
+}
+</style>
+
+
+<style id="mine-circle-only-and-transfers">
+/* Шахта: убираем квадратную область/рамку, оставляем только круг */
+#tab-mine,
+#click-zone {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+#click-zone {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+#core-btn {
+  flex: 0 0 auto !important;
+  border-radius: 50% !important;
+}
+
+/* Переводы */
+#transfer-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0,0,0,.68);
+  backdrop-filter: blur(7px);
+}
+#transfer-modal-overlay.open { display: flex; }
+#transfer-modal {
+  width: min(390px, 100%);
+  padding: 16px;
+  border: 1px solid rgba(104,201,220,.22);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(20,28,36,.98), rgba(10,15,21,.99));
+  box-shadow: 0 20px 60px rgba(0,0,0,.55);
+}
+#transfer-modal .transfer-title {
+  font-size: 15px;
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+#transfer-modal .transfer-subtitle {
+  color: var(--textdim);
+  font-size: 10px;
+  margin-bottom: 13px;
+}
+.transfer-balance {
+  margin: 9px 0 12px;
+  padding: 8px 10px;
+  border: 1px solid rgba(210,225,235,.08);
+  border-radius: 10px;
+  background: rgba(255,255,255,.025);
+  font-size: 10px;
+  color: var(--textdim);
+}
+.transfer-balance b { color: var(--gold); }
+.transfer-input {
+  width: 100%;
+  height: 42px;
+  margin-bottom: 8px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(10,15,22,.9);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+.transfer-input:focus { border-color: rgba(104,201,220,.45); }
+.transfer-actions { display:flex; gap:8px; margin-top:8px; }
+.transfer-actions .action-btn { flex:1; }
+#transfer-send-btn[disabled] { opacity:.45; pointer-events:none; }
+
+@media (max-width:390px) {
+  #transfer-modal { padding: 13px; border-radius: 15px; }
+  #transfer-modal .transfer-title { font-size: 14px; }
+  .transfer-input { height: 40px; }
 }
 </style>
 
@@ -1330,18 +819,6 @@ input:focus, select:focus {
 <body>
 
 <div id="app">
-
-  <div id="floating-side-nav" aria-label="Дополнительная навигация">
-    <button class="floating-nav-btn" data-side-tab="achievements" onclick="switchSideTab('achievements', this)">
-      <span class="floating-nav-icon">🏅</span><span>Ачивки</span>
-    </button>
-    <button class="floating-nav-btn" data-side-tab="leaderboard" onclick="switchSideTab('leaderboard', this)">
-      <span class="floating-nav-icon">🏆</span><span>Топ</span>
-    </button>
-    <button class="floating-nav-btn" data-side-tab="collection" onclick="switchSideTab('collection', this)">
-      <span class="floating-nav-icon">📚</span><span>Архив</span>
-    </button>
-  </div>
   <div id="topbar">
     <div id="game-title">AT COIN</div>
     
@@ -1353,14 +830,7 @@ input:focus, select:focus {
     <div style="display:flex;align-items:center;gap:10px;">
       <div id="user-name" style="font-size: 14px; color: var(--neon1);">Игрок</div>
       <div id="level-badge">LVL <span id="lvl-val">1</span></div>
-      <button id="utility-menu-btn" aria-label="Дополнительное меню" onclick="toggleUtilityMenu()">⋮</button>
     </div>
-  </div>
-
-  <div id="utility-menu" aria-hidden="true">
-    <button onclick="openUtilityTab('achievements')">🏅 <span>Ачивки</span></button>
-    <button onclick="openUtilityTab('leaderboard')">🏆 <span>Топ</span></button>
-    <button onclick="openUtilityTab('collection')">📚 <span>Архив</span></button>
   </div>
 
   <div id="stats-area">
@@ -1457,11 +927,6 @@ input:focus, select:focus {
         </select>
       </div>
 
-      <div id="market-analytics" class="card" style="padding:10px;margin-bottom:8px;">
-        <div style="font-size:10px;color:var(--textdim);letter-spacing:.06em;">РЫНОЧНЫЙ ТЕРМИНАЛ</div>
-        <div id="market-analytics-content" style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:7px;"></div>
-      </div>
-
       <div class="card-list" id="market-list">
         <div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка биржи...</div>
       </div>
@@ -1469,31 +934,15 @@ input:focus, select:focus {
 
     <!-- ТОП -->
     <div class="tab-view" id="tab-leaderboard">
-      <div class="form-title" style="margin-bottom:4px;">🏆 ЛИДЕРБОРД</div>
-      <div style="font-size:11px;color:var(--textdim);margin-bottom:10px;">
-        Разные способы стать лучшим — не только по монетам.
+      <div class="form-title" style="margin-bottom: 10px;">🏆 ТОП ИГРОКОВ</div>
+      <div style="font-size:13px; color:var(--textdim); margin-bottom:14px;">Самые богатые шахтеры этой вселенной.</div>
+      <div class="card-list" id="lb-list">
+        <div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>
       </div>
-
-      <div id="leaderboard-tabs" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;">
-        <button class="action-btn lb-filter active" data-lb="wealth">💰 Богатство</button>
-        <button class="action-btn lb-filter" data-lb="mining">⛏ Добыча</button>
-        <button class="action-btn lb-filter" data-lb="craft">🔧 Крафт</button>
-        <button class="action-btn lb-filter" data-lb="collection">📚 Коллекция</button>
-        <button class="action-btn lb-filter" data-lb="upgrade">⚡ Заточка</button>
-        <button class="action-btn lb-filter" data-lb="trading">🏪 Торговля</button>
-      </div>
-
-      <div id="leaderboard-current" class="card" style="padding:10px;margin-bottom:8px;"></div>
-      <div id="leaderboard-list" class="card-list"></div>
     </div>
+  </div>
 
-    <!-- АРХИВ КОЛЛЕКЦИИ -->
-    <div class="tab-view" id="tab-collection">
-      <div class="form-title" style="margin-bottom:10px;">📚 АРХИВ</div>
-      <div id="collection-summary" style="font-size:11px;color:var(--textdim);margin-bottom:10px;"></div>
-      <div id="collection-list" class="card-list"></div>
-    </div>
-<!-- НИЖНЕЕ МЕНЮ -->
+  <!-- НИЖНЕЕ МЕНЮ -->
   <div id="bottom-nav">
     <button class="nav-btn active" onclick="switchTab('mine', this)">
       <span class="nav-btn-icon">⛏️</span>
@@ -1516,6 +965,22 @@ input:focus, select:focus {
       <span>Биржа</span>
     </button>
   </div>
+
+  <!-- БЫСТРЫЙ БОКОВОЙ БЛОК -->
+  <div id="side-nav">
+    <button class="side-nav-btn" onclick="switchSideTab('achievements', this)">
+      <span class="nav-btn-icon">🏅</span>
+      <span>Ачивки</span>
+    </button>
+    <button class="side-nav-btn" onclick="switchSideTab('leaderboard', this)">
+      <span class="nav-btn-icon">🏆</span>
+      <span>Топ</span>
+    </button>
+    <button class="side-nav-btn" onclick="openTransferModal()">
+      <span class="nav-btn-icon">💸</span>
+      <span>Перевод</span>
+    </button>
+  </div>
 </div>
 
 <!-- Модальное окно выставления цены -->
@@ -1531,6 +996,45 @@ input:focus, select:focus {
   </div>
 </div>
 
+
+<!-- Модальное окно перевода AT Coins -->
+<div id="transfer-modal-overlay" onclick="if(event.target===this) closeTransferModal()">
+  <div id="transfer-modal">
+    <div class="transfer-title">💸 ПЕРЕВОД AT COINS</div>
+    <div class="transfer-subtitle">Отправь монеты другому игроку по его Telegram username.</div>
+
+    <div class="transfer-balance">
+      Твой баланс: <b><span id="transfer-my-balance">0</span> ⚡</b>
+    </div>
+
+    <input
+      id="transfer-recipient"
+      class="transfer-input"
+      type="text"
+      maxlength="32"
+      autocomplete="off"
+      autocapitalize="none"
+      spellcheck="false"
+      placeholder="@username получателя"
+    />
+    <input
+      id="transfer-amount"
+      class="transfer-input"
+      type="number"
+      inputmode="numeric"
+      min="1"
+      max="1000000"
+      step="1"
+      placeholder="Количество AT Coins"
+    />
+
+    <div class="transfer-actions">
+      <button class="action-btn" style="background:var(--border);" onclick="closeTransferModal()">Отмена</button>
+      <button id="transfer-send-btn" class="action-btn" onclick="sendCoinsToPlayer()">Отправить</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -1541,7 +1045,6 @@ const SUPABASE_URL = 'https://jroakbqcautuleqmctau.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Y2hiGcojW9-6b-vZKs2d1g_Yq1WDqkG';
 const db = window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 const MAX_MARKET_PRICE = 1_000_000_000;
-const MARKET_FEE_RATE = 0.05;
 const MAX_INVENTORY_SIZE = 5000;
 const MAX_EQUIPPED = 3;
 
@@ -1590,19 +1093,7 @@ function sanitizeState() {
   state.stats = {
     clicks: Math.max(0, Math.floor(Number(state.stats?.clicks) || 0)),
     crafts: Math.max(0, Math.floor(Number(state.stats?.crafts) || 0)),
-    upgrades: Math.max(0, Math.floor(Number(state.stats?.upgrades) || 0)),
-    trades: Math.max(0, Math.floor(Number(state.stats?.trades) || 0)),
-    marketVolume: Math.max(0, Math.floor(Number(state.stats?.marketVolume) || 0)),
-    discoveredBlueprints: Array.isArray(state.stats?.discoveredBlueprints)
-      ? [...new Set(state.stats.discoveredBlueprints.map(String))]
-      : [],
-    collection: Array.isArray(state.stats?.collection)
-      ? [...new Set(state.stats.collection.map(String))]
-      : [],
-    titles: Array.isArray(state.stats?.titles)
-      ? [...new Set(state.stats.titles.map(String))]
-      : [],
-    activeTitle: String(state.stats?.activeTitle || '')
+    upgrades: Math.max(0, Math.floor(Number(state.stats?.upgrades) || 0))
   };
 
   state.claimedAchievements = Array.isArray(state.claimedAchievements)
@@ -2123,10 +1614,7 @@ let state = {
   inventory: [],
   equipped: [],
   shields: 0,
-  stats: {
-    clicks: 0, crafts: 0, upgrades: 0, trades: 0, marketVolume: 0,
-    discoveredBlueprints: [], collection: [], titles: [], activeTitle: ''
-  },
+  stats: { clicks: 0, crafts: 0, upgrades: 0 },
   claimedAchievements: []
 };
 
@@ -2238,7 +1726,7 @@ async function loadData() {
       state.inventory = Array.isArray(data.inventory) ? data.inventory : [];
       state.equipped = Array.isArray(data.equipped) ? data.equipped : [];
       state.shields = Number(data.shields) || 0;
-      state.stats = data.stats || { clicks: 0, crafts: 0, upgrades: 0, trades:0, marketVolume:0, seasonXp:0, discoveredBlueprints:[], collection:[], titles:[], activeTitle:'' };
+      state.stats = data.stats || { clicks: 0, crafts: 0, upgrades: 0 };
       state.claimedAchievements = Array.isArray(data.claimed_achievements) ? data.claimed_achievements : [];
       sanitizeState();
     } else {
@@ -2347,27 +1835,15 @@ function spawnParticles(x, y, color) {
   }
 }
 
-
-function switchSideTab(tabId, btn) {
-  document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('#floating-side-nav .floating-nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`tab-${tabId}`)?.classList.add('active');
-  btn?.classList.add('active');
-
-  if (tabId === 'achievements') renderAchievements();
-  if (tabId === 'leaderboard') fetchLeaderboard();
-  if (tabId === 'collection') renderCollection();
-}
-
 function switchTab(tabId, btn) {
   document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('#floating-side-nav .floating-nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn, .side-nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(`tab-${tabId}`).classList.add('active');
   btn.classList.add('active');
 
   if (tabId === 'achievements' || tabId === 'leaderboard') {
-      }
+    document.querySelectorAll('.side-nav-btn').forEach(b => b.classList.remove('active'));
+  }
 
   if (tabId === 'inventory') renderInventory();
   if (tabId === 'craft') renderCraft();
@@ -2375,9 +1851,17 @@ function switchTab(tabId, btn) {
   if (tabId === 'achievements') renderAchievements();
   if (tabId === 'market') fetchMarketLots();
   if (tabId === 'leaderboard') fetchLeaderboard();
-  if (tabId === 'collection') renderCollection();
 }
 
+
+function switchSideTab(tabId, btn) {
+  document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn, .side-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${tabId}`).classList.add('active');
+  btn.classList.add('active');
+  if (tabId === 'achievements') renderAchievements();
+  if (tabId === 'leaderboard') fetchLeaderboard();
+}
 
 // ВЕРОЯТНОСТЬ ВЫПАДЕНИЯ ПРЕДМЕТОВ
 const DROP_CHANCE = 0.002; 
@@ -2799,11 +2283,6 @@ async function confirmSellItem() {
   }
 
   try {
-    const listingFee = Math.max(1, Math.floor(price * 0.01));
-    if (state.coins < listingFee) {
-      showToast(`⚠️ Комиссия за выставление: ${listingFee.toLocaleString()} ⚡`);
-      return;
-    }
     const { error } = await db.from('market_lots').insert({
       seller_id: getUserId(),
       seller_name: getUserName(),
@@ -2814,7 +2293,6 @@ async function confirmSellItem() {
 
     if (error) throw error;
 
-    state.coins -= listingFee;
     const eqIdx = state.equipped.findIndex(id => String(id) === instanceId);
     if (eqIdx !== -1) state.equipped.splice(eqIdx, 1);
 
@@ -2823,7 +2301,7 @@ async function confirmSellItem() {
 
     closeMarketModal();
     playSound('success');
-    showToast(`✅ Предмет выставлен · комиссия ${listingFee.toLocaleString()} ⚡`);
+    showToast('✅ Предмет выставлен!');
     renderInventory();
     updateUI();
   } catch (e) {
@@ -2832,114 +2310,14 @@ async function confirmSellItem() {
   }
 }
 
-
-// === COLLECTION / HIDDEN BLUEPRINTS / SEASON ===
-const HIDDEN_BLUEPRINTS = new Set(
-  CRAFT_RECIPES.filter((r, i) => i >= Math.max(0, CRAFT_RECIPES.length - 8)).map(r => r.id)
-);
-
-function refreshCollection() {
-  const ids = new Set(state.stats.collection || []);
-  state.inventory.forEach(item => ids.add(String(item.id)));
-  state.stats.collection = [...ids];
-}
-
-function blueprintDiscovered(recipe) {
-  const discovered = new Set(state.stats.discoveredBlueprints || []);
-  if (!HIDDEN_BLUEPRINTS.has(recipe.id)) return true;
-  if (discovered.has(recipe.id)) return true;
-
-  const hasRareMaterial = state.inventory.some(i => ['m2','m3','m4'].includes(i.id));
-  const tier = recipe.tier;
-  const auto =
-    (tier === 'epic' && (state.stats.crafts >= 12 || hasRareMaterial)) ||
-    (tier === 'legendary' && (state.stats.crafts >= 24 || state.stats.marketVolume >= 100000));
-  if (auto) {
-    discovered.add(recipe.id);
-    state.stats.discoveredBlueprints = [...discovered];
-    showToast(`📜 Открыт скрытый чертёж: ${recipe.name}`);
-    return true;
-  }
-  return false;
-}
-
-function checkHiddenBlueprints() {
-  CRAFT_RECIPES.forEach(blueprintDiscovered);
-}
-
-const TITLE_RULES = [
-  { id:'title_miner', title:'Шахтёр', test:()=>state.stats.clicks >= 1000 },
-  { id:'title_engineer', title:'Инженер', test:()=>state.stats.crafts >= 10 },
-  { id:'title_trader', title:'Торговец', test:()=>state.stats.trades >= 10 },
-  { id:'title_collector', title:'Коллекционер', test:()=> (state.stats.collection?.length || 0) >= 15 },
-  { id:'title_legend', title:'Археолог', test:()=>state.inventory.some(i=>i.rarity==='legendary') }
-];
-
-function checkTitles() {
-  const titles = new Set(state.stats.titles || []);
-  TITLE_RULES.forEach(rule => {
-    if (rule.test()) titles.add(rule.id);
-  });
-  state.stats.titles = [...titles];
-  if (!state.stats.activeTitle && state.stats.titles.length) {
-    state.stats.activeTitle = state.stats.titles[0];
-  }
-}
-
-function getActiveTitleName() {
-  return TITLE_RULES.find(x => x.id === state.stats.activeTitle)?.title || '';
-}
-
-function renderCollection() {
-  refreshCollection();
-  const summary = document.getElementById('collection-summary');
-  const list = document.getElementById('collection-list');
-  const discovered = new Set(state.stats.collection || []);
-  const total = LOOT_ITEMS.filter(i => i.type !== 'craft_material' && !i.isCraftPart).length;
-  summary.textContent = `Открыто ${discovered.size} из ${total} предметов · найденные предметы остаются в архиве навсегда.`;
-  list.innerHTML = '';
-
-  LOOT_ITEMS.filter(i => i.type !== 'craft_material' && !i.isCraftPart).forEach(item => {
-    const found = discovered.has(String(item.id));
-    const card = document.createElement('div');
-    card.className = `upg-card rarity-${item.rarity}`;
-    card.innerHTML = `
-      <div style="font-size:22px;opacity:${found?1:.22};">${found ? escapeHtml(item.icon) : '▣'}</div>
-      <div style="flex:1;">
-        <div style="font-weight:900;font-size:12px;">${found ? escapeHtml(item.name) : 'Неизвестный артефакт'}</div>
-        <div style="font-size:10px;color:var(--textdim);">${found ? escapeHtml(item.rarity.toUpperCase()) : 'Исследуйте шахту и крафт'}</div>
-      </div>
-      <div style="font-size:11px;color:${found?'var(--it-green)':'var(--textdim)'};">${found?'✓':'?'}</div>
-    `;
-    list.appendChild(card);
-  });
-}
-
-
 // ПРОДВИНУТЫЙ КРАФТ
 function renderCraft() {
   const list = document.getElementById('craft-list');
   list.innerHTML = '';
 
-  checkHiddenBlueprints();
   CRAFT_RECIPES.forEach(recipe => {
     const targetItem = LOOT_ITEMS.find(i => i.id === recipe.resultId);
-    if (!blueprintDiscovered(recipe)) {
-      const mystery = document.createElement('div');
-      mystery.className = 'craft-card';
-      mystery.innerHTML = `
-        <div style="font-size:24px;">📜</div>
-        <div style="flex:1;">
-          <div style="font-weight:900;">Скрытый чертёж</div>
-          <div style="font-size:10px;color:var(--textdim);">Экспериментируйте с редкими материалами и продвигайтесь по сезону.</div>
-        </div>
-        <div style="font-size:11px;color:var(--it-cyan);">???</div>
-      `;
-      list.appendChild(mystery);
-      return;
-    }
-    const blueprintKnown = blueprintDiscovered(recipe);
-  const unlocked = blueprintKnown && state.coins >= (recipe.unlockCoins || 0);
+    const unlocked = state.coins >= (recipe.unlockCoins || 0);
     const recipeCost = getRecipeCost(recipe);
     const hasCoins = state.coins >= recipeCost;
     const hasIngs = recipe.check(state.inventory);
@@ -3133,15 +2511,8 @@ function upgradeItem(instanceId) {
 
 // ОТОБРАЖЕНИЕ АЧИВОК
 function renderAchievements() {
-  checkTitles();
   const list = document.getElementById('achievements-list');
   list.innerHTML = '';
-  const titleBar = document.createElement('div');
-  titleBar.className = 'card';
-  titleBar.style.padding = '10px';
-  titleBar.style.marginBottom = '8px';
-  titleBar.innerHTML = `<div style="font-size:10px;color:var(--textdim);">АКТИВНЫЙ ТИТУЛ</div><div style="font-size:14px;font-weight:900;margin-top:3px;">${escapeHtml(getActiveTitleName() || 'Нет титула')}</div>`;
-  list.appendChild(titleBar);
   
   ACHIEVEMENTS.forEach(ach => {
     let current = 0;
@@ -3176,21 +2547,6 @@ function setMarketTab(t) {
   fetchMarketLots();
 }
 
-
-function renderMarketAnalytics(lots) {
-  const box = document.getElementById('market-analytics-content');
-  if (!box) return;
-  const prices = lots.map(l=>Number(l.price)).filter(Number.isFinite).filter(x=>x>0);
-  const avg = prices.length ? Math.floor(prices.reduce((a,b)=>a+b,0)/prices.length) : 0;
-  const min = prices.length ? Math.min(...prices) : 0;
-  const max = prices.length ? Math.max(...prices) : 0;
-  box.innerHTML = `
-    <div><div style="font-size:9px;color:var(--textdim);">ЛОТОВ</div><div style="font-weight:900;">${lots.length}</div></div>
-    <div><div style="font-size:9px;color:var(--textdim);">СРЕДНЯЯ</div><div style="font-weight:900;color:var(--it-amber);">${avg.toLocaleString()} ⚡</div></div>
-    <div><div style="font-size:9px;color:var(--textdim);">ДИАПАЗОН</div><div style="font-weight:900;">${min.toLocaleString()}–${max.toLocaleString()}</div></div>
-  `;
-}
-
 async function fetchMarketLots() {
   const list = document.getElementById('market-list');
   list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка биржи...</div>';
@@ -3212,7 +2568,6 @@ async function fetchMarketLots() {
     if (error) throw error;
 
     let lots = Array.isArray(data) ? data : [];
-    renderMarketAnalytics(lots);
 
     const rarityFilter = document.getElementById('market-filter-rarity')?.value || 'all';
     const sortFilter = document.getElementById('market-filter-sort')?.value || 'new';
@@ -3400,8 +2755,7 @@ async function buyLot(lotId) {
 
     let sellerCredit = null;
     try {
-      const sellerPayout = Math.max(1, Math.floor(price * (1 - MARKET_FEE_RATE)));
-      sellerCredit = await adjustUserCoinsOptimistic(lot.seller_id, sellerPayout);
+      sellerCredit = await adjustUserCoinsOptimistic(lot.seller_id, price);
       if (!sellerCredit.success) throw new Error('Не удалось начислить монеты продавцу');
 
       state.coins -= price;
@@ -3409,9 +2763,6 @@ async function buyLot(lotId) {
         ...item,
         instanceId: newInstanceId()
       });
-      state.stats.trades = (state.stats.trades || 0) + 1;
-      state.stats.marketVolume = (state.stats.marketVolume || 0) + price;
-
       sanitizeState();
 
       const saved = await saveDataNow();
@@ -3453,8 +2804,7 @@ async function buyLot(lotId) {
     }
 
     playSound('success');
-    const fee = Math.floor(price * MARKET_FEE_RATE);
-    showToast(`🎉 Куплено за ${price.toLocaleString()} ⚡ · комиссия ${fee.toLocaleString()} ⚡`);
+    showToast(`🎉 Куплено за ${price.toLocaleString()} ⚡`);
     fetchMarketLots();
     updateUI(false);
   } catch (e) {
@@ -3542,182 +2892,160 @@ async function cancelLot(lotId) {
 }
 
 
-async function fetchLeaderboard(category = 'wealth') {
-  const list = document.getElementById('leaderboard-list');
-  const current = document.getElementById('leaderboard-current');
-  if (!list || !current) return;
+/* =========================
+   ПЕРЕВОДЫ МЕЖДУ ИГРОКАМИ
+   ========================= */
 
-  const categories = {
-    wealth: {
-      title: 'Богатство',
-      icon: '💰',
-      description: 'Общий запас монет',
-      value: p => Number(p.coins || 0),
-      format: v => `${Math.floor(v).toLocaleString()} ⚡`
-    },
-    mining: {
-      title: 'Добыча',
-      icon: '⛏',
-      description: 'Количество тапов',
-      value: p => Number(p.stats?.clicks || 0),
-      format: v => `${Math.floor(v).toLocaleString()} тапов`
-    },
-    craft: {
-      title: 'Крафт',
-      icon: '🔧',
-      description: 'Созданные предметы',
-      value: p => Number(p.stats?.crafts || 0),
-      format: v => `${Math.floor(v).toLocaleString()} предметов`
-    },
-    collection: {
-      title: 'Коллекция',
-      icon: '📚',
-      description: 'Найденные предметы',
-      value: p => Array.isArray(p.stats?.collection) ? p.stats.collection.length : Number(p.collection_count || 0),
-      format: v => `${Math.floor(v)} открыто`
-    },
-    upgrade: {
-      title: 'Заточка',
-      icon: '⚡',
-      description: 'Количество улучшений',
-      value: p => Number(p.stats?.upgrades || 0),
-      format: v => `${Math.floor(v).toLocaleString()} улучшений`
-    },
-    trading: {
-      title: 'Торговля',
-      icon: '🏪',
-      description: 'Оборот на бирже',
-      value: p => Number(p.stats?.marketVolume || 0),
-      format: v => `${Math.floor(v).toLocaleString()} ⚡ оборот`
-    }
-  };
+const MAX_TRANSFER_AMOUNT = 1000000;
 
-  const cfg = categories[category] || categories.wealth;
+function normalizeUsername(value) {
+  return String(value || '').trim().replace(/^@+/, '').toLowerCase();
+}
 
-  document.querySelectorAll('.lb-filter').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.lb === category);
-  });
+function openTransferModal() {
+  const overlay = document.getElementById('transfer-modal-overlay');
+  const recipient = document.getElementById('transfer-recipient');
+  const amount = document.getElementById('transfer-amount');
+  const balance = document.getElementById('transfer-my-balance');
 
-  current.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div>
-        <div style="font-size:10px;color:var(--textdim);letter-spacing:.06em;">ТЕКУЩИЙ РЕЖИМ</div>
-        <div style="font-weight:900;font-size:14px;margin-top:3px;">${cfg.icon} ${cfg.title}</div>
-      </div>
-      <div style="text-align:right;font-size:10px;color:var(--textdim);">${cfg.description}</div>
-    </div>
-  `;
+  if (!overlay) return;
+  if (balance) balance.textContent = Math.floor(state.coins).toLocaleString();
+  if (recipient) recipient.value = '';
+  if (amount) amount.value = '';
+  overlay.classList.add('open');
 
-  list.innerHTML = '<div class="card" style="padding:12px;text-align:center;color:var(--textdim);">Загрузка рейтинга...</div>';
+  setTimeout(() => recipient?.focus(), 80);
+}
+
+function closeTransferModal() {
+  document.getElementById('transfer-modal-overlay')?.classList.remove('open');
+}
+
+async function sendCoinsToPlayer() {
+  if (!db || !getUserId()) {
+    showToast('⚠️ Открой игру через Telegram');
+    return;
+  }
+
+  const recipient = normalizeUsername(document.getElementById('transfer-recipient')?.value);
+  const amount = Math.floor(Number(document.getElementById('transfer-amount')?.value));
+
+  if (!recipient) {
+    showToast('⚠️ Укажи username получателя');
+    return;
+  }
+  if (!/^[a-z0-9_]{5,32}$/i.test(recipient)) {
+    showToast('⚠️ Некорректный Telegram username');
+    return;
+  }
+  if (!Number.isSafeInteger(amount) || amount < 1 || amount > MAX_TRANSFER_AMOUNT) {
+    showToast(`⚠️ Сумма от 1 до ${MAX_TRANSFER_AMOUNT.toLocaleString()} ⚡`);
+    return;
+  }
+  if (recipient === normalizeUsername(getUserName())) {
+    showToast('⚠️ Нельзя переводить самому себе');
+    return;
+  }
+  if (state.coins < amount) {
+    showToast('⚠️ Недостаточно AT Coins');
+    return;
+  }
+
+  const btn = document.getElementById('transfer-send-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Отправка...';
+  }
+
+  const oldCoins = state.coins;
 
   try {
-    // Existing public profiles are used; if stats are not exposed by the current
-    // schema, fall back gracefully to the existing wealth leaderboard.
-    const { data, error } = await db.from('profiles')
-      .select('id, username, display_name, coins, stats')
-      .order('coins', { ascending: false })
-      .limit(50);
+    /*
+      ВАЖНО: RPC делает обе операции внутри одной транзакции.
+      Это безопаснее, чем два отдельных UPDATE из браузера.
+    */
+    const { data, error } = await db.rpc('transfer_at_coins', {
+      p_sender_telegram_id: String(getUserId()),
+      p_recipient_username: recipient,
+      p_amount: amount
+    });
 
     if (error) throw error;
 
-    const players = Array.isArray(data) ? data.slice() : [];
-    players.sort((a,b) => cfg.value(b) - cfg.value(a));
+    state.coins = oldCoins - amount;
+    updateUI(false);
+    closeTransferModal();
+    playSound('success');
 
-    const me = players.find(p => String(p.id) === String(getUserId()));
-    const myRank = me ? players.indexOf(me) + 1 : null;
-
-    list.innerHTML = '';
-
-    if (!players.length) {
-      list.innerHTML = '<div class="card" style="padding:12px;text-align:center;color:var(--textdim);">Пока нет данных.</div>';
-      return;
-    }
-
-    players.forEach((p, idx) => {
-      const rank = idx + 1;
-      const isMe = String(p.id) === String(getUserId());
-      const name = p.display_name || p.username || `Игрок ${String(p.id).slice(0,6)}`;
-      const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
-
-      const card = document.createElement('div');
-      card.className = 'upg-card';
-      card.style.padding = '9px';
-      card.style.borderColor = isMe ? 'rgba(104,201,220,.28)' : '';
-      card.innerHTML = `
-        <div style="width:34px;text-align:center;font-size:${rank<=3?'19px':'11px'};font-weight:900;">${medal}</div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-weight:900;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-            ${escapeHtml(name)} ${isMe ? '<span style="color:var(--it-cyan);font-size:9px;">ВЫ</span>' : ''}
-          </div>
-          <div style="font-size:9px;color:var(--textdim);">${cfg.description}</div>
-        </div>
-        <div style="font-size:11px;font-weight:900;text-align:right;">${cfg.format(cfg.value(p))}</div>
-      `;
-      list.appendChild(card);
-    });
-
-    if (myRank) {
-      current.innerHTML += `
-        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(210,225,235,.07);font-size:10px;color:var(--textdim);">
-          Твоя позиция: <b style="color:var(--it-text);">#${myRank}</b>
-        </div>
-      `;
-    }
+    const recipientName = data?.recipient_username || `@${recipient}`;
+    showToast(`💸 Отправлено ${amount.toLocaleString()} ⚡ → @${recipientName}`);
   } catch (e) {
-    console.warn('multidimensional leaderboard:', e);
-    // Wealth remains available through the existing schema even if extended
-    // stats are not returned by Supabase.
-    if (category !== 'wealth') {
-      list.innerHTML = `
-        <div class="card" style="padding:12px;text-align:center;">
-          <div style="font-size:18px;">⚠️</div>
-          <div style="font-weight:900;margin-top:4px;">Расширенная статистика пока недоступна</div>
-          <div style="font-size:10px;color:var(--textdim);margin-top:4px;">
-            Нужны публичные поля stats в профиле Supabase.
-          </div>
-        </div>`;
+    console.error('sendCoinsToPlayer:', e);
+
+    const msg = String(e?.message || '');
+    if (/not found|не найден/i.test(msg)) {
+      showToast('⚠️ Игрок с таким username не найден');
+    } else if (/insufficient|недостаточно/i.test(msg)) {
+      showToast('⚠️ Недостаточно AT Coins');
+      loadData();
+    } else if (/same|самому/i.test(msg)) {
+      showToast('⚠️ Нельзя переводить самому себе');
     } else {
-      list.innerHTML = '<div class="card" style="padding:12px;text-align:center;color:var(--textdim);">Не удалось загрузить рейтинг.</div>';
+      showToast('⚠️ Перевод не выполнен');
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Отправить';
     }
   }
 }
-</script>
-<script>
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('.lb-filter');
-  if (!btn) return;
-  fetchLeaderboard(btn.dataset.lb || 'wealth');
+
+async function fetchLeaderboard() {
+  const list = document.getElementById('lb-list');
+  list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>';
+  if (!db) {
+    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">База данных недоступна</div>';
+    return;
+  }
+  try {
+    const { data } = await db.from('users').select('username, coins').order('coins', { ascending: false }).limit(10);
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Топ пуст</div>';
+      return;
+    }
+    list.innerHTML = '';
+    data.forEach((user, idx) => {
+      const card = document.createElement('div');
+      card.className = `upg-card`;
+      card.innerHTML = `
+        <div style="font-weight:900; color:var(--neon1); width:24px;">#${idx + 1}</div>
+        <div style="flex:1; font-weight:700;">${escapeHtml(user.username || 'Игрок')}</div>
+        <div style="color:var(--gold); font-weight:900;">${Math.floor(Number(user.coins) || 0).toLocaleString()} ⚡</div>
+      `;
+      list.appendChild(card);
+    });
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Ошибка загрузки топа</div>';
+  }
+}
+
+
+document.getElementById('transfer-amount')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') sendCoinsToPlayer();
 });
-</script>
-<script id="utility-menu-js">
-function toggleUtilityMenu() {
-  const menu = document.getElementById('utility-menu');
-  if (!menu) return;
-  const open = menu.classList.toggle('open');
-  menu.setAttribute('aria-hidden', String(!open));
-}
-function closeUtilityMenu() {
-  const menu = document.getElementById('utility-menu');
-  if (!menu) return;
-  menu.classList.remove('open');
-  menu.setAttribute('aria-hidden','true');
-}
-function openUtilityTab(tabId) {
-  closeUtilityMenu();
-  // The old side buttons are intentionally gone; route directly to the tab.
-  document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const tab = document.getElementById(`tab-${tabId}`);
-  if (tab) tab.classList.add('active');
-  if (tabId === 'achievements' && typeof renderAchievements === 'function') renderAchievements();
-  if (tabId === 'leaderboard' && typeof fetchLeaderboard === 'function') fetchLeaderboard();
-  if (tabId === 'collection' && typeof renderCollection === 'function') renderCollection();
-}
-document.addEventListener('click', (e) => {
-  const menu = document.getElementById('utility-menu');
-  const button = document.getElementById('utility-menu-btn');
-  if (menu && menu.classList.contains('open') && !menu.contains(e.target) && e.target !== button) closeUtilityMenu();
+document.getElementById('transfer-recipient')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('transfer-amount')?.focus();
 });
+
+// Старт инициализации
+sanitizeState();
+if (requireTelegramUser()) {
+  loadData();
+} else {
+  updateUI(false);
+  showToast('⚠️ Открой игру через Telegram');
+}
 </script>
 </body>
 </html>
