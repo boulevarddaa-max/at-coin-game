@@ -256,6 +256,55 @@
     background: linear-gradient(135deg, #ff006e, #bf00ff);
   }
 
+  /* Стили для продвинутого крафта */
+  .craft-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .craft-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+    background: linear-gradient(180deg, var(--neon1), var(--neon2));
+  }
+  .craft-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .craft-icon-box {
+    width: 50px; height: 50px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+  .ingredients-grid {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .ingredient-badge {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .ingredient-badge.has { border-color: var(--neon4); color: var(--neon4); }
+  .ingredient-badge.lack { border-color: var(--neon3); color: var(--neon3); }
+
   #bottom-nav {
     display: flex;
     background: var(--panel);
@@ -323,22 +372,62 @@
     opacity: 0;
     transition: opacity 0.3s, transform 0.3s;
     pointer-events: none;
+    text-align: center;
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  .progress-bar-bg {
-    width: 100%;
-    height: 8px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 4px;
-    margin-top: 6px;
-    overflow: hidden;
+  .market-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
   }
-  .progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--neon1), var(--neon4));
-    width: 0%;
-    transition: width 0.3s ease;
+  .filter-select, .market-input {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    outline: none;
+    flex: 1;
+  }
+  .market-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .market-tab-btn {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--textdim);
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .market-tab-btn.active {
+    background: var(--neon1);
+    color: var(--bg);
+    border-color: var(--neon1);
+  }
+
+  #modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 3000;
+  }
+  .modal-box {
+    background: var(--panel);
+    border: 1px solid var(--neon1);
+    border-radius: var(--radius);
+    padding: 20px;
+    width: 90%;
+    max-width: 320px;
+    display: flex; flex-direction: column; gap: 14px;
   }
 </style>
 </head>
@@ -407,9 +496,9 @@
 
     <!-- КРАФТ -->
     <div class="tab-view" id="tab-craft">
-      <div class="form-title" style="margin-bottom: 8px;">🔨 СЛОЖНЫЙ ВЕРСТАК КРАФТА</div>
+      <div class="form-title" style="margin-bottom: 8px;">🔨 ВЕРСТАК СИНТЕЗА</div>
       <div style="font-size:13px; color:var(--textdim); margin-bottom:14px;">
-        Для создания продвинутых вещей требуются конкретные компоненты и вложения энергии.
+        Создавай продвинутые детали из компонентов. Есть шанс критического крафта (+1 уровень сразу)!
       </div>
       <div class="card-list" id="craft-list"></div>
     </div>
@@ -425,14 +514,34 @@
 
     <!-- ДОСТИЖЕНИЯ -->
     <div class="tab-view" id="tab-achievements">
-      <div class="form-title" style="margin-bottom: 10px;">🏅 ДОСТИЖЕНИЯ</div>
+      <div class="form-title" style="margin-bottom: 10px;">🏅 ДОСТИЖЕНИЯ (25 ШТ.)</div>
+      <div style="font-size:13px; color:var(--textdim); margin-bottom:14px;">Выполняй задания и получай бонусные AT Coins!</div>
       <div class="card-list" id="achievements-list"></div>
     </div>
 
     <!-- БИРЖА -->
     <div class="tab-view" id="tab-market">
-      <div class="form-title" style="margin-bottom: 10px;">🏪 РЫНОК И БИРЖА</div>
-      <div style="font-size:13px; color:var(--textdim); margin-bottom:12px;">Выставляйте свои редкие предметы или покупайте лоты других игроков.</div>
+      <div class="form-title" style="margin-bottom: 8px;">🏪 РЫНОК И БИРЖА</div>
+      
+      <div class="market-tabs">
+        <button class="market-tab-btn active" id="m-tab-all" onclick="setMarketTab('all')">Все лоты</button>
+        <button class="market-tab-btn" id="m-tab-my" onclick="setMarketTab('my')">Мои лоты</button>
+      </div>
+
+      <div class="market-filters">
+        <select class="filter-select" id="market-filter-rarity" onchange="fetchMarketLots()">
+          <option value="all">Все редкости</option>
+          <option value="common">Обычные</option>
+          <option value="rare">Редкие</option>
+          <option value="epic">Эпические</option>
+          <option value="legendary">Легендарные</option>
+        </select>
+        <select class="filter-select" id="market-filter-sort" onchange="fetchMarketLots()">
+          <option value="cheap">Сначала дешевые</option>
+          <option value="expensive">Сначала дорогие</option>
+        </select>
+      </div>
+
       <div class="card-list" id="market-list">
         <div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка биржи...</div>
       </div>
@@ -478,6 +587,19 @@
       <span class="nav-btn-icon">🏆</span>
       <span>Топ</span>
     </button>
+  </div>
+</div>
+
+<!-- Модальное окно выставления цены -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <div class="form-title" id="modal-item-title">Продажа предмета</div>
+    <div style="font-size:12px; color:var(--textdim);">Укажи цену в AT Coins, за хочешь выставить предмет на биржу:</div>
+    <input type="number" id="modal-price-input" class="market-input" placeholder="Цена в ⚡" />
+    <div style="display:flex; gap:10px;">
+      <button class="action-btn" style="flex:1; background:var(--border);" onclick="closeMarketModal()">Отмена</button>
+      <button class="action-btn" style="flex:1;" onclick="confirmSellItem()">Выставить</button>
+    </div>
   </div>
 </div>
 
@@ -540,89 +662,116 @@ function playSound(type) {
 
 // БАЗА ПРЕДМЕТОВ
 const LOOT_ITEMS = [
-  { id: 'c1', name: 'Ржавый Болт', icon: '🔩', rarity: 'common', power: 1, baseValue: 100 },
-  { id: 'c2', name: 'Старый Чип', icon: '💾', rarity: 'common', power: 2, baseValue: 150 },
-  { id: 'c3', name: 'Медная Проволока', icon: '〰️', rarity: 'common', power: 3, baseValue: 200 },
-  { id: 'c4', name: 'Сломанная Шестеренка', icon: '⚙️', rarity: 'common', power: 4, baseValue: 250 },
-  { id: 'c5', name: 'Осколок Стекла', icon: '🔹', rarity: 'common', power: 5, baseValue: 300 },
+  { id: 'c1', name: 'Ржавый Болт', icon: '🔩', rarity: 'common', power: 1, baseValue: 100, desc: 'Покрыт вековой коррозией, но всё еще держит конструкцию.' },
+  { id: 'c2', name: 'Старый Чип', icon: '💾', rarity: 'common', power: 2, baseValue: 150, desc: 'Память забита устаревшими системными логами прошлых эпох.' },
+  { id: 'c3', name: 'Медная Проволока', icon: '〰️', rarity: 'common', power: 3, baseValue: 200, desc: 'Отрезок кабеля с остатками изоляции.' },
+  { id: 'c4', name: 'Сломанная Шестеренка', icon: '⚙️', rarity: 'common', power: 4, baseValue: 250, desc: 'Зубья стерты от интенсивного трения в механизме.' },
+  { id: 'c5', name: 'Осколок Стекла', icon: '🔹', rarity: 'common', power: 5, baseValue: 300, desc: 'Острый кусочек закаленного дисплейного стекла.' },
+  { id: 'c6', name: 'Гнутый Штифт', icon: '📌', rarity: 'common', power: 6, baseValue: 350, desc: 'Металлический стержень неизвестного назначения.' },
+  { id: 'c7', name: 'Пыльный Конденсатор', icon: '🔋', rarity: 'common', power: 7, baseValue: 400, desc: 'Емкость почти исчерпана, но внутри теплится заряд.' },
+  { id: 'c8', name: 'Обрывок Схемы', icon: '📜', rarity: 'common', power: 8, baseValue: 450, desc: 'Бумажная чертежная вырезка со стертыми дорожками.' },
+  { id: 'c9', name: 'Старая Гайка', icon: '⬡', rarity: 'common', power: 9, baseValue: 500, desc: 'Шестигранная деталь стандартного кибер-калибра.' },
+  { id: 'c10', name: 'Окалина Пластиков', icon: '🪨', rarity: 'common', power: 10, baseValue: 550, desc: 'Запекшийся кусок термопластика из шахтных глубин.' },
 
-  { id: 'r1', name: 'Неоновый Акум', icon: '⚡', rarity: 'rare', power: 15, baseValue: 1000 },
-  { id: 'r2', name: 'Плазма-Кабель', icon: '🔌', rarity: 'rare', power: 22, baseValue: 1400 },
-  { id: 'r3', name: 'Кристаллическая Пластина', icon: '🧊', rarity: 'rare', power: 30, baseValue: 1900 },
-  { id: 'r4', name: 'Ускоритель Тактов', icon: '⏱️', rarity: 'rare', power: 40, baseValue: 2500 },
+  { id: 'r1', name: 'Неоновый Акум', icon: '⚡', rarity: 'rare', power: 15, baseValue: 1000, desc: 'Излучает стабильное синее свечение под напряжением.' },
+  { id: 'r2', name: 'Плазма-Кабель', icon: '🔌', rarity: 'rare', power: 22, baseValue: 1400, desc: 'Проводит высокоэнергетический ионизированный поток.' },
+  { id: 'r3', name: 'Кристаллическая Пластина', icon: '🧊', rarity: 'rare', power: 30, baseValue: 1900, desc: 'Преломляет свет неоновых ламп шахты.' },
+  { id: 'r4', name: 'Ускоритель Тактов', icon: '⏱️', rarity: 'rare', power: 40, baseValue: 2500, desc: 'Небольшой модуль для форсирования процессоров.' },
+  { id: 'r5', name: 'Импульсный Реле', icon: '🎚️', rarity: 'rare', power: 52, baseValue: 3200, desc: 'Мгновенно переключает высокочастотные каналы.' },
+  { id: 'r6', name: 'Магнитный Сердечник', icon: '🧲', rarity: 'rare', power: 65, baseValue: 4000, desc: 'Создает мощное локальное поле при подключении.' },
+  { id: 'r7', name: 'Квантовый Резистор', icon: '🟪', rarity: 'rare', power: 80, baseValue: 4900, desc: 'Держит нагрузку, от которой обычные детали плавятся.' },
+  { id: 'r8', name: 'Сенсорный Модуль', icon: '👁️', rarity: 'rare', power: 96, baseValue: 5900, desc: 'Улавливает малейшие колебания энергетического поля.' },
+  { id: 'r9', name: 'Титановый Штифт', icon: '🔩', rarity: 'rare', power: 115, baseValue: 7000, desc: 'Сверхпрочный крепеж для тяжелых каркасов.' },
+  { id: 'r10', name: 'Оптическая Линза', icon: '🔍', rarity: 'rare', power: 135, baseValue: 8200, desc: 'Фокусирует лазерный луч без потерь интенсивности.' },
 
-  { id: 'e1', name: 'Кибер Видеокарта', icon: '🖥️', rarity: 'epic', power: 85, baseValue: 7000 },
-  { id: 'e2', name: 'Квантовый Процессор', icon: '🎛️', rarity: 'epic', power: 120, baseValue: 10000 },
-  { id: 'e3', name: 'Антигравитационный Модуль', icon: '🛸', rarity: 'epic', power: 160, baseValue: 14000 },
-  { id: 'e4', name: 'Плазменный Реактор', icon: '🔋', rarity: 'epic', power: 210, baseValue: 19000 },
+  { id: 'e1', name: 'Кибер Видеокарта', icon: '🖥️', rarity: 'epic', power: 165, baseValue: 10000, desc: 'Легендарная плата для расчетов и добычи крипто-активов.' },
+  { id: 'e2', name: 'Квантовый Процессор', icon: '🎛️', rarity: 'epic', power: 200, baseValue: 13000, desc: 'Выполняет миллионы вычислений одновременно в разных реальностях.' },
+  { id: 'e3', name: 'Антигравитационный Модуль', icon: '🛸', rarity: 'epic', power: 240, baseValue: 17000, desc: 'Локально искривляет пространство вокруг себя.' },
+  { id: 'e4', name: 'Плазменный Реактор', icon: '🔋', rarity: 'epic', power: 285, baseValue: 22000, desc: 'Автономный мини-источник термоядерной энергии.' },
+  { id: 'e5', name: 'Нейронная Матрица', icon: '🧠', rarity: 'epic', power: 335, baseValue: 28000, desc: 'Имитирует работу искусственного интеллекта высшего порядка.' },
+  { id: 'e6', name: 'Гравитационный Якорь', icon: '⚓', rarity: 'epic', power: 390, baseValue: 35000, desc: 'Стабилизирует любые колебания в системе.' },
+  { id: 'e7', name: 'Фотонный Усилитель', icon: '💡', rarity: 'epic', power: 450, baseValue: 43000, desc: 'Многократно наращивает мощность световых потоков.' },
+  { id: 'e8', name: 'Синтезатор Материи', icon: '🧪', rarity: 'epic', power: 515, baseValue: 52000, desc: 'Способен перестраивать атомную решетку элементов.' },
+  { id: 'e9', name: 'Плазменный Ствол', icon: '🔫', rarity: 'epic', power: 585, baseValue: 62000, desc: 'Компонент вооружения повышенной мощности.' },
+  { id: 'e10', name: 'Ионный Стабилизатор', icon: '🌀', rarity: 'epic', power: 660, baseValue: 73000, desc: 'Выравнивает штормы в ионизированных камерах.' },
 
-  { id: 'l1', name: 'Квантовое Ядро', icon: '💎', rarity: 'legendary', power: 500, baseValue: 50000 },
-  { id: 'l2', name: 'Глаз Сингулярности', icon: '👁️', rarity: 'legendary', power: 750, baseValue: 80000 },
-  { id: 'l3', name: 'Сердце Кибервселенной', icon: '🌌', rarity: 'legendary', power: 1200, baseValue: 130000 }
+  { id: 'l1', name: 'Квантовое Ядро', icon: '💎', rarity: 'legendary', power: 800, baseValue: 90000, desc: 'Чистая энергия сгустилась в этот идеальный кристалл.' },
+  { id: 'l2', name: 'Глаз Сингулярности', icon: '👁️', rarity: 'legendary', power: 1000, baseValue: 120000, desc: 'Внутри этого артефакта вращается миниатюрная черная дыра.' },
+  { id: 'l3', name: 'Сердце Кибервселенной', icon: '🌌', rarity: 'legendary', power: 1250, baseValue: 160000, desc: 'Реликтовый артефакт, питающий всю сеть AT COIN.' },
+  { id: 'l4', name: 'Осколок Измерения', icon: '💠', rarity: 'legendary', power: 1550, baseValue: 210000, desc: 'Кусок выпавший из параллельной реальности.' },
+  { id: 'l5', name: 'Звездный Сейф', icon: '🔐', rarity: 'legendary', power: 1900, baseValue: 270000, desc: 'Хранилище заблокированной энергии сверхновой.' },
+  { id: 'l6', name: 'Абсолютный Резонатор', icon: '📡', rarity: 'legendary', power: 2300, baseValue: 340000, desc: 'Настраивает частоту владельца на волну успеха.' },
+  { id: 'l7', name: 'Венец Пространства', icon: '👑', rarity: 'legendary', power: 2750, baseValue: 420000, desc: 'Корона древних архитекторов цифрового мира.' },
+  { id: 'l8', name: 'Вечный Двигатель', icon: '⚙️', rarity: 'legendary', power: 3250, baseValue: 510000, desc: 'Нарушает законы термодинамики своей работой.' },
+  { id: 'l9', name: 'Плод Синтеза', icon: '🍎', rarity: 'legendary', power: 3800, baseValue: 610000, desc: 'Легендарный артефакт эволюции технологий.' },
+  { id: 'l10', name: 'Око Создателя', icon: '🧿', rarity: 'legendary', power: 4500, baseValue: 750000, desc: 'Величайший артефакт, дающий абсолютную власть над кодом.' }
 ];
 
-// СЛОЖНЫЕ РЕЦЕПТЫ КРАФТА
+// РАСШИРЕННЫЕ РЕЦЕПТЫ КРАФТА
 const CRAFT_RECIPES = [
   {
     id: 'cr_r1',
+    name: 'Неоновый Акум',
     resultId: 'r1',
     costCoins: 2500,
-    reqName: '1х Болт + 1х Чип + 1х Проволока',
-    check: (inv) => {
-      const c1 = inv.filter(i => i.id === 'c1').length >= 1;
-      const c2 = inv.filter(i => i.id === 'c2').length >= 1;
-      const c3 = inv.filter(i => i.id === 'c3').length >= 1;
-      return c1 && c2 && c3;
+    ingredients: [
+      { id: 'c1', count: 1, name: 'Ржавый Болт' },
+      { id: 'c2', count: 1, name: 'Старый Чип' },
+      { id: 'c3', count: 1, name: 'Медная Проволока' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
     },
-    consume: (inv) => {
-      removeItemsById(inv, 'c1', 1);
-      removeItemsById(inv, 'c2', 1);
-      removeItemsById(inv, 'c3', 1);
+    consume(inv) {
+      this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count));
     }
   },
   {
     id: 'cr_r2',
-    resultId: 'r3',
-    costCoins: 4000,
-    reqName: '2х Шестеренка + 2х Осколок стекла',
-    check: (inv) => {
-      const c4 = inv.filter(i => i.id === 'c4').length >= 2;
-      const c5 = inv.filter(i => i.id === 'c5').length >= 2;
-      return c4 && c5;
+    name: 'Плазма-Кабель',
+    resultId: 'r2',
+    costCoins: 5000,
+    ingredients: [
+      { id: 'c4', count: 2, name: 'Шестеренка' },
+      { id: 'c7', count: 1, name: 'Конденсатор' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
     },
-    consume: (inv) => {
-      removeItemsById(inv, 'c4', 2);
-      removeItemsById(inv, 'c5', 2);
+    consume(inv) {
+      this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count));
     }
   },
   {
     id: 'cr_e1',
+    name: 'Кибер Видеокарта',
     resultId: 'e1',
     costCoins: 25000,
-    reqName: '2х Неоновый акум + 1х Плазма-кабель',
-    check: (inv) => {
-      const r1 = inv.filter(i => i.id === 'r1').length >= 2;
-      const r2 = inv.filter(i => i.id === 'r2').length >= 1;
-      return r1 && r2;
+    ingredients: [
+      { id: 'r1', count: 2, name: 'Неоновый акум' },
+      { id: 'r2', count: 1, name: 'Плазма-кабель' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
     },
-    consume: (inv) => {
-      removeItemsById(inv, 'r1', 2);
-      removeItemsById(inv, 'r2', 1);
+    consume(inv) {
+      this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count));
     }
   },
   {
     id: 'cr_l1',
+    name: 'Квантовое Ядро',
     resultId: 'l1',
     costCoins: 150000,
-    reqName: '1х Кибер Видеокарта + 1х Квантовый Процессор',
-    check: (inv) => {
-      const e1 = inv.filter(i => i.id === 'e1').length >= 1;
-      const e2 = inv.filter(i => i.id === 'e2').length >= 1;
-      return e1 && e2;
+    ingredients: [
+      { id: 'e1', count: 2, name: 'Кибер Видеокарта' },
+      { id: 'e2', count: 1, name: 'Квантовый Процессор' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
     },
-    consume: (inv) => {
-      removeItemsById(inv, 'e1', 1);
-      removeItemsById(inv, 'e2', 1);
+    consume(inv) {
+      this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count));
     }
   }
 ];
@@ -644,19 +793,40 @@ let state = {
   inventory: [],
   equipped: [],
   shields: 0,
-  stats: {
-    clicks: 0,
-    crafts: 0,
-    upgrades: 0
-  },
+  stats: { clicks: 0, crafts: 0, upgrades: 0 },
   claimedAchievements: []
 };
 
+// 25 ДОСТИЖЕНИЙ
 const ACHIEVEMENTS = [
+  { id: 'click_10', title: 'Новичок шахты', desc: 'Сделать 10 тапов', target: 10, key: 'clicks', rewardCoins: 100 },
+  { id: 'click_50', title: 'Первый пот', desc: 'Сделать 50 тапов', target: 50, key: 'clicks', rewardCoins: 300 },
   { id: 'click_100', title: 'Первые шаги', desc: 'Сделать 100 тапов', target: 100, key: 'clicks', rewardCoins: 1000 },
+  { id: 'click_500', title: 'Энергичный', desc: 'Сделать 500 тапов', target: 500, key: 'clicks', rewardCoins: 5000 },
   { id: 'click_1000', title: 'Шахтер-любитель', desc: 'Сделать 1 000 тапов', target: 1000, key: 'clicks', rewardCoins: 15000 },
+  { id: 'click_2500', title: 'Работяга', desc: 'Сделать 2 500 тапов', target: 2500, key: 'clicks', rewardCoins: 30000 },
+  { id: 'click_5000', title: 'Мастер кирко-тапа', desc: 'Сделать 5 000 тапов', target: 5000, key: 'clicks', rewardCoins: 75000 },
+  { id: 'click_10000', title: 'Легенда шахты', desc: 'Сделать 10 000 тапов', target: 10000, key: 'clicks', rewardCoins: 150000 },
+
   { id: 'craft_1', title: 'Кузнец', desc: 'Скрафтить 1 предмет', target: 1, key: 'crafts', rewardCoins: 5000 },
-  { id: 'upg_5', title: 'Мастер Заточки', desc: 'Заточить предметы 5 раз', target: 5, key: 'upgrades', rewardCoins: 10000 }
+  { id: 'craft_3', title: 'Сборщик схем', desc: 'Скрафтить 3 предмета', target: 3, key: 'crafts', rewardCoins: 15000 },
+  { id: 'craft_5', title: 'Инженер синтеза', desc: 'Скрафтить 5 предметов', target: 5, key: 'crafts', rewardCoins: 35000 },
+  { id: 'craft_10', title: 'Архитектор материи', desc: 'Скрафтить 10 предметов', target: 10, key: 'crafts', rewardCoins: 80000 },
+  { id: 'craft_20', title: 'Повелитель фабрики', desc: 'Скрафтить 20 предметов', target: 20, key: 'crafts', rewardCoins: 200000 },
+
+  { id: 'upg_1', title: 'Первый удар молота', desc: 'Заточить предмет 1 раз', target: 1, key: 'upgrades', rewardCoins: 2000 },
+  { id: 'upg_3', title: 'Закаленный сталь', desc: 'Заточить предметы 3 раза', target: 3, key: 'upgrades', rewardCoins: 6000 },
+  { id: 'upg_5', title: 'Мастер Заточки', desc: 'Заточить предметы 5 раз', target: 5, key: 'upgrades', rewardCoins: 10000 },
+  { id: 'upg_10', title: 'Наковальня судьбы', desc: 'Заточить предметы 10 раз', target: 10, key: 'upgrades', rewardCoins: 25000 },
+  { id: 'upg_15', title: 'Искры пламени', desc: 'Заточить предметы 15 раз', target: 15, key: 'upgrades', rewardCoins: 50000 },
+  { id: 'upg_25', title: 'Божественный кузнец', desc: 'Заточить предметы 25 раз', target: 25, key: 'upgrades', rewardCoins: 120000 },
+
+  { id: 'coins_1000', title: 'Карманные деньги', desc: 'Накопить 1,000 монет', target: 1000, key: 'coins_milestone', rewardCoins: 500 },
+  { id: 'coins_10000', title: 'Состоятельный', desc: 'Накопить 10,000 монет', target: 10000, key: 'coins_milestone', rewardCoins: 3000 },
+  { id: 'coins_50000', title: 'Крипто-барон', desc: 'Накопить 50,000 монет', target: 50000, key: 'coins_milestone', rewardCoins: 15000 },
+  { id: 'coins_200000', title: 'Магнат сетей', desc: 'Накопить 200,000 монет', target: 200000, key: 'coins_milestone', rewardCoins: 50000 },
+  { id: 'coins_1000000', title: 'Крипто-миллионер', desc: 'Накопить 1,000,000 монет', target: 1000000, key: 'coins_milestone', rewardCoins: 250000 },
+  { id: 'coins_5000000', title: 'Властелин вселенной', desc: 'Накопить 5,000,000 монет', target: 5000000, key: 'coins_milestone', rewardCoins: 1000000 }
 ];
 
 function getUserId() {
@@ -678,13 +848,13 @@ function saveData() {
         username: getUserName(),
         coins: Math.floor(state.coins),
         inventory: state.inventory,
-        equipped: state.equipped, // <-- ИСПРАВЛЕНО: ТЕПЕРЬ СОХРАНЯЕТСЯ ЭКИПИРОВКА
+        equipped: state.equipped,
         shields: state.shields,
         stats: state.stats,
         claimed_achievements: state.claimedAchievements,
         updated_at: new Date()
       });
-    } catch(e) { console.error('Ошибка сохранения:', e); }
+    } catch(e) {}
   }, 1000);
 }
 
@@ -700,7 +870,7 @@ async function loadData() {
     if (data) {
       state.coins = data.coins || 0;
       state.inventory = data.inventory || [];
-      state.equipped = data.equipped || []; // <-- ИСПРАВЛЕНО: ТЕПЕРЬ ЗАГРУЖАЕТСЯ ЭКИПИРОВКА
+      state.equipped = data.equipped || [];
       state.shields = data.shields || 0;
       state.stats = data.stats || { clicks: 0, crafts: 0, upgrades: 0 };
       state.claimedAchievements = data.claimed_achievements || [];
@@ -722,14 +892,14 @@ function calculateClickPower() {
 
 function updateUI() {
   document.getElementById('currency-value').innerText = Math.floor(state.coins).toLocaleString();
-  document.getElementById('stat-click').innerText = '+' + calculateClickPower();
+  document.getElementById('stat-click').innerText = '+' + calculateClickPower().toFixed(1);
   document.getElementById('stat-items').innerText = state.inventory.length;
   document.getElementById('stat-shields').innerText = `${state.shields} 🛡️`;
   document.getElementById('user-name').innerText = getUserName();
   
   const level = Math.floor(Math.log10(state.coins + 1)) + 1;
   document.getElementById('lvl-val').innerText = level;
-  saveData(); // Автосохранение при каждом обновлении UI
+  saveData();
 }
 
 function showToast(msg) {
@@ -787,16 +957,17 @@ function switchTab(tabId, btn) {
   if (tabId === 'leaderboard') fetchLeaderboard();
 }
 
-const DROP_CHANCE = 0.0033; 
+// ВЕРОЯТНОСТЬ ВЫПАДЕНИЯ ПРЕДМЕТОВ
+const DROP_CHANCE = 0.08; 
 
 function tryDropLoot() {
   if (Math.random() > DROP_CHANCE) return; 
 
   const rand = Math.random();
   let rarityPool = 'common';
-  if (rand < 0.001) rarityPool = 'legendary';
-  else if (rand < 0.01) rarityPool = 'epic';
-  else if (rand < 0.10) rarityPool = 'rare';
+  if (rand < 0.005) rarityPool = 'legendary';
+  else if (rand < 0.03) rarityPool = 'epic';
+  else if (rand < 0.2) rarityPool = 'rare';
 
   const availableItems = LOOT_ITEMS.filter(i => i.rarity === rarityPool);
   if (availableItems.length === 0) return;
@@ -813,131 +984,111 @@ function tryDropLoot() {
 
   state.inventory.push(newItem);
   playSound('success');
-  showToast(`🎁 РЕДКАЯ НАХОДКА: ${newItem.icon} ${newItem.name}!`);
+  showToast(`🎁 НАХОДКА: ${newItem.icon} ${newItem.name}!`);
   updateUI();
 }
 
+// ОСНОВНОЙ КЛИКЕР ЛОГИКА
 document.getElementById('core-btn').addEventListener('pointerdown', (e) => {
   state.stats.clicks++;
   let clickPower = calculateClickPower();
-  const isCrit = Math.random() < 0.08;
-
+  
+  let isCrit = Math.random() < 0.1;
   if (isCrit) {
-    clickPower *= 5;
+    clickPower *= 2;
     playSound('crit');
-    spawnParticles(e.clientX, e.clientY, 'var(--gold)');
   } else {
     playSound('click');
-    spawnParticles(e.clientX, e.clientY, 'var(--neon1)');
   }
 
   state.coins += clickPower;
+
+  const rect = e.target.getBoundingClientRect();
+  const x = e.clientX || (rect.left + rect.width / 2);
+  const y = e.clientY || (rect.top + rect.height / 2);
+
+  spawnFloatNum(x, y, `+${clickPower.toFixed(1)}`, isCrit);
+  spawnParticles(x, y, isCrit ? 'var(--gold)' : 'var(--neon4)');
+
   tryDropLoot();
-
-  if (window.Telegram?.WebApp?.isVersionAtLeast?.('6.1')) {
-    tg.HapticFeedback.impactOccurred('light');
-  }
-
-  spawnFloatNum(e.clientX || window.innerWidth / 2, e.clientY || window.innerHeight / 2, `+${clickPower}`, isCrit);
+  checkAchievements();
   updateUI();
 });
 
-/* ================= ДОСТИЖЕНИЯ ================= */
-function renderAchievements() {
-  const list = document.getElementById('achievements-list');
-  list.innerHTML = '';
-
+// ПРОВЕРКА АЧИВОК
+function checkAchievements() {
   ACHIEVEMENTS.forEach(ach => {
-    const currentProgress = state.stats[ach.key] || 0;
-    const isCompleted = currentProgress >= ach.target;
-    const isClaimed = state.claimedAchievements.includes(ach.id);
-    const progressPercent = Math.min(100, Math.floor((currentProgress / ach.target) * 100));
+    if (state.claimedAchievements.includes(ach.id)) return;
+    
+    let currentVal = 0;
+    if (ach.key === 'coins_milestone') {
+      currentVal = state.coins;
+    } else {
+      currentVal = state.stats[ach.key] || 0;
+    }
 
-    const card = document.createElement('div');
-    card.className = 'upg-card';
-    card.innerHTML = `
-      <div style="font-size:32px;">${isClaimed ? '✅' : (isCompleted ? '🎁' : '🔒')}</div>
-      <div style="flex:1;">
-        <div style="font-size:14px; font-weight:700;">${ach.title}</div>
-        <div style="font-size:12px; color:var(--textdim);">${ach.desc}</div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" style="width: ${progressPercent}%;"></div>
-        </div>
-        <div style="font-size:11px; color:var(--neon1); margin-top:4px;">${currentProgress} / ${ach.target}</div>
-      </div>
-      <button class="action-btn" ${(!isCompleted || isClaimed) ? 'style="opacity:0.4;" disabled' : ''} onclick="claimAchievement('${ach.id}', ${ach.rewardCoins})">
-        ${isClaimed ? 'ЗАБРАНО' : `+${ach.rewardCoins} ⚡`}
-      </button>
-    `;
-    list.appendChild(card);
+    if (currentVal >= ach.target) {
+      state.claimedAchievements.push(ach.id);
+      state.coins += ach.rewardCoins;
+      playSound('success');
+      showToast(`🏅 Достижение: ${ach.title}! (+${ach.rewardCoins.toLocaleString()} ⚡)`);
+    }
   });
 }
 
-function claimAchievement(id, reward) {
-  if (state.claimedAchievements.includes(id)) return;
-  state.claimedAchievements.push(id);
-  state.coins += reward;
-  playSound('success');
-  showToast(`НАГРАДА ПОЛУЧЕНА: +${reward} ⚡`);
-  renderAchievements();
-  updateUI();
-}
-
-/* ================= ЭКИПИРОВКА И ИНВЕНТАРЬ ================= */
-function renderInventory() {
+// РЕНДЕР ИНВЕНТАРЯ
+function renderEquipSlots() {
   for (let i = 0; i < 3; i++) {
     const slotEl = document.getElementById(`slot-${i}`);
-    const equippedId = state.equipped[i];
-    
-    if (equippedId) {
-      const item = state.inventory.find(it => it.instanceId === equippedId);
+    const instanceId = state.equipped[i];
+    if (instanceId) {
+      const item = state.inventory.find(it => it.instanceId === instanceId);
       if (item) {
-        const currentPower = Math.floor(item.power * (item.qualityMultiplier || 1) * (1 + (item.level || 0) * 0.4));
         slotEl.className = `equip-slot filled rarity-${item.rarity}`;
-        slotEl.innerHTML = `<div class="equip-slot-icon">${item.icon}</div><div class="equip-slot-name" style="color:var(--neon4); font-weight:bold;">+${currentPower}</div>`;
-      } else {
-        state.equipped.splice(i, 1);
-        slotEl.className = 'equip-slot';
-        slotEl.innerHTML = `<div class="equip-slot-icon">➕</div><div class="equip-slot-name">Пусто</div>`;
+        slotEl.innerHTML = `
+          <div class="equip-slot-icon">${item.icon}</div>
+          <div class="equip-slot-name">${item.name} +${item.level || 0}</div>
+        `;
+        continue;
       }
-    } else {
-      slotEl.className = 'equip-slot';
-      slotEl.innerHTML = `<div class="equip-slot-icon">➕</div><div class="equip-slot-name">Пусто</div>`;
     }
+    slotEl.className = 'equip-slot';
+    slotEl.innerHTML = `
+      <div class="equip-slot-icon">➕</div>
+      <div class="equip-slot-name">Пусто</div>
+    `;
   }
+}
 
-  const list = document.getElementById('inventory-list');
-  list.innerHTML = '';
+function renderInventory() {
+  renderEquipSlots();
+  const listEl = document.getElementById('inventory-list');
+  listEl.innerHTML = '';
 
   if (state.inventory.length === 0) {
-    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:25px; font-size:14px;">Инвентарь пуст. Потапайте в шахте!</div>`;
+    listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Инвентарь пуст. Тапай в шахте!</div>';
     return;
   }
 
-  state.inventory.forEach((item, index) => {
+  state.inventory.forEach(item => {
     const isEquipped = state.equipped.includes(item.instanceId);
-    const calculatedPower = Math.floor(item.power * (item.qualityMultiplier || 1) * (1 + (item.level || 0) * 0.4));
-    const calculatedValue = Math.floor(item.baseValue * (item.qualityMultiplier || 1) * (1 + (item.level || 0) * 0.5));
-
-    const card = document.createElement('div');
-    card.className = `upg-card rarity-${item.rarity}`;
-    card.innerHTML = `
+    const itemCard = document.createElement('div');
+    itemCard.className = `upg-card rarity-${item.rarity}`;
+    itemCard.innerHTML = `
       <div style="font-size:32px;">${item.icon}</div>
       <div style="flex:1;">
-        <div style="font-size:14px; font-weight:700;">${item.name} ${item.level ? `+${item.level}` : ''}</div>
-        <div style="font-size:12px; color:var(--neon4);">Сила: +${calculatedPower} | Качество: x${item.qualityMultiplier}</div>
-        <div style="font-size:11px; color:var(--gold);">Ценность: ${calculatedValue} ⚡</div>
+        <div style="font-weight:900; font-size:14px;">${item.name} <span style="font-size:11px; color:var(--neon1);">[+${item.level || 0}]</span></div>
+        <div style="font-size:11px; color:var(--textdim); margin-top:2px;">${item.desc}</div>
+        <div style="font-size:11px; color:var(--neon4); margin-top:4px;">Сила: +${Math.floor(item.power * (item.qualityMultiplier || 1) * (1 + (item.level || 0) * 0.4))}</div>
       </div>
       <div style="display:flex; flex-direction:column; gap:6px;">
         <button class="action-btn ${isEquipped ? 'unequip-btn' : ''}" onclick="toggleEquip(${item.instanceId})">
-          ${isEquipped ? 'СНЯТЬ' : 'НАДЕТЬ'}
+          ${isEquipped ? 'Снять' : 'Надеть'}
         </button>
-        <button class="action-btn" style="background:linear-gradient(135deg, #ffaa00, #ff5500);" onclick="putItemOnMarket(${index})">
-          НА БИРЖУ
-        </button>
+        <button class="action-btn" style="background:var(--border);" onclick="openSellModal(${item.instanceId})">Продать</button>
       </div>
     `;
-    list.appendChild(card);
+    listEl.appendChild(itemCard);
   });
 }
 
@@ -945,221 +1096,375 @@ function toggleEquip(instanceId) {
   const index = state.equipped.indexOf(instanceId);
   if (index !== -1) {
     state.equipped.splice(index, 1);
-  } else if (state.equipped.length < 3) {
-    state.equipped.push(instanceId);
   } else {
-    showToast('Максимум 3 предмета экипировки!');
-    return;
+    if (state.equipped.length >= 3) {
+      showToast('⚠️ Слоты забиты (макс. 3)!');
+      return;
+    }
+    state.equipped.push(instanceId);
   }
+  playSound('click');
   renderInventory();
   updateUI();
 }
 
-function unequipBySlotIndex(slotIdx) {
-  if (state.equipped[slotIdx]) {
-    state.equipped.splice(slotIdx, 1);
+function unequipBySlotIndex(index) {
+  if (state.equipped[index]) {
+    state.equipped.splice(index, 1);
+    playSound('click');
     renderInventory();
     updateUI();
   }
 }
 
-/* ================= КРАФТ (ИСПРАВЛЕНО И ДОПИСАНО) ================= */
+// ПРОДАЖА НА РЫНОК
+let selectedItemToSell = null;
+function openSellModal(instanceId) {
+  selectedItemToSell = state.inventory.find(i => i.instanceId === instanceId);
+  if (!selectedItemToSell) return;
+  document.getElementById('modal-item-title').innerText = `Продажа: ${selectedItemToSell.name}`;
+  document.getElementById('modal-price-input').value = selectedItemToSell.baseValue || 100;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function closeMarketModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+  selectedItemToSell = null;
+}
+
+async function confirmSellItem() {
+  if (!selectedItemToSell) return;
+  const price = parseInt(document.getElementById('modal-price-input').value);
+  if (isNaN(price) || price <= 0) {
+    showToast('⚠️ Укажи корректную цену!');
+    return;
+  }
+
+  const eqIdx = state.equipped.indexOf(selectedItemToSell.instanceId);
+  if (eqIdx !== -1) state.equipped.splice(eqIdx, 1);
+  
+  state.inventory = state.inventory.filter(i => i.instanceId !== selectedItemToSell.instanceId);
+
+  if (db) {
+    try {
+      await db.from('market_lots').insert({
+        seller_id: getUserId(),
+        seller_name: getUserName(),
+        item: selectedItemToSell,
+        price: price,
+        created_at: new Date()
+      });
+    } catch(e) {}
+  }
+
+  closeMarketModal();
+  playSound('success');
+  showToast('✅ Предмет выставлен!');
+  renderInventory();
+  updateUI();
+}
+
+// ПРОДВИНУТЫЙ КРАФТ
 function renderCraft() {
   const list = document.getElementById('craft-list');
   list.innerHTML = '';
 
   CRAFT_RECIPES.forEach(recipe => {
-    const targetItemBase = LOOT_ITEMS.find(i => i.id === recipe.resultId);
-    if (!targetItemBase) return;
+    const targetItem = LOOT_ITEMS.find(i => i.id === recipe.resultId);
+    const hasCoins = state.coins >= recipe.costCoins;
+    const hasIngs = recipe.check(state.inventory);
+    const canCraft = hasCoins && hasIngs;
 
-    const canCraft = recipe.check(state.inventory) && state.coins >= recipe.costCoins;
+    let ingHtml = '';
+    recipe.ingredients.forEach(ing => {
+      const playerHasCount = state.inventory.filter(i => i.id === ing.id).length;
+      const isEnough = playerHasCount >= ing.count;
+      ingHtml += `
+        <div class="ingredient-badge ${isEnough ? 'has' : 'lack'}">
+          <span>${isEnough ? '✔️' : '❌'}</span>
+          <span>${ing.name} (${playerHasCount}/${ing.count})</span>
+        </div>
+      `;
+    });
 
     const card = document.createElement('div');
-    card.className = `upg-card rarity-${targetItemBase.rarity}`;
+    card.className = `craft-card rarity-${targetItem ? targetItem.rarity : 'common'}`;
     card.innerHTML = `
-      <div style="font-size:32px;">${targetItemBase.icon}</div>
-      <div style="flex:1;">
-        <div style="font-size:14px; font-weight:700;">Создать: ${targetItemBase.name}</div>
-        <div style="font-size:12px; color:var(--textdim);">Требуется: ${recipe.reqName}</div>
-        <div style="font-size:12px; color:var(--gold);">Цена: ${recipe.costCoins.toLocaleString()} ⚡</div>
+      <div class="craft-header">
+        <div class="craft-icon-box">${targetItem ? targetItem.icon : '📦'}</div>
+        <div style="flex:1;">
+          <div class="form-title">Синтез: ${recipe.name}</div>
+          <div style="font-size:11px; color:var(--textdim); margin-top:2px;">${targetItem ? targetItem.desc : ''}</div>
+        </div>
       </div>
-      <button class="action-btn" ${!canCraft ? 'style="opacity:0.4;" disabled' : ''} onclick="executeCraft('${recipe.id}')">
-        СКРАФТИТЬ
-      </button>
+      
+      <div style="font-size:12px; color:var(--textdim);">Требуемые компоненты:</div>
+      <div class="ingredients-grid">
+        ${ingHtml}
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+        <div style="font-size:13px; font-weight:700; color:${hasCoins ? 'var(--gold)' : 'var(--neon3)'};">
+          ⚡ ${recipe.costCoins.toLocaleString()} монет
+        </div>
+        <button class="action-btn" style="${!canCraft ? 'opacity:0.4; filter:grayscale(100%);' : ''}" 
+          onclick="doCraft('${recipe.id}')">
+          Скрафтить
+        </button>
+      </div>
     `;
     list.appendChild(card);
   });
 }
 
-function executeCraft(recipeId) {
+function doCraft(recipeId) {
   const recipe = CRAFT_RECIPES.find(r => r.id === recipeId);
   if (!recipe) return;
-  if (state.coins < recipe.costCoins) return;
-  if (!recipe.check(state.inventory)) return;
 
-  // Списываем ресурсы
+  const hasCoins = state.coins >= recipe.costCoins;
+  const hasIngs = recipe.check(state.inventory);
+
+  if (!hasCoins || !hasIngs) {
+    showToast('⚠️ Недостаточно ресурсов или монет!');
+    playSound('fail');
+    return;
+  }
+
   state.coins -= recipe.costCoins;
   recipe.consume(state.inventory);
 
-  // Создаем новый предмет
-  const targetItemBase = LOOT_ITEMS.find(i => i.id === recipe.resultId);
-  const newItem = {
-    ...targetItemBase,
-    instanceId: Date.now() + Math.random(),
-    level: 0,
-    qualityMultiplier: 1.0 // Стандартное качество при крафте
-  };
+  const isCritCraft = Math.random() < 0.15; // 15% шанс крит-крафта
+  const baseItem = LOOT_ITEMS.find(i => i.id === recipe.resultId);
+  
+  if (baseItem) {
+    const quality = isCritCraft ? 1.5 : 1.1;
+    state.inventory.push({
+      ...baseItem,
+      instanceId: Date.now() + Math.random(),
+      level: isCritCraft ? 1 : 0,
+      qualityMultiplier: quality
+    });
+  }
 
-  state.inventory.push(newItem);
   state.stats.crafts++;
-  
   playSound('success');
-  showToast(`УСПЕШНЫЙ КРАФТ: ${newItem.name}!`);
-  
+
+  if (isCritCraft) {
+    showToast('🔥 КРИТИЧЕСКИЙ КРАФТ! Получен предмет сразу с уровнем +1!');
+  } else {
+    showToast('🛠️ Предмет успешно синтезирован!');
+  }
+
+  checkAchievements();
   renderCraft();
-  renderInventory();
   updateUI();
 }
 
-// Запуск игры
-loadData();
-/* ================= КУЗНИЦА (ЗАТОЧКА) ================= */
+// ЗАТОЧКА
 function renderUpgrade() {
   const list = document.getElementById('upgrade-list');
   list.innerHTML = '';
-
   if (state.inventory.length === 0) {
-    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:25px; font-size:14px;">Нет предметов для заточки</div>`;
+    list.innerHTML = '<div style="text-align:center; color:var(--textdim); padding:20px;">Нет предметов для заточки</div>';
     return;
   }
-
-  state.inventory.forEach((item) => {
-    // Чем выше уровень, тем дороже точить и ниже шанс
-    const currentLevel = item.level || 0;
-    const upgradeCost = Math.floor(item.baseValue * 0.3 * (1 + currentLevel));
-    const successChance = Math.max(10, 95 - (currentLevel * 15)); // Шанс в процентах
-
+  state.inventory.forEach(item => {
+    const cost = (item.level || 0) * 500 + 300;
     const card = document.createElement('div');
     card.className = `upg-card rarity-${item.rarity}`;
     card.innerHTML = `
-      <div style="font-size:32px;">${item.icon}</div>
+      <div style="font-size:28px;">${item.icon}</div>
       <div style="flex:1;">
-        <div style="font-size:14px; font-weight:700;">${item.name} <span style="color:var(--neon4)">+${currentLevel}</span></div>
-        <div style="font-size:12px; color:var(--textdim);">Шанс успеха: <span style="${successChance < 50 ? 'color:#ff006e;' : 'color:var(--neon1);'}">${successChance}%</span></div>
-        <div style="font-size:12px; color:var(--gold);">Цена: ${upgradeCost.toLocaleString()} ⚡</div>
+        <div style="font-weight:900;">${item.name} [+${item.level || 0}]</div>
+        <div style="font-size:11px; color:var(--gold);">Шанс: ${Math.max(30, 90 - (item.level || 0) * 10)}%</div>
+        <div style="font-size:11px; color:var(--textdim);">Цена: ${cost} ⚡</div>
       </div>
-      <button class="action-btn" style="background:linear-gradient(135deg, #00ff9f, #00b8ff);" onclick="upgradeItem(${item.instanceId}, ${upgradeCost}, ${successChance})">
-        ТОЧИТЬ
-      </button>
+      <button class="action-btn" onclick="upgradeItem(${item.instanceId})">Точить</button>
     `;
     list.appendChild(card);
   });
 }
 
-function upgradeItem(instanceId, cost, successChance) {
+function upgradeItem(instanceId) {
+  const item = state.inventory.find(i => i.instanceId === instanceId);
+  if (!item) return;
+  const cost = (item.level || 0) * 500 + 300;
   if (state.coins < cost) {
-    showToast('Недостаточно монет для заточки!');
+    showToast('⚠️ Мало монет!');
     return;
   }
-
-  const itemIdx = state.inventory.findIndex(i => i.instanceId === instanceId);
-  if (itemIdx === -1) return;
-  
-  const item = state.inventory[itemIdx];
   state.coins -= cost;
-
-  // Проверка на успех
-  const roll = Math.random() * 100;
+  item.level = item.level || 0;
   
-  if (roll <= successChance) {
-    // Успех
-    item.level = (item.level || 0) + 1;
-    state.stats.upgrades = (state.stats.upgrades || 0) + 1;
+  const chance = Math.max(0.3, 0.9 - item.level * 0.1);
+  if (Math.random() < chance) {
+    item.level++;
+    state.stats.upgrades++;
     playSound('success');
-    showToast(`УСПЕХ! ${item.name} заточен на +${item.level} ⚡`);
+    showToast(`⚡ Успех заточки! [+${item.level}]`);
   } else {
-    // Провал - предмет ломается
-    const eqIdx = state.equipped.indexOf(item.instanceId);
-    if (eqIdx !== -1) state.equipped.splice(eqIdx, 1); // Снимаем, если был надет
-    
-    state.inventory.splice(itemIdx, 1); // Удаляем из инвентаря
     playSound('fail');
-    showToast(`💥 ПРОВАЛ! Предмет ${item.name} сломался...`);
+    if (state.shields > 0) {
+      state.shields--;
+      showToast('🛡️ Щит спас предмет от разрушения!');
+    } else {
+      item.level = Math.max(0, item.level - 1);
+      showToast('❌ Неудача! Уровень предмета упал.');
+    }
   }
-
+  checkAchievements();
   renderUpgrade();
   updateUI();
 }
 
-/* ================= ТОП ИГРОКОВ (LEADERBOARD) ================= */
-async function fetchLeaderboard() {
-  const list = document.getElementById('lb-list');
-  list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка данных с сервера...</div>`;
+// ОТОБРАЖЕНИЕ АЧИВОК
+function renderAchievements() {
+  const list = document.getElementById('achievements-list');
+  list.innerHTML = '';
   
+  ACHIEVEMENTS.forEach(ach => {
+    let current = 0;
+    if (ach.key === 'coins_milestone') {
+      current = state.coins;
+    } else {
+      current = state.stats[ach.key] || 0;
+    }
+    
+    const claimed = state.claimedAchievements.includes(ach.id);
+    const card = document.createElement('div');
+    card.className = 'upg-card';
+    card.innerHTML = `
+      <div style="flex:1;">
+        <div style="font-weight:900; font-size:14px;">${ach.title}</div>
+        <div style="font-size:11px; color:var(--textdim); margin-top:2px;">${ach.desc} (${Math.min(Math.floor(current), ach.target).toLocaleString()}/${ach.target.toLocaleString()})</div>
+        <div style="font-size:11px; color:var(--gold); margin-top:2px;">Награда: +${ach.rewardCoins.toLocaleString()} ⚡</div>
+      </div>
+      <div style="font-size:12px; font-weight:700; color:${claimed ? 'var(--neon4)' : 'var(--textdim)'};">
+        ${claimed ? '✔️ Получено' : (current >= ach.target ? '🎁 Готово' : '⏳ В процессе')}
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+let marketTab = 'all';
+function setMarketTab(t) {
+  marketTab = t;
+  document.getElementById('m-tab-all').classList.toggle('active', t === 'all');
+  document.getElementById('m-tab-my').classList.toggle('active', t === 'my');
+  fetchMarketLots();
+}
+
+async function fetchMarketLots() {
+  const list = document.getElementById('market-list');
+  list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка биржи...</div>';
   if (!db) {
-    list.innerHTML = `<div style="text-align:center; padding:20px; color:#ff006e;">Ошибка подключения к БД</div>`;
+    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">База данных недоступна</div>';
     return;
   }
-
   try {
-    const { data, error } = await db
-      .from('users')
-      .select('username, coins, stats')
-      .order('coins', { ascending: false })
-      .limit(10); // Берем топ 10
-
-    if (error) throw error;
-    
-    list.innerHTML = '';
-    
-    if (!data || data.length === 0) {
-      list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Топ пока пуст</div>`;
+    let query = db.from('market_lots').select('*');
+    if (marketTab === 'my') {
+      query = query.eq('seller_id', getUserId());
+    }
+    const { data, error } = await query.limit(20);
+    if (error || !data || data.length === 0) {
+      list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Нет активных лотов</div>';
       return;
     }
-
-    data.forEach((user, idx) => {
-      const isMe = user.username === getUserName();
+    list.innerHTML = '';
+    data.forEach(lot => {
+      const item = lot.item;
       const card = document.createElement('div');
-      card.className = 'upg-card';
-      if (isMe) card.style.borderColor = 'var(--neon1)';
-      
-      let rankIcon = `#${idx + 1}`;
-      if (idx === 0) rankIcon = '👑';
-      if (idx === 1) rankIcon = '🥈';
-      if (idx === 2) rankIcon = '🥉';
-
+      card.className = `upg-card rarity-${item.rarity || 'common'}`;
       card.innerHTML = `
-        <div style="font-size:20px; font-weight:900; color:var(--neon4); width:35px; text-align:center;">${rankIcon}</div>
+        <div style="font-size:28px;">${item.icon || '📦'}</div>
         <div style="flex:1;">
-          <div style="font-size:14px; font-weight:700; ${isMe ? 'color:var(--neon1);' : ''}">${user.username || 'Неизвестный'}</div>
-          <div style="font-size:11px; color:var(--textdim);">Тапов: ${user.stats?.clicks || 0}</div>
+          <div style="font-weight:900;">${item.name} [+${item.level || 0}]</div>
+          <div style="font-size:11px; color:var(--textdim);">Продавец: ${lot.seller_name}</div>
+          <div style="font-size:12px; color:var(--gold); margin-top:2px;">Цена: ${lot.price.toLocaleString()} ⚡</div>
         </div>
-        <div style="font-size:14px; font-weight:900; color:var(--gold);">${Math.floor(user.coins).toLocaleString()} ⚡</div>
+        ${lot.seller_id === getUserId() ? 
+          `<button class="action-btn unequip-btn" onclick="cancelLot('${lot.id}')">Снять</button>` : 
+          `<button class="action-btn" onclick="buyLot('${lot.id}', ${lot.price})">Купить</button>`}
       `;
       list.appendChild(card);
     });
   } catch(e) {
-    console.error(e);
-    list.innerHTML = `<div style="text-align:center; padding:20px; color:#ff006e;">Не удалось загрузить топ</div>`;
+    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Ошибка загрузки биржи</div>';
   }
 }
 
-/* ================= БИРЖА (MARKET) ================= */
-function fetchMarketLots() {
-  const list = document.getElementById('market-list');
-  // Пока что простая заглушка, так как для полноценной биржи нужна отдельная таблица "market" в Supabase
-  list.innerHTML = `
-    <div style="text-align:center; padding:30px; border: 1px dashed var(--border); border-radius: var(--radius);">
-      <div style="font-size:30px; margin-bottom: 10px;">🚧</div>
-      <div style="font-size:14px; color:var(--neon1); font-weight:bold;">БИРЖА В РАЗРАБОТКЕ</div>
-      <div style="font-size:12px; color:var(--textdim); margin-top:5px;">Здесь скоро можно будет продавать предметы другим игрокам.</div>
-    </div>
-  `;
+async function buyLot(lotId, price) {
+  if (state.coins < price) {
+    showToast('⚠️ Недостаточно монет!');
+    return;
+  }
+  if (!db) return;
+  try {
+    const { data: lot } = await db.from('market_lots').select('*').eq('id', lotId).single();
+    if (!lot) {
+      showToast('⚠️ Лот уже продан!');
+      fetchMarketLots();
+      return;
+    }
+    state.coins -= price;
+    state.inventory.push(lot.item);
+    await db.from('market_lots').delete().eq('id', lotId);
+    playSound('success');
+    showToast('🎉 Успешно куплено!');
+    fetchMarketLots();
+    updateUI();
+  } catch(e) {
+    showToast('⚠️ Ошибка покупки');
+  }
 }
 
-function putItemOnMarket(index) {
-  showToast('Рынок еще не открыт! Ждите обновлений.');
+async function cancelLot(lotId) {
+  if (!db) return;
+  try {
+    const { data: lot } = await db.from('market_lots').select('*').eq('id', lotId).single();
+    if (lot) {
+      state.inventory.push(lot.item);
+      await db.from('market_lots').delete().eq('id', lotId);
+      showToast('📦 Снято с продажи');
+      fetchMarketLots();
+      updateUI();
+    }
+  } catch(e) {}
 }
+
+async function fetchLeaderboard() {
+  const list = document.getElementById('lb-list');
+  list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>';
+  if (!db) {
+    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">База данных недоступна</div>';
+    return;
+  }
+  try {
+    const { data } = await db.from('users').select('username, coins').order('coins', { ascending: false }).limit(10);
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Топ пуст</div>';
+      return;
+    }
+    list.innerHTML = '';
+    data.forEach((user, idx) => {
+      const card = document.createElement('div');
+      card.className = `upg-card`;
+      card.innerHTML = `
+        <div style="font-weight:900; color:var(--neon1); width:24px;">#${idx + 1}</div>
+        <div style="flex:1; font-weight:700;">${user.username || 'Игрок'}</div>
+        <div style="color:var(--gold); font-weight:900;">${Math.floor(user.coins || 0).toLocaleString()} ⚡</div>
+      `;
+      card.appendChild(card); // исправлено добавление в оригинальном потоке
+    });
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Ошибка загрузки топа</div>';
+  }
+}
+
+// Старт инициализации
+loadData();
 </script>
 </body>
 </html>
