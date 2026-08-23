@@ -1023,6 +1023,143 @@ function executeCraft(recipeId) {
 
 // Запуск игры
 loadData();
+/* ================= КУЗНИЦА (ЗАТОЧКА) ================= */
+function renderUpgrade() {
+  const list = document.getElementById('upgrade-list');
+  list.innerHTML = '';
+
+  if (state.inventory.length === 0) {
+    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:25px; font-size:14px;">Нет предметов для заточки</div>`;
+    return;
+  }
+
+  state.inventory.forEach((item) => {
+    // Чем выше уровень, тем дороже точить и ниже шанс
+    const currentLevel = item.level || 0;
+    const upgradeCost = Math.floor(item.baseValue * 0.3 * (1 + currentLevel));
+    const successChance = Math.max(10, 95 - (currentLevel * 15)); // Шанс в процентах
+
+    const card = document.createElement('div');
+    card.className = `upg-card rarity-${item.rarity}`;
+    card.innerHTML = `
+      <div style="font-size:32px;">${item.icon}</div>
+      <div style="flex:1;">
+        <div style="font-size:14px; font-weight:700;">${item.name} <span style="color:var(--neon4)">+${currentLevel}</span></div>
+        <div style="font-size:12px; color:var(--textdim);">Шанс успеха: <span style="${successChance < 50 ? 'color:#ff006e;' : 'color:var(--neon1);'}">${successChance}%</span></div>
+        <div style="font-size:12px; color:var(--gold);">Цена: ${upgradeCost.toLocaleString()} ⚡</div>
+      </div>
+      <button class="action-btn" style="background:linear-gradient(135deg, #00ff9f, #00b8ff);" onclick="upgradeItem(${item.instanceId}, ${upgradeCost}, ${successChance})">
+        ТОЧИТЬ
+      </button>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function upgradeItem(instanceId, cost, successChance) {
+  if (state.coins < cost) {
+    showToast('Недостаточно монет для заточки!');
+    return;
+  }
+
+  const itemIdx = state.inventory.findIndex(i => i.instanceId === instanceId);
+  if (itemIdx === -1) return;
+  
+  const item = state.inventory[itemIdx];
+  state.coins -= cost;
+
+  // Проверка на успех
+  const roll = Math.random() * 100;
+  
+  if (roll <= successChance) {
+    // Успех
+    item.level = (item.level || 0) + 1;
+    state.stats.upgrades = (state.stats.upgrades || 0) + 1;
+    playSound('success');
+    showToast(`УСПЕХ! ${item.name} заточен на +${item.level} ⚡`);
+  } else {
+    // Провал - предмет ломается
+    const eqIdx = state.equipped.indexOf(item.instanceId);
+    if (eqIdx !== -1) state.equipped.splice(eqIdx, 1); // Снимаем, если был надет
+    
+    state.inventory.splice(itemIdx, 1); // Удаляем из инвентаря
+    playSound('fail');
+    showToast(`💥 ПРОВАЛ! Предмет ${item.name} сломался...`);
+  }
+
+  renderUpgrade();
+  updateUI();
+}
+
+/* ================= ТОП ИГРОКОВ (LEADERBOARD) ================= */
+async function fetchLeaderboard() {
+  const list = document.getElementById('lb-list');
+  list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка данных с сервера...</div>`;
+  
+  if (!db) {
+    list.innerHTML = `<div style="text-align:center; padding:20px; color:#ff006e;">Ошибка подключения к БД</div>`;
+    return;
+  }
+
+  try {
+    const { data, error } = await db
+      .from('users')
+      .select('username, coins, stats')
+      .order('coins', { ascending: false })
+      .limit(10); // Берем топ 10
+
+    if (error) throw error;
+    
+    list.innerHTML = '';
+    
+    if (!data || data.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Топ пока пуст</div>`;
+      return;
+    }
+
+    data.forEach((user, idx) => {
+      const isMe = user.username === getUserName();
+      const card = document.createElement('div');
+      card.className = 'upg-card';
+      if (isMe) card.style.borderColor = 'var(--neon1)';
+      
+      let rankIcon = `#${idx + 1}`;
+      if (idx === 0) rankIcon = '👑';
+      if (idx === 1) rankIcon = '🥈';
+      if (idx === 2) rankIcon = '🥉';
+
+      card.innerHTML = `
+        <div style="font-size:20px; font-weight:900; color:var(--neon4); width:35px; text-align:center;">${rankIcon}</div>
+        <div style="flex:1;">
+          <div style="font-size:14px; font-weight:700; ${isMe ? 'color:var(--neon1);' : ''}">${user.username || 'Неизвестный'}</div>
+          <div style="font-size:11px; color:var(--textdim);">Тапов: ${user.stats?.clicks || 0}</div>
+        </div>
+        <div style="font-size:14px; font-weight:900; color:var(--gold);">${Math.floor(user.coins).toLocaleString()} ⚡</div>
+      `;
+      list.appendChild(card);
+    });
+  } catch(e) {
+    console.error(e);
+    list.innerHTML = `<div style="text-align:center; padding:20px; color:#ff006e;">Не удалось загрузить топ</div>`;
+  }
+}
+
+/* ================= БИРЖА (MARKET) ================= */
+function fetchMarketLots() {
+  const list = document.getElementById('market-list');
+  // Пока что простая заглушка, так как для полноценной биржи нужна отдельная таблица "market" в Supabase
+  list.innerHTML = `
+    <div style="text-align:center; padding:30px; border: 1px dashed var(--border); border-radius: var(--radius);">
+      <div style="font-size:30px; margin-bottom: 10px;">🚧</div>
+      <div style="font-size:14px; color:var(--neon1); font-weight:bold;">БИРЖА В РАЗРАБОТКЕ</div>
+      <div style="font-size:12px; color:var(--textdim); margin-top:5px;">Здесь скоро можно будет продавать предметы другим игрокам.</div>
+    </div>
+  `;
+}
+
+function putItemOnMarket(index) {
+  showToast('Рынок еще не открыт! Ждите обновлений.');
+}
 </script>
 </body>
 </html>
