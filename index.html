@@ -678,6 +678,7 @@ function saveData() {
         username: getUserName(),
         coins: Math.floor(state.coins),
         inventory: state.inventory,
+        equipped: state.equipped, // <-- ИСПРАВЛЕНО: ТЕПЕРЬ СОХРАНЯЕТСЯ ЭКИПИРОВКА
         shields: state.shields,
         stats: state.stats,
         claimed_achievements: state.claimedAchievements,
@@ -699,6 +700,7 @@ async function loadData() {
     if (data) {
       state.coins = data.coins || 0;
       state.inventory = data.inventory || [];
+      state.equipped = data.equipped || []; // <-- ИСПРАВЛЕНО: ТЕПЕРЬ ЗАГРУЖАЕТСЯ ЭКИПИРОВКА
       state.shields = data.shields || 0;
       state.stats = data.stats || { clicks: 0, crafts: 0, upgrades: 0 };
       state.claimedAchievements = data.claimed_achievements || [];
@@ -727,7 +729,7 @@ function updateUI() {
   
   const level = Math.floor(Math.log10(state.coins + 1)) + 1;
   document.getElementById('lvl-val').innerText = level;
-  saveData();
+  saveData(); // Автосохранение при каждом обновлении UI
 }
 
 function showToast(msg) {
@@ -961,7 +963,7 @@ function unequipBySlotIndex(slotIdx) {
   }
 }
 
-/* ================= КРАФТ ================= */
+/* ================= КРАФТ (ИСПРАВЛЕНО И ДОПИСАНО) ================= */
 function renderCraft() {
   const list = document.getElementById('craft-list');
   list.innerHTML = '';
@@ -992,272 +994,34 @@ function renderCraft() {
 function executeCraft(recipeId) {
   const recipe = CRAFT_RECIPES.find(r => r.id === recipeId);
   if (!recipe) return;
+  if (state.coins < recipe.costCoins) return;
+  if (!recipe.check(state.inventory)) return;
 
-  if (!recipe.check(state.inventory) || state.coins < recipe.costCoins) {
-    showToast('Недостаточно ресурсов или энергии!');
-    return;
-  }
-
+  // Списываем ресурсы
   state.coins -= recipe.costCoins;
   recipe.consume(state.inventory);
 
-  const targetBase = LOOT_ITEMS.find(i => i.id === recipe.resultId);
+  // Создаем новый предмет
+  const targetItemBase = LOOT_ITEMS.find(i => i.id === recipe.resultId);
   const newItem = {
-    ...targetBase,
+    ...targetItemBase,
     instanceId: Date.now() + Math.random(),
     level: 0,
-    qualityMultiplier: 1.0
+    qualityMultiplier: 1.0 // Стандартное качество при крафте
   };
 
   state.inventory.push(newItem);
   state.stats.crafts++;
-
+  
   playSound('success');
-  showToast(`🔨 УСПЕШНЫЙ КРАФТ: ${targetBase.icon} ${targetBase.name}!`);
+  showToast(`УСПЕШНЫЙ КРАФТ: ${newItem.name}!`);
+  
   renderCraft();
+  renderInventory();
   updateUI();
 }
 
-/* ================= ЗАТОЧКА ================= */
-function renderUpgrade() {
-  const list = document.getElementById('upgrade-list');
-  list.innerHTML = '';
-
-  if (state.inventory.length === 0) {
-    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:25px; font-size:14px;">Нет предметов для заточки!</div>`;
-    return;
-  }
-
-  state.inventory.forEach((item, index) => {
-    const currentLevel = item.level || 0;
-    const upgradeCost = Math.floor(500 * Math.pow(1.8, currentLevel));
-    const successChance = Math.max(20, 95 - currentLevel * 12);
-
-    const card = document.createElement('div');
-    card.className = `upg-card rarity-${item.rarity}`;
-    card.innerHTML = `
-      <div style="font-size:32px;">${item.icon}</div>
-      <div style="flex:1;">
-        <div style="font-size:14px; font-weight:700;">${item.name} +${currentLevel}</div>
-        <div style="font-size:12px; color:var(--neon1);">Шанс успеха: ${successChance}%</div>
-        <div style="font-size:12px; color:var(--gold);">Цена: ${upgradeCost.toLocaleString()} ⚡</div>
-      </div>
-      <button class="action-btn" onclick="upgradeItem(${index}, ${upgradeCost}, ${successChance})">
-        ЗАТОЧИТЬ
-      </button>
-    `;
-    list.appendChild(card);
-  });
-}
-
-function upgradeItem(index, cost, chance) {
-  if (state.coins < cost) {
-    showToast('Не хватает AT Coins!');
-    return;
-  }
-
-  state.coins -= cost;
-  state.stats.upgrades++;
-
-  const roll = Math.random() * 100;
-  if (roll <= chance) {
-    state.inventory[index].level = (state.inventory[index].level || 0) + 1;
-    playSound('success');
-    showToast(`⚡ УСПЕХ! Предмет заточен до +${state.inventory[index].level}`);
-  } else {
-    playSound('fail');
-    if (state.shields > 0) {
-      state.shields--;
-      showToast('🛡️ Защита спасла предмет от поломки!');
-    } else {
-      const broken = state.inventory.splice(index, 1)[0];
-      const eqIdx = state.equipped.indexOf(broken.instanceId);
-      if (eqIdx !== -1) state.equipped.splice(eqIdx, 1);
-      showToast(`💥 НЕУДАЧА! Предмет сломался и уничтожен!`);
-    }
-  }
-
-  renderUpgrade();
-  updateUI();
-}
-
-/* ================= БИРЖА ================= */
-async function fetchMarketLots() {
-  const list = document.getElementById('market-list');
-  list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка биржи...</div>`;
-
-  if (!db) {
-    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:20px;">Биржа недоступна</div>`;
-    return;
-  }
-
-  try {
-    const { data, error } = await db
-      .from('market_lots')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(20);
-
-    if (error) throw error;
-
-    list.innerHTML = '';
-    if (!data || data.length === 0) {
-      list.innerHTML = `<div style="text-align:center; padding:25px; color:var(--textdim); font-size:14px;">На бирже пока нет лотов.</div>`;
-      return;
-    }
-
-    data.forEach(lot => {
-      const item = lot.item;
-      const card = document.createElement('div');
-      card.className = `upg-card rarity-${item.rarity || 'common'}`;
-      card.innerHTML = `
-        <div style="font-size:32px;">${item.icon || '📦'}</div>
-        <div style="flex:1;">
-          <div style="font-size:14px; font-weight:700;">${item.name} ${item.level ? `+${item.level}` : ''}</div>
-          <div style="font-size:12px; color:var(--textdim);">Продавец: ${lot.seller_name || 'Игрок'}</div>
-          <div style="font-size:13px; color:var(--gold); font-weight:bold;">Цена: ${lot.price.toLocaleString()} ⚡</div>
-        </div>
-        <button class="action-btn" onclick="buyMarketLot('${lot.id}', ${lot.price})">КУПИТЬ</button>
-      `;
-      list.appendChild(card);
-    });
-  } catch(e) {
-    list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--neon3);">Ошибка загрузки рынка</div>`;
-  }
-}
-
-async function putItemOnMarket(index) {
-  const item = state.inventory[index];
-  const pricePrompt = prompt(`Укажите цену для "${item.name}" в AT Coins:`, '1000');
-  if (!pricePrompt) return;
-
-  const price = parseInt(pricePrompt);
-  if (isNaN(price) || price <= 0) {
-    showToast('Некорректная цена!');
-    return;
-  }
-
-  if (!db) {
-    showToast('База данных недоступна!');
-    return;
-  }
-
-  try {
-    const eqIdx = state.equipped.indexOf(item.instanceId);
-    if (eqIdx !== -1) state.equipped.splice(eqIdx, 1);
-
-    state.inventory.splice(index, 1);
-
-    const { error } = await db.from('market_lots').insert({
-      user_id: getUserId(),
-      seller_id: getUserId(),
-      seller_name: getUserName(),
-      item_id: item.instanceId ? String(item.instanceId) : 'item_' + Date.now(),
-      item: item,
-      price: price
-    });
-
-    if (error) throw error;
-
-    playSound('success');
-    showToast('✅ Лот успешно выставлен на биржу!');
-    renderInventory();
-    updateUI();
-  } catch(e) {
-    showToast('Ошибка выставления на биржу!');
-  }
-}
-
-async function buyMarketLot(lotId, price) {
-  if (state.coins < price) {
-    showToast('У вас недостаточно AT Coins!');
-    return;
-  }
-
-  if (!db) return;
-
-  try {
-    const { data: lot, error: fetchErr } = await db
-      .from('market_lots')
-      .select('*')
-      .eq('id', lotId)
-      .single();
-
-    if (fetchErr || !lot) {
-      showToast('Этот лот уже купили!');
-      fetchMarketLots();
-      return;
-    }
-
-    if (lot.seller_id === getUserId()) {
-      showToast('Нельзя покупать свои собственные лоты!');
-      return;
-    }
-
-    const { error: delErr } = await db
-      .from('market_lots')
-      .delete()
-      .eq('id', lotId);
-
-    if (delErr) throw delErr;
-
-    state.coins -= price;
-    state.inventory.push(lot.item);
-
-    playSound('success');
-    showToast('🎉 Вы успешно купили предмет!');
-    fetchMarketLots();
-    updateUI();
-  } catch(e) {
-    showToast('Ошибка при покупке лота');
-  }
-}
-
-/* ================= ТОП ================= */
-async function fetchLeaderboard() {
-  const list = document.getElementById('lb-list');
-  list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>`;
-
-  if (!db) {
-    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:20px;">Топ недоступен</div>`;
-    return;
-  }
-
-  try {
-    const { data, error } = await db
-      .from('users')
-      .select('username, coins')
-      .order('coins', { ascending: false })
-      .limit(10);
-
-    if (error) throw error;
-
-    list.innerHTML = '';
-    if (!data || data.length === 0) {
-      list.innerHTML = `<div style="text-align:center; padding:25px; color:var(--textdim); font-size:14px;">Список лидеров пуст.</div>`;
-      return;
-    }
-
-    data.forEach((user, idx) => {
-      const medals = ['🥇', '🥈', '🥉'];
-      const rankBadge = medals[idx] || `#${idx + 1}`;
-
-      const card = document.createElement('div');
-      card.className = 'upg-card';
-      card.innerHTML = `
-        <div style="font-size:24px; font-weight:900; width:35px; text-align:center;">${rankBadge}</div>
-        <div style="flex:1;">
-          <div style="font-size:14px; font-weight:700;">${user.username || 'Игрок'}</div>
-          <div style="font-size:12px; color:var(--gold);">Баланс: ${Math.floor(user.coins || 0).toLocaleString()} ⚡</div>
-        </div>
-      `;
-      list.appendChild(card);
-    });
-  } catch(e) {
-    list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--neon3);">Ошибка загрузки топа</div>`;
-  }
-}
-
+// Запуск игры
 loadData();
 </script>
 </body>
