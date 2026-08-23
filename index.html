@@ -823,6 +823,25 @@ html, body { min-height: 100%; }
 @media(max-width:390px){.lb-modes{grid-template-columns:repeat(2,1fr)}}
 </style>
 
+
+<style id="profile-contracts-css">
+.profile-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:8px 0 12px}
+.profile-stat{padding:10px;border:1px solid var(--border);border-radius:11px;background:rgba(255,255,255,.025)}
+.profile-stat .v{font-size:16px;font-weight:900;color:var(--neon1)}
+.profile-stat .k{font-size:9px;color:var(--textdim);margin-top:3px}
+.profile-head{display:flex;align-items:center;gap:11px;padding:12px;border:1px solid var(--border);border-radius:13px;background:linear-gradient(135deg,rgba(104,201,220,.08),rgba(255,255,255,.02));margin-bottom:9px}
+.profile-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(104,201,220,.10);border:1px solid rgba(104,201,220,.28);font-size:22px}
+.profile-name{font-size:15px;font-weight:900}.profile-sub{font-size:10px;color:var(--textdim);margin-top:2px}
+.contract-card{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:12px;margin-bottom:8px}
+.contract-top{display:flex;align-items:center;gap:9px}.contract-icon{font-size:23px}.contract-title{font-weight:900;font-size:12px;flex:1}.contract-reward{font-size:10px;color:var(--gold);font-weight:900}
+.contract-desc{font-size:10px;color:var(--textdim);margin:6px 0 8px}
+.contract-progress{height:7px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+.contract-progress>div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--neon1),var(--neon2));transition:width .2s ease}
+.contract-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:7px;font-size:9px;color:var(--textdim)}
+.contract-claim{min-height:30px!important;padding:5px 9px!important;font-size:9px!important}
+.contract-done{opacity:.72;border-color:rgba(0,255,160,.25)}
+</style>
+
 </head>
 <body>
 
@@ -956,6 +975,40 @@ html, body { min-height: 100%; }
         <div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>
       </div>
     </div>
+
+    <!-- ПРОФИЛЬ -->
+    <div class="tab-view" id="tab-profile">
+      <div class="form-title" style="margin-bottom:8px;">🧑‍🚀 ПРОФИЛЬ ИГРОКА</div>
+      <div class="profile-head">
+        <div class="profile-avatar">👨‍🚀</div>
+        <div style="min-width:0;">
+          <div class="profile-name" id="profile-name">Игрок</div>
+          <div class="profile-sub" id="profile-level">LVL 1 · Рейтинг по богатству — #—</div>
+        </div>
+      </div>
+      <div class="profile-grid">
+        <div class="profile-stat"><div class="v" id="profile-coins">0</div><div class="k">⚡ AT COINS</div></div>
+        <div class="profile-stat"><div class="v" id="profile-power">+0.1</div><div class="k">СИЛА ТАПА</div></div>
+        <div class="profile-stat"><div class="v" id="profile-clicks">0</div><div class="k">⛏️ ДОБЫТО КЛИКОВ</div></div>
+        <div class="profile-stat"><div class="v" id="profile-crafts">0</div><div class="k">🔨 КРАФТОВ</div></div>
+        <div class="profile-stat"><div class="v" id="profile-upgrades">0</div><div class="k">⚡ ЗАТОЧЕК</div></div>
+        <div class="profile-stat"><div class="v" id="profile-collection">0/40</div><div class="k">📚 КОЛЛЕКЦИЯ</div></div>
+      </div>
+      <div class="profile-stat">
+        <div class="k">ЭКИПИРОВКА</div>
+        <div style="margin-top:5px;font-size:11px;" id="profile-equipped">0 / 3 слота занято</div>
+      </div>
+    </div>
+
+    <!-- КОНТРАКТЫ -->
+    <div class="tab-view" id="tab-contracts">
+      <div class="form-title" style="margin-bottom:4px;">🎯 КОНТРАКТЫ ШАХТЁРА</div>
+      <div style="font-size:10px;color:var(--textdim);margin-bottom:10px;">
+        Ежедневные задания. Прогресс сохраняется вместе с профилем и обновляется прямо во время игры.
+      </div>
+      <div id="contracts-list"></div>
+    </div>
+
   </div>
 
   <!-- НИЖНЕЕ МЕНЮ -->
@@ -995,6 +1048,14 @@ html, body { min-height: 100%; }
     <button class="side-nav-btn" onclick="openTransferModal()">
       <span class="nav-btn-icon">💸</span>
       <span>Перевод</span>
+    </button>
+    <button class="side-nav-btn" onclick="switchSideTab('profile', this)">
+      <span class="nav-btn-icon">🧑‍🚀</span>
+      <span>Профиль</span>
+    </button>
+    <button class="side-nav-btn" onclick="switchSideTab('contracts', this)">
+      <span class="nav-btn-icon">🎯</span>
+      <span>Контракты</span>
     </button>
   </div>
 </div>
@@ -1106,10 +1167,14 @@ function sanitizeState() {
   state.coins = Math.max(0, Number(state.coins) || 0);
   state.shields = Math.max(0, Math.floor(Number(state.shields) || 0));
 
+  const oldStats = (state.stats && typeof state.stats === 'object') ? state.stats : {};
   state.stats = {
-    clicks: Math.max(0, Math.floor(Number(state.stats?.clicks) || 0)),
-    crafts: Math.max(0, Math.floor(Number(state.stats?.crafts) || 0)),
-    upgrades: Math.max(0, Math.floor(Number(state.stats?.upgrades) || 0))
+    clicks: Math.max(0, Math.floor(Number(oldStats.clicks) || 0)),
+    crafts: Math.max(0, Math.floor(Number(oldStats.crafts) || 0)),
+    upgrades: Math.max(0, Math.floor(Number(oldStats.upgrades) || 0)),
+    contracts: (oldStats.contracts && typeof oldStats.contracts === 'object')
+      ? oldStats.contracts
+      : null
   };
 
   state.claimedAchievements = Array.isArray(state.claimedAchievements)
@@ -1756,11 +1821,14 @@ async function loadData() {
       await saveDataNow();
     }
 
+    ensureDailyContracts();
     dataLoaded = true;
     updateUI(false);
     renderInventory();
     renderCraft();
     renderUpgrade();
+    renderProfile();
+    renderContracts();
   } catch (e) {
     dataLoaded = false;
     console.error('loadData:', e);
@@ -1796,6 +1864,166 @@ function getCraftDiscount() {
 
 function getUpgradeProtection() {
   return Math.min(0.25, getEquippedItems().filter(i => getItemRole(i) === 'defense').reduce((sum, i) => sum + 0.04 + (i.level || 0) * 0.005, 0));
+}
+
+
+// ==================== ПРОФИЛЬ + ЕЖЕДНЕВНЫЕ КОНТРАКТЫ ====================
+const CONTRACT_POOL = [
+  { id:'mine_1500', icon:'⛏️', title:'Разведка жилы', desc:'Сделать 1 500 тапов по ядру', key:'clicks', target:1500, reward:150 },
+  { id:'mine_5000', icon:'🔥', title:'Глубокая добыча', desc:'Сделать 5 000 тапов по ядру', key:'clicks', target:5000, reward:350 },
+  { id:'craft_2', icon:'🔨', title:'Малый заказ', desc:'Создать 2 предмета на верстаке', key:'crafts', target:2, reward:200 },
+  { id:'craft_5', icon:'🧪', title:'Синтез партии', desc:'Создать 5 предметов на верстаке', key:'crafts', target:5, reward:400 },
+  { id:'upgrade_2', icon:'⚡', title:'Настройка снаряжения', desc:'Успешно заточить предмет 2 раза', key:'upgrades', target:2, reward:250 },
+  { id:'upgrade_4', icon:'🔧', title:'Кузнечный заказ', desc:'Успешно заточить предмет 4 раза', key:'upgrades', target:4, reward:500 },
+  { id:'loot_2', icon:'🎁', title:'Случайная находка', desc:'Получить 2 предмета из шахты', key:'loot', target:2, reward:200 },
+  { id:'loot_5', icon:'💎', title:'Охота за добычей', desc:'Получить 5 предметов из шахты', key:'loot', target:5, reward:450 }
+];
+
+function localDateKey() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
+function contractSeed() {
+  const raw = `${localDateKey()}|${getUserId() || 'guest'}`;
+  let h = 2166136261;
+  for (let i=0;i<raw.length;i++) {
+    h ^= raw.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function ensureDailyContracts() {
+  const date = localDateKey();
+  const current = state.stats?.contracts;
+  if (current && current.date === date && Array.isArray(current.items)) return;
+
+  let seed = contractSeed();
+  const pool = [...CONTRACT_POOL];
+  const items = [];
+  while (items.length < 3 && pool.length) {
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    const idx = seed % pool.length;
+    items.push({ ...pool.splice(idx,1)[0], claimed:false });
+  }
+
+  state.stats.contracts = {
+    date,
+    items,
+    progress: { clicks:0, crafts:0, upgrades:0, loot:0 }
+  };
+}
+
+function getContractProgress(contract) {
+  ensureDailyContracts();
+  return Math.max(0, Math.floor(Number(state.stats.contracts.progress?.[contract.key]) || 0));
+}
+
+function updateContractProgress(key, amount=1) {
+  ensureDailyContracts();
+  const progress = state.stats.contracts.progress;
+  progress[key] = Math.max(0, Math.floor(Number(progress[key]) || 0) + Number(amount || 0));
+}
+
+function renderContracts() {
+  const list = document.getElementById('contracts-list');
+  if (!list) return;
+  ensureDailyContracts();
+
+  list.innerHTML = '';
+  state.stats.contracts.items.forEach(contract => {
+    const progress = Math.min(contract.target, getContractProgress(contract));
+    const done = progress >= contract.target;
+    const claimed = Boolean(contract.claimed);
+    const pct = Math.min(100, Math.floor(progress / contract.target * 100));
+
+    const card = document.createElement('div');
+    card.className = `contract-card${claimed ? ' contract-done' : ''}`;
+
+    const action = claimed
+      ? '<span style="color:var(--neon4);font-weight:900;">✓ Получено</span>'
+      : done
+        ? `<button class="action-btn contract-claim" onclick="claimContract('${contract.id}')">Забрать ${contract.reward.toLocaleString()} ⚡</button>`
+        : `<span>${progress.toLocaleString()} / ${contract.target.toLocaleString()}</span>`;
+
+    card.innerHTML = `
+      <div class="contract-top">
+        <div class="contract-icon">${contract.icon}</div>
+        <div class="contract-title">${escapeHtml(contract.title)}</div>
+        <div class="contract-reward">+${contract.reward.toLocaleString()} ⚡</div>
+      </div>
+      <div class="contract-desc">${escapeHtml(contract.desc)}</div>
+      <div class="contract-progress"><div style="width:${pct}%"></div></div>
+      <div class="contract-bottom"><span>${pct}%</span>${action}</div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function claimContract(contractId) {
+  ensureDailyContracts();
+  const contract = state.stats.contracts.items.find(x => x.id === contractId);
+  if (!contract || contract.claimed) return;
+
+  const progress = getContractProgress(contract);
+  if (progress < contract.target) {
+    showToast('⚠️ Контракт ещё не выполнен');
+    return;
+  }
+
+  contract.claimed = true;
+  state.coins += contract.reward;
+  playSound('success');
+  showToast(`🎯 Контракт выполнен! +${contract.reward.toLocaleString()} ⚡`);
+  renderContracts();
+  updateUI();
+}
+
+function renderProfile() {
+  const name = document.getElementById('profile-name');
+  const level = document.getElementById('profile-level');
+  const coins = document.getElementById('profile-coins');
+  const power = document.getElementById('profile-power');
+  const clicks = document.getElementById('profile-clicks');
+  const crafts = document.getElementById('profile-crafts');
+  const upgrades = document.getElementById('profile-upgrades');
+  const collection = document.getElementById('profile-collection');
+  const equipped = document.getElementById('profile-equipped');
+
+  if (!name) return;
+
+  const lvl = Math.floor(Math.log10(state.coins + 1)) + 1;
+  const uniqueIds = new Set(state.inventory.map(item => item.id));
+  name.textContent = getUserName();
+  level.textContent = `LVL ${lvl} · Рейтинг по богатству — #—`;
+  coins.textContent = Math.floor(state.coins).toLocaleString();
+  power.textContent = '+' + calculateClickPower().toFixed(1);
+  clicks.textContent = Math.floor(state.stats.clicks || 0).toLocaleString();
+  crafts.textContent = Math.floor(state.stats.crafts || 0).toLocaleString();
+  upgrades.textContent = Math.floor(state.stats.upgrades || 0).toLocaleString();
+  collection.textContent = `${uniqueIds.size}/40`;
+  equipped.textContent = `${state.equipped.length} / ${MAX_EQUIPPED} слота занято`;
+
+  loadProfileRank();
+}
+
+async function loadProfileRank() {
+  const level = document.getElementById('profile-level');
+  if (!level || !db || !getUserId()) return;
+  try {
+    const { data: users, error } = await db.from('users').select('telegram_id,coins').order('coins',{ascending:false});
+    if (error) throw error;
+    const myId = String(getUserId());
+    const idx = (users || []).findIndex(u => String(u.telegram_id) === myId);
+    const lvl = Math.floor(Math.log10(state.coins + 1)) + 1;
+    level.textContent = `LVL ${lvl} · Рейтинг по богатству — ${idx >= 0 ? '#'+(idx+1) : '#—'}`;
+  } catch (e) {
+    console.warn('loadProfileRank:', e);
+  }
 }
 
 function getRecipeCost(recipe) {
@@ -1883,6 +2111,8 @@ function switchTab(tabId, btn) {
   if (tabId === 'achievements') renderAchievements();
   if (tabId === 'market') fetchMarketLots();
   if (tabId === 'leaderboard') fetchLeaderboard();
+  if (tabId === 'profile') renderProfile();
+  if (tabId === 'contracts') renderContracts();
 }
 
 
@@ -1893,6 +2123,8 @@ function switchSideTab(tabId, btn) {
   btn.classList.add('active');
   if (tabId === 'achievements') renderAchievements();
   if (tabId === 'leaderboard') fetchLeaderboard();
+  if (tabId === 'profile') renderProfile();
+  if (tabId === 'contracts') renderContracts();
 }
 
 // ВЕРОЯТНОСТЬ ВЫПАДЕНИЯ ПРЕДМЕТОВ
@@ -1947,6 +2179,7 @@ function tryDropLoot() {
   }
 
   state.inventory.push(newItem);
+  updateContractProgress('loot', 1);
   sanitizeState();
   playSound('success');
   showToast(`🎁 НАХОДКА: ${newItem.icon} ${newItem.name}!`);
@@ -1956,6 +2189,7 @@ function tryDropLoot() {
 // ОСНОВНОЙ КЛИКЕР ЛОГИКА
 document.getElementById('core-btn').addEventListener('pointerdown', (e) => {
   state.stats.clicks++;
+  updateContractProgress('clicks', 1);
   let clickPower = calculateClickPower();
   
   let isCrit = Math.random() < 0.05;
@@ -2351,6 +2585,7 @@ async function confirmSellItem() {
     }
 
     closeMarketModal();
+    updateContractProgress('market', 1);
     playSound('success');
     showToast('✅ Предмет выставлен!');
     renderInventory();
@@ -2453,6 +2688,7 @@ function doCraft(recipeId) {
   }
 
   state.stats.crafts++;
+  updateContractProgress('crafts', 1);
   playSound('success');
 
   if (isCritCraft) {
@@ -2526,6 +2762,7 @@ function upgradeItem(instanceId) {
   if (Math.random() < chance) {
     item.level = level + 1;
     state.stats.upgrades++;
+    updateContractProgress('upgrades', 1);
 
     playSound('success');
     showToast(`⚡ Успех заточки! [+${item.level}]`);
@@ -3131,6 +3368,8 @@ if (requireTelegramUser()) {
   loadData();
 } else {
   updateUI(false);
+  renderProfile();
+  renderContracts();
   showToast('⚠️ Открой игру через Telegram');
 }
 </script>
