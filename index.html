@@ -842,6 +842,49 @@ html, body { min-height: 100%; }
 .contract-done{opacity:.72;border-color:rgba(0,255,160,.25)}
 </style>
 
+
+<style id="collapsible-side-shelf-css">
+  #side-nav{
+    transition: transform .28s ease, opacity .22s ease, width .28s ease, padding .28s ease;
+    transform-origin: right center;
+  }
+  #side-nav.side-shelf-collapsed{
+    transform: translateX(calc(100% - 34px));
+  }
+  #side-nav.side-shelf-collapsed .side-nav-btn{
+    opacity:0;
+    pointer-events:none;
+  }
+  #side-nav .side-shelf-toggle{
+    width:34px;
+    height:34px;
+    min-height:34px;
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    border:1px solid var(--border);
+    border-radius:50%;
+    background:rgba(10,16,23,.94);
+    color:var(--neon1);
+    box-shadow:0 8px 22px rgba(0,0,0,.28);
+    backdrop-filter:blur(8px);
+    font-size:15px;
+    font-weight:900;
+    cursor:pointer;
+    transition:transform .2s ease, background .2s ease;
+  }
+  #side-nav .side-shelf-toggle:active{transform:scale(.92);}
+  #side-nav.side-shelf-collapsed .side-shelf-toggle{
+    transform:translateX(-1px);
+  }
+  @media(max-width:600px){
+    #side-nav.side-shelf-collapsed{transform:translateX(calc(100% - 31px));}
+    #side-nav .side-shelf-toggle{width:31px;height:31px;min-height:31px;font-size:14px;}
+  }
+</style>
+
 </head>
 <body>
 
@@ -1035,8 +1078,9 @@ html, body { min-height: 100%; }
     </button>
   </div>
 
-  <!-- БЫСТРЫЙ БОКОВОЙ БЛОК -->
-  <div id="side-nav">
+  <!-- СВОРАЧИВАЕМАЯ ПЛАВАЮЩАЯ ПОЛКА -->
+  <div id="side-nav" class="side-shelf-open">
+    <button class="side-shelf-toggle" id="side-shelf-toggle" onclick="toggleSideShelf()" aria-label="Свернуть панель" title="Свернуть">›</button>
     <button class="side-nav-btn" onclick="switchSideTab('achievements', this)">
       <span class="nav-btn-icon">🏅</span>
       <span>Ачивки</span>
@@ -2115,6 +2159,32 @@ function switchTab(tabId, btn) {
   if (tabId === 'contracts') renderContracts();
 }
 
+
+function toggleSideShelf(forceState) {
+  const shelf = document.getElementById('side-nav');
+  const toggle = document.getElementById('side-shelf-toggle');
+  if (!shelf || !toggle) return;
+
+  const collapsed = typeof forceState === 'boolean'
+    ? forceState
+    : !shelf.classList.contains('side-shelf-collapsed');
+
+  shelf.classList.toggle('side-shelf-collapsed', collapsed);
+  shelf.classList.toggle('side-shelf-open', !collapsed);
+  toggle.textContent = collapsed ? '‹' : '›';
+  toggle.title = collapsed ? 'Развернуть' : 'Свернуть';
+  toggle.setAttribute('aria-label', collapsed ? 'Развернуть панель' : 'Свернуть панель');
+
+  try { localStorage.setItem('atcoin_side_shelf_collapsed', collapsed ? '1' : '0'); } catch(e) {}
+}
+
+function restoreSideShelfState() {
+  try {
+    toggleSideShelf(localStorage.getItem('atcoin_side_shelf_collapsed') === '1');
+  } catch(e) {
+    toggleSideShelf(false);
+  }
+}
 
 function switchSideTab(tabId, btn) {
   document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
@@ -3275,7 +3345,8 @@ async function sendCoinsToPlayer() {
       showToast('⚠️ Игрок с таким username не найден');
     } else if (/insufficient|недостаточно/i.test(msg)) {
       showToast('⚠️ Недостаточно AT Coins');
-      loadData();
+      restoreSideShelfState();
+loadData();
     } else if (/same|самому/i.test(msg)) {
       showToast('⚠️ Нельзя переводить самому себе');
     } else {
