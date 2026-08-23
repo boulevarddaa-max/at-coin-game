@@ -697,8 +697,8 @@ function normalizeItem(item) {
     instanceId: String(item.instanceId || newInstanceId()),
     level: Math.max(0, Math.floor(Number(item.level) || 0)),
     qualityMultiplier: Math.min(2, Math.max(0.5, Number(item.qualityMultiplier) || 1)),
-    type: item.type || (/^c\d+$/.test(base.id) ? 'craft_part' : 'item'),
-    isCraftPart: Boolean(item.isCraftPart || /^c\d+$/.test(base.id))
+    type: item.type || (/^(c|m)\d+$/.test(base.id) ? 'craft_part' : 'item'),
+    isCraftPart: Boolean(item.isCraftPart || /^(c|m)\d+$/.test(base.id))
   };
 }
 
@@ -810,6 +810,10 @@ const LOOT_ITEMS = [
   { id: 'c8', name: 'Обрывок Схемы', icon: '📜', rarity: 'common', power: 8, baseValue: 450, desc: 'Бумажная чертежная вырезка со стертыми дорожками.' },
   { id: 'c9', name: 'Старая Гайка', icon: '⬡', rarity: 'common', power: 9, baseValue: 500, desc: 'Шестигранная деталь стандартного кибер-калибра.' },
   { id: 'c10', name: 'Окалина Пластиков', icon: '🪨', rarity: 'common', power: 10, baseValue: 550, desc: 'Запекшийся кусок термопластика из шахтных глубин.' },
+  { id: 'm1', name: 'Неоновый Кристалл', icon: '💠', rarity: 'rare', power: 0, baseValue: 900, desc: 'Редкий кристалл, необходимый для продвинутого синтеза.', type: 'craft_material', isCraftPart: true },
+  { id: 'm2', name: 'Квантовый Фрагмент', icon: '🧬', rarity: 'epic', power: 0, baseValue: 5000, desc: 'Осколок нестабильной материи из глубин шахты.', type: 'craft_material', isCraftPart: true },
+  { id: 'm3', name: 'Ядро Энергии', icon: '🔆', rarity: 'epic', power: 0, baseValue: 12000, desc: 'Сгусток энергии для высокоуровневых схем.', type: 'craft_material', isCraftPart: true },
+  { id: 'm4', name: 'Фрагмент Сингулярности', icon: '🌀', rarity: 'legendary', power: 0, baseValue: 50000, desc: 'Почти невозможный к получению материал для финальных артефактов.', type: 'craft_material', isCraftPart: true },
 
   { id: 'r1', name: 'Неоновый Акум', icon: '⚡', rarity: 'rare', power: 15, baseValue: 1000, desc: 'Излучает стабильное синее свечение под напряжением.' },
   { id: 'r2', name: 'Плазма-Кабель', icon: '🔌', rarity: 'rare', power: 22, baseValue: 1400, desc: 'Проводит высокоэнергетический ионизированный поток.' },
@@ -848,76 +852,390 @@ const LOOT_ITEMS = [
 // РАСШИРЕННЫЕ РЕЦЕПТЫ КРАФТА
 const CRAFT_RECIPES = [
   {
-    id: 'cr_r1',
-    name: 'Неоновый Акум',
-    resultId: 'r1',
-    costCoins: 2500,
+    id: 'cr_r1', name: 'Неоновый Акум', resultId: 'r1', tier: 'rare', unlockCoins: 1500, costCoins: 500,
     ingredients: [
       { id: 'c1', count: 1, name: 'Ржавый Болт' },
       { id: 'c2', count: 1, name: 'Старый Чип' },
       { id: 'c3', count: 1, name: 'Медная Проволока' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id && (i.isCraftPart || /^c\d+$/.test(i.id))).length >= ing.count);
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
     },
-    consume(inv) {
-      this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count));
-    }
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
   {
-    id: 'cr_r2',
-    name: 'Плазма-Кабель',
-    resultId: 'r2',
-    costCoins: 5000,
+    id: 'cr_r2', name: 'Плазма-Кабель', resultId: 'r2', tier: 'rare', unlockCoins: 3000, costCoins: 2000,
     ingredients: [
-      { id: 'c4', count: 2, name: 'Сломанная Шестеренка' },
-      { id: 'c7', count: 1, name: 'Пыльный Конденсатор' }
+      { id: 'c4', count: 3, name: 'Сломанная Шестеренка' },
+      { id: 'c7', count: 2, name: 'Пыльный Конденсатор' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id && (i.isCraftPart || /^c\d+$/.test(i.id))).length >= ing.count);
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
     },
-    consume(inv) {
-      this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count));
-    }
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
   {
-    id: 'cr_e1',
-    name: 'Кибер Видеокарта',
-    resultId: 'e1',
-    costCoins: 25000,
+    id: 'cr_r3', name: 'Кристаллическая Пластина', resultId: 'r3', tier: 'rare', unlockCoins: 4500, costCoins: 4500,
     ingredients: [
-      { id: 'r1', count: 2, name: 'Неоновый Акум' },
+      { id: 'c5', count: 2, name: 'Осколок Стекла' },
+      { id: 'c8', count: 2, name: 'Обрывок Схемы' },
+      { id: 'c9', count: 1, name: 'Старая Гайка' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_r4', name: 'Ускоритель Тактов', resultId: 'r4', tier: 'rare', unlockCoins: 6000, costCoins: 8000,
+    ingredients: [
+      { id: 'c2', count: 2, name: 'Старый Чип' },
+      { id: 'c6', count: 1, name: 'Гнутый Штифт' },
+      { id: 'c10', count: 1, name: 'Окалина Пластиков' },
+      { id: 'm1', count: 1, name: 'Неоновый Кристалл' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_r5', name: 'Импульсное Реле', resultId: 'r5', tier: 'rare', unlockCoins: 7500, costCoins: 12500,
+    ingredients: [
+      { id: 'c3', count: 2, name: 'Медная Проволока' },
+      { id: 'c5', count: 1, name: 'Осколок Стекла' },
+      { id: 'c7', count: 1, name: 'Пыльный Конденсатор' },
+      { id: 'm1', count: 1, name: 'Неоновый Кристалл' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_r6', name: 'Магнитный Сердечник', resultId: 'r6', tier: 'rare', unlockCoins: 9000, costCoins: 18000,
+    ingredients: [
+      { id: 'c4', count: 2, name: 'Сломанная Шестеренка' },
+      { id: 'c6', count: 1, name: 'Гнутый Штифт' },
+      { id: 'c9', count: 1, name: 'Старая Гайка' },
+      { id: 'm1', count: 2, name: 'Неоновый Кристалл' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_r7', name: 'Квантовый Резистор', resultId: 'r7', tier: 'rare', unlockCoins: 10500, costCoins: 24500,
+    ingredients: [
+      { id: 'c2', count: 3, name: 'Старый Чип' },
+      { id: 'c8', count: 1, name: 'Обрывок Схемы' },
+      { id: 'c10', count: 1, name: 'Окалина Пластиков' },
+      { id: 'm1', count: 2, name: 'Неоновый Кристалл' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_r8', name: 'Сенсорный Модуль', resultId: 'r8', tier: 'rare', unlockCoins: 12000, costCoins: 32000,
+    ingredients: [
+      { id: 'c1', count: 3, name: 'Ржавый Болт' },
+      { id: 'c5', count: 1, name: 'Осколок Стекла' },
+      { id: 'c8', count: 1, name: 'Обрывок Схемы' },
+      { id: 'm1', count: 2, name: 'Неоновый Кристалл' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_r9', name: 'Титановый Штифт', resultId: 'r9', tier: 'rare', unlockCoins: 13500, costCoins: 40500,
+    ingredients: [
+      { id: 'c3', count: 3, name: 'Медная Проволока' },
+      { id: 'c6', count: 1, name: 'Гнутый Штифт' },
+      { id: 'c9', count: 1, name: 'Старая Гайка' },
+      { id: 'm1', count: 2, name: 'Неоновый Кристалл' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_r10', name: 'Оптическая Линза', resultId: 'r10', tier: 'rare', unlockCoins: 15000, costCoins: 50000,
+    ingredients: [
+      { id: 'c4', count: 4, name: 'Сломанная Шестеренка' },
+      { id: 'c7', count: 1, name: 'Пыльный Конденсатор' },
+      { id: 'c10', count: 1, name: 'Окалина Пластиков' },
+      { id: 'm1', count: 2, name: 'Неоновый Кристалл' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_e1', name: 'Кибер Видеокарта', resultId: 'e1', tier: 'epic', unlockCoins: 20000, costCoins: 8000,
+    ingredients: [
+      { id: 'r2', count: 1, name: 'Плазма-Кабель' },
+      { id: 'r1', count: 1, name: 'Неоновый Акум' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_e2', name: 'Квантовый Процессор', resultId: 'e2', tier: 'epic', unlockCoins: 40000, costCoins: 32000,
+    ingredients: [
+      { id: 'r2', count: 1, name: 'Плазма-Кабель' },
       { id: 'r2', count: 1, name: 'Плазма-Кабель' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id && (i.isCraftPart || /^c\d+$/.test(i.id))).length >= ing.count);
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
     },
-    consume(inv) {
-      this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count));
-    }
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
   {
-    id: 'cr_l1',
-    name: 'Квантовое Ядро',
-    resultId: 'l1',
-    costCoins: 150000,
+    id: 'cr_e3', name: 'Антигравитационный Модуль', resultId: 'e3', tier: 'epic', unlockCoins: 60000, costCoins: 72000,
     ingredients: [
-      { id: 'e1', count: 2, name: 'Кибер Видеокарта' },
-      { id: 'e2', count: 1, name: 'Квантовый Процессор' }
+      { id: 'r2', count: 1, name: 'Плазма-Кабель' },
+      { id: 'r3', count: 1, name: 'Кристаллическая Пластина' },
+      { id: 'm2', count: 1, name: 'Квантовый Фрагмент' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id && (i.isCraftPart || /^c\d+$/.test(i.id))).length >= ing.count);
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
     },
-    consume(inv) {
-      this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count));
-    }
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_e4', name: 'Плазменный Реактор', resultId: 'e4', tier: 'epic', unlockCoins: 80000, costCoins: 128000,
+    ingredients: [
+      { id: 'r3', count: 1, name: 'Кристаллическая Пластина' },
+      { id: 'r4', count: 1, name: 'Ускоритель Тактов' },
+      { id: 'm2', count: 1, name: 'Квантовый Фрагмент' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_e5', name: 'Нейронная Матрица', resultId: 'e5', tier: 'epic', unlockCoins: 100000, costCoins: 200000,
+    ingredients: [
+      { id: 'r4', count: 2, name: 'Ускоритель Тактов' },
+      { id: 'r5', count: 1, name: 'Импульсное Реле' },
+      { id: 'm2', count: 1, name: 'Квантовый Фрагмент' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_e6', name: 'Гравитационный Якорь', resultId: 'e6', tier: 'epic', unlockCoins: 120000, costCoins: 288000,
+    ingredients: [
+      { id: 'r5', count: 2, name: 'Импульсное Реле' },
+      { id: 'r6', count: 1, name: 'Магнитный Сердечник' },
+      { id: 'm2', count: 2, name: 'Квантовый Фрагмент' },
+      { id: 'r4', count: 1, name: 'Ускоритель Тактов' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_e7', name: 'Фотонный Усилитель', resultId: 'e7', tier: 'epic', unlockCoins: 140000, costCoins: 392000,
+    ingredients: [
+      { id: 'r6', count: 2, name: 'Магнитный Сердечник' },
+      { id: 'r7', count: 1, name: 'Квантовый Резистор' },
+      { id: 'm2', count: 2, name: 'Квантовый Фрагмент' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_e8', name: 'Синтезатор Материи', resultId: 'e8', tier: 'epic', unlockCoins: 160000, costCoins: 512000,
+    ingredients: [
+      { id: 'r7', count: 2, name: 'Квантовый Резистор' },
+      { id: 'r8', count: 1, name: 'Сенсорный Модуль' },
+      { id: 'm2', count: 2, name: 'Квантовый Фрагмент' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_e9', name: 'Плазменный Ствол', resultId: 'e9', tier: 'epic', unlockCoins: 180000, costCoins: 648000,
+    ingredients: [
+      { id: 'r8', count: 3, name: 'Сенсорный Модуль' },
+      { id: 'r9', count: 1, name: 'Титановый Штифт' },
+      { id: 'm2', count: 2, name: 'Квантовый Фрагмент' },
+      { id: 'r7', count: 1, name: 'Квантовый Резистор' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_e10', name: 'Ионный Стабилизатор', resultId: 'e10', tier: 'epic', unlockCoins: 200000, costCoins: 800000,
+    ingredients: [
+      { id: 'r9', count: 3, name: 'Титановый Штифт' },
+      { id: 'r10', count: 1, name: 'Оптическая Линза' },
+      { id: 'm2', count: 2, name: 'Квантовый Фрагмент' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_l1', name: 'Квантовое Ядро', resultId: 'l1', tier: 'legendary', unlockCoins: 150000, costCoins: 50000,
+    ingredients: [
+      { id: 'e2', count: 1, name: 'Квантовый Процессор' },
+      { id: 'e1', count: 1, name: 'Кибер Видеокарта' },
+      { id: 'r2', count: 2, name: 'Плазма-Кабель' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_l2', name: 'Глаз Сингулярности', resultId: 'l2', tier: 'legendary', unlockCoins: 300000, costCoins: 200000,
+    ingredients: [
+      { id: 'e2', count: 1, name: 'Квантовый Процессор' },
+      { id: 'e2', count: 1, name: 'Квантовый Процессор' },
+      { id: 'r2', count: 2, name: 'Плазма-Кабель' },
+      { id: 'm3', count: 1, name: 'Ядро Энергии' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_l3', name: 'Сердце Кибервселенной', resultId: 'l3', tier: 'legendary', unlockCoins: 450000, costCoins: 450000,
+    ingredients: [
+      { id: 'e2', count: 1, name: 'Квантовый Процессор' },
+      { id: 'e3', count: 1, name: 'Антигравитационный Модуль' },
+      { id: 'r2', count: 2, name: 'Плазма-Кабель' },
+      { id: 'm3', count: 1, name: 'Ядро Энергии' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_l4', name: 'Осколок Измерения', resultId: 'l4', tier: 'legendary', unlockCoins: 600000, costCoins: 800000,
+    ingredients: [
+      { id: 'e3', count: 1, name: 'Антигравитационный Модуль' },
+      { id: 'e4', count: 1, name: 'Плазменный Реактор' },
+      { id: 'r2', count: 3, name: 'Плазма-Кабель' },
+      { id: 'm3', count: 1, name: 'Ядро Энергии' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_l5', name: 'Звездный Сейф', resultId: 'l5', tier: 'legendary', unlockCoins: 750000, costCoins: 1250000,
+    ingredients: [
+      { id: 'e4', count: 2, name: 'Плазменный Реактор' },
+      { id: 'e5', count: 1, name: 'Нейронная Матрица' },
+      { id: 'r3', count: 3, name: 'Кристаллическая Пластина' },
+      { id: 'm3', count: 1, name: 'Ядро Энергии' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_l6', name: 'Абсолютный Резонатор', resultId: 'l6', tier: 'legendary', unlockCoins: 900000, costCoins: 1800000,
+    ingredients: [
+      { id: 'e5', count: 2, name: 'Нейронная Матрица' },
+      { id: 'e6', count: 1, name: 'Гравитационный Якорь' },
+      { id: 'r4', count: 3, name: 'Ускоритель Тактов' },
+      { id: 'm3', count: 2, name: 'Ядро Энергии' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_l7', name: 'Венец Пространства', resultId: 'l7', tier: 'legendary', unlockCoins: 1050000, costCoins: 2450000,
+    ingredients: [
+      { id: 'e6', count: 2, name: 'Гравитационный Якорь' },
+      { id: 'e7', count: 1, name: 'Фотонный Усилитель' },
+      { id: 'r5', count: 4, name: 'Импульсное Реле' },
+      { id: 'm3', count: 2, name: 'Ядро Энергии' },
+      { id: 'm4', count: 1, name: 'Фрагмент Сингулярности' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_l8', name: 'Вечный Двигатель', resultId: 'l8', tier: 'legendary', unlockCoins: 1200000, costCoins: 3200000,
+    ingredients: [
+      { id: 'e7', count: 2, name: 'Фотонный Усилитель' },
+      { id: 'e8', count: 1, name: 'Синтезатор Материи' },
+      { id: 'r6', count: 4, name: 'Магнитный Сердечник' },
+      { id: 'm3', count: 2, name: 'Ядро Энергии' },
+      { id: 'm4', count: 1, name: 'Фрагмент Сингулярности' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_l9', name: 'Плод Синтеза', resultId: 'l9', tier: 'legendary', unlockCoins: 1350000, costCoins: 4050000,
+    ingredients: [
+      { id: 'e8', count: 3, name: 'Синтезатор Материи' },
+      { id: 'e9', count: 1, name: 'Плазменный Ствол' },
+      { id: 'r7', count: 4, name: 'Квантовый Резистор' },
+      { id: 'm3', count: 2, name: 'Ядро Энергии' },
+      { id: 'm4', count: 1, name: 'Фрагмент Сингулярности' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
+  },
+  {
+    id: 'cr_l10', name: 'Око Создателя', resultId: 'l10', tier: 'legendary', unlockCoins: 1500000, costCoins: 5000000,
+    ingredients: [
+      { id: 'e9', count: 3, name: 'Плазменный Ствол' },
+      { id: 'e10', count: 1, name: 'Ионный Стабилизатор' },
+      { id: 'r8', count: 5, name: 'Сенсорный Модуль' },
+      { id: 'm3', count: 2, name: 'Ядро Энергии' },
+      { id: 'm4', count: 1, name: 'Фрагмент Сингулярности' }
+    ],
+    check(inv) {
+      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+    },
+    consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   }
 ];
 
 function removeItemsById(inv, itemId, count) {
   let removed = 0;
   for (let i = inv.length - 1; i >= 0 && removed < count; i--) {
-    if (inv[i].id === itemId && (inv[i].isCraftPart || /^c\d+$/.test(inv[i].id))) {
+    if (inv[i].id === itemId) {
       const eqIdx = state.equipped.indexOf(inv[i].instanceId);
       if (eqIdx !== -1) state.equipped.splice(eqIdx, 1);
       inv.splice(i, 1);
@@ -937,34 +1255,34 @@ let state = {
 
 // 25 ДОСТИЖЕНИЙ
 const ACHIEVEMENTS = [
-  { id: 'click_10', title: 'Новичок шахты', desc: 'Сделать 10 тапов', target: 10, key: 'clicks', rewardCoins: 100 },
-  { id: 'click_50', title: 'Первый пот', desc: 'Сделать 50 тапов', target: 50, key: 'clicks', rewardCoins: 300 },
-  { id: 'click_100', title: 'Первые шаги', desc: 'Сделать 100 тапов', target: 100, key: 'clicks', rewardCoins: 1000 },
-  { id: 'click_500', title: 'Энергичный', desc: 'Сделать 500 тапов', target: 500, key: 'clicks', rewardCoins: 5000 },
-  { id: 'click_1000', title: 'Шахтер-любитель', desc: 'Сделать 1 000 тапов', target: 1000, key: 'clicks', rewardCoins: 15000 },
-  { id: 'click_2500', title: 'Работяга', desc: 'Сделать 2 500 тапов', target: 2500, key: 'clicks', rewardCoins: 30000 },
-  { id: 'click_5000', title: 'Мастер кирко-тапа', desc: 'Сделать 5 000 тапов', target: 5000, key: 'clicks', rewardCoins: 75000 },
-  { id: 'click_10000', title: 'Легенда шахты', desc: 'Сделать 10 000 тапов', target: 10000, key: 'clicks', rewardCoins: 150000 },
+  { id: 'click_10', title: 'Новичок шахты', desc: 'Сделать 10 тапов', target: 10, key: 'clicks', rewardCoins: 50 },
+  { id: 'click_50', title: 'Первый пот', desc: 'Сделать 50 тапов', target: 50, key: 'clicks', rewardCoins: 100 },
+  { id: 'click_100', title: 'Первые шаги', desc: 'Сделать 100 тапов', target: 100, key: 'clicks', rewardCoins: 250 },
+  { id: 'click_500', title: 'Энергичный', desc: 'Сделать 500 тапов', target: 500, key: 'clicks', rewardCoins: 500 },
+  { id: 'click_1000', title: 'Шахтер-любитель', desc: 'Сделать 1 000 тапов', target: 1000, key: 'clicks', rewardCoins: 1000 },
+  { id: 'click_2500', title: 'Работяга', desc: 'Сделать 2 500 тапов', target: 2500, key: 'clicks', rewardCoins: 2500 },
+  { id: 'click_5000', title: 'Мастер кирко-тапа', desc: 'Сделать 5 000 тапов', target: 5000, key: 'clicks', rewardCoins: 5000 },
+  { id: 'click_10000', title: 'Легенда шахты', desc: 'Сделать 10 000 тапов', target: 10000, key: 'clicks', rewardCoins: 10000 },
 
-  { id: 'craft_1', title: 'Кузнец', desc: 'Скрафтить 1 предмет', target: 1, key: 'crafts', rewardCoins: 5000 },
-  { id: 'craft_3', title: 'Сборщик схем', desc: 'Скрафтить 3 предмета', target: 3, key: 'crafts', rewardCoins: 15000 },
-  { id: 'craft_5', title: 'Инженер синтеза', desc: 'Скрафтить 5 предметов', target: 5, key: 'crafts', rewardCoins: 35000 },
-  { id: 'craft_10', title: 'Архитектор материи', desc: 'Скрафтить 10 предметов', target: 10, key: 'crafts', rewardCoins: 80000 },
-  { id: 'craft_20', title: 'Повелитель фабрики', desc: 'Скрафтить 20 предметов', target: 20, key: 'crafts', rewardCoins: 200000 },
+  { id: 'craft_1', title: 'Кузнец', desc: 'Скрафтить 1 предмет', target: 1, key: 'crafts', rewardCoins: 250 },
+  { id: 'craft_3', title: 'Сборщик схем', desc: 'Скрафтить 3 предмета', target: 3, key: 'crafts', rewardCoins: 500 },
+  { id: 'craft_5', title: 'Инженер синтеза', desc: 'Скрафтить 5 предметов', target: 5, key: 'crafts', rewardCoins: 1000 },
+  { id: 'craft_10', title: 'Архитектор материи', desc: 'Скрафтить 10 предметов', target: 10, key: 'crafts', rewardCoins: 2500 },
+  { id: 'craft_20', title: 'Повелитель фабрики', desc: 'Скрафтить 20 предметов', target: 20, key: 'crafts', rewardCoins: 5000 },
 
-  { id: 'upg_1', title: 'Первый удар молота', desc: 'Заточить предмет 1 раз', target: 1, key: 'upgrades', rewardCoins: 2000 },
-  { id: 'upg_3', title: 'Закаленный сталь', desc: 'Заточить предметы 3 раза', target: 3, key: 'upgrades', rewardCoins: 6000 },
-  { id: 'upg_5', title: 'Мастер Заточки', desc: 'Заточить предметы 5 раз', target: 5, key: 'upgrades', rewardCoins: 10000 },
-  { id: 'upg_10', title: 'Наковальня судьбы', desc: 'Заточить предметы 10 раз', target: 10, key: 'upgrades', rewardCoins: 25000 },
-  { id: 'upg_15', title: 'Искры пламени', desc: 'Заточить предметы 15 раз', target: 15, key: 'upgrades', rewardCoins: 50000 },
-  { id: 'upg_25', title: 'Божественный кузнец', desc: 'Заточить предметы 25 раз', target: 25, key: 'upgrades', rewardCoins: 120000 },
+  { id: 'upg_1', title: 'Первый удар молота', desc: 'Заточить предмет 1 раз', target: 1, key: 'upgrades', rewardCoins: 100 },
+  { id: 'upg_3', title: 'Закаленная сталь', desc: 'Заточить предметы 3 раза', target: 3, key: 'upgrades', rewardCoins: 250 },
+  { id: 'upg_5', title: 'Мастер заточки', desc: 'Заточить предметы 5 раз', target: 5, key: 'upgrades', rewardCoins: 500 },
+  { id: 'upg_10', title: 'Наковальня судьбы', desc: 'Заточить предметы 10 раз', target: 10, key: 'upgrades', rewardCoins: 1000 },
+  { id: 'upg_15', title: 'Искры пламени', desc: 'Заточить предметы 15 раз', target: 15, key: 'upgrades', rewardCoins: 2500 },
+  { id: 'upg_25', title: 'Божественный кузнец', desc: 'Заточить предметы 25 раз', target: 25, key: 'upgrades', rewardCoins: 5000 },
 
-  { id: 'coins_1000', title: 'Карманные деньги', desc: 'Накопить 1,000 монет', target: 1000, key: 'coins_milestone', rewardCoins: 500 },
-  { id: 'coins_10000', title: 'Состоятельный', desc: 'Накопить 10,000 монет', target: 10000, key: 'coins_milestone', rewardCoins: 3000 },
-  { id: 'coins_50000', title: 'Крипто-барон', desc: 'Накопить 50,000 монет', target: 50000, key: 'coins_milestone', rewardCoins: 15000 },
-  { id: 'coins_200000', title: 'Магнат сетей', desc: 'Накопить 200,000 монет', target: 200000, key: 'coins_milestone', rewardCoins: 50000 },
-  { id: 'coins_1000000', title: 'Крипто-миллионер', desc: 'Накопить 1,000,000 монет', target: 1000000, key: 'coins_milestone', rewardCoins: 250000 },
-  { id: 'coins_5000000', title: 'Властелин вселенной', desc: 'Накопить 5,000,000 монет', target: 5000000, key: 'coins_milestone', rewardCoins: 1000000 }
+  { id: 'coins_1000', title: 'Карманные деньги', desc: 'Накопить 1,000 монет', target: 1000, key: 'coins_milestone', rewardCoins: 250 },
+  { id: 'coins_10000', title: 'Состоятельный', desc: 'Накопить 10,000 монет', target: 10000, key: 'coins_milestone', rewardCoins: 1000 },
+  { id: 'coins_50000', title: 'Крипто-барон', desc: 'Накопить 50,000 монет', target: 50000, key: 'coins_milestone', rewardCoins: 5000 },
+  { id: 'coins_200000', title: 'Магнат сетей', desc: 'Накопить 200,000 монет', target: 200000, key: 'coins_milestone', rewardCoins: 20000 },
+  { id: 'coins_1000000', title: 'Крипто-миллионер', desc: 'Накопить 1,000,000 монет', target: 1000000, key: 'coins_milestone', rewardCoins: 100000 },
+  { id: 'coins_5000000', title: 'Властелин вселенной', desc: 'Накопить 5,000,000 монет', target: 5000000, key: 'coins_milestone', rewardCoins: 500000 }
 ];
 
 function getUserId() {
@@ -1058,12 +1376,42 @@ async function loadData() {
   updateUI(false);
 }
 
+function getItemRole(item) {
+  const n = Number(String(item.id).match(/\d+$/)?.[0] || 0);
+  if (item.rarity === 'common' || item.type === 'craft_part') return 'material';
+  if (n % 4 === 1) return 'mining';
+  if (n % 4 === 2) return 'luck';
+  if (n % 4 === 3) return 'efficiency';
+  return 'defense';
+}
+
+function getEquippedItems() {
+  return state.inventory.filter(item => state.equipped.includes(String(item.instanceId)));
+}
+
+function getLuckBonus() {
+  return getEquippedItems().filter(i => getItemRole(i) === 'luck').reduce((sum, i) => sum + 0.015 + (i.level || 0) * 0.003, 0);
+}
+
+function getCraftDiscount() {
+  return Math.min(0.15, getEquippedItems().filter(i => getItemRole(i) === 'efficiency').reduce((sum, i) => sum + 0.03 + (i.level || 0) * 0.005, 0));
+}
+
+function getUpgradeProtection() {
+  return Math.min(0.25, getEquippedItems().filter(i => getItemRole(i) === 'defense').reduce((sum, i) => sum + 0.04 + (i.level || 0) * 0.005, 0));
+}
+
+function getRecipeCost(recipe) {
+  return Math.max(1, Math.floor(recipe.costCoins * (1 - getCraftDiscount())));
+}
+
 function calculateClickPower() {
   let basePower = 0.1;
   state.inventory.forEach(item => {
     if (state.equipped.includes(item.instanceId)) {
-      const levelBonus = 1 + (item.level || 0) * 0.4;
-      basePower += Math.floor(item.power * (item.qualityMultiplier || 1) * levelBonus);
+      const levelBonus = 1 + (item.level || 0) * 0.12;
+      const quality = 0.95 + ((item.qualityMultiplier || 1) - 1) * 0.5;
+      basePower += item.power * quality * levelBonus;
     }
   });
   return basePower;
@@ -1151,10 +1499,31 @@ function switchSideTab(tabId, btn) {
 }
 
 // ВЕРОЯТНОСТЬ ВЫПАДЕНИЯ ПРЕДМЕТОВ
-const DROP_CHANCE = 0.003; 
+const DROP_CHANCE = 0.002; 
 
 function tryDropLoot() {
-  if (Math.random() > DROP_CHANCE) return; 
+  const effectiveDropChance = Math.min(0.008, DROP_CHANCE + getLuckBonus());
+  if (Math.random() > effectiveDropChance) return;
+
+  // Редкие материалы для продвинутых чертежей
+  const materialRoll = Math.random();
+  let materialId = null;
+  if (materialRoll < 0.003) materialId = 'm4';
+  else if (materialRoll < 0.015) materialId = 'm3';
+  else if (materialRoll < 0.045) materialId = 'm2';
+  else if (materialRoll < 0.12) materialId = 'm1';
+
+  if (materialId) {
+    const material = LOOT_ITEMS.find(i => i.id === materialId);
+    if (material && state.inventory.length < MAX_INVENTORY_SIZE) {
+      state.inventory.push({ ...material, instanceId: newInstanceId(), level: 0, qualityMultiplier: 1, type: 'craft_material', isCraftPart: true });
+      sanitizeState();
+      playSound('success');
+      showToast(`💠 РЕДКИЙ МАТЕРИАЛ: ${material.icon} ${material.name}!`);
+      updateUI(false);
+      return;
+    }
+  }
 
   const rand = Math.random();
   let rarityPool = 'common';
@@ -1166,7 +1535,7 @@ function tryDropLoot() {
   if (availableItems.length === 0) return;
 
   const baseItem = availableItems[Math.floor(Math.random() * availableItems.length)];
-  const qualityMultiplier = parseFloat((Math.random() * 0.5 + 0.8).toFixed(2));
+  const qualityMultiplier = parseFloat((Math.random() * 0.30 + 0.85).toFixed(2));
   
   const newItem = {
     ...baseItem,
@@ -1192,9 +1561,9 @@ document.getElementById('core-btn').addEventListener('pointerdown', (e) => {
   state.stats.clicks++;
   let clickPower = calculateClickPower();
   
-  let isCrit = Math.random() < 0.1;
+  let isCrit = Math.random() < 0.05;
   if (isCrit) {
-    clickPower *= 2;
+    clickPower *= 1.5;
     playSound('crit');
   } else {
     playSound('click');
@@ -1278,7 +1647,7 @@ function renderInventory() {
       <div style="flex:1;">
         <div style="font-weight:900; font-size:14px;">${item.name} <span style="font-size:11px; color:var(--neon1);">[+${item.level || 0}]</span></div>
         <div style="font-size:11px; color:var(--textdim); margin-top:2px;">${item.desc}</div>
-        <div style="font-size:11px; color:var(--neon4); margin-top:4px;">Сила: +${Math.floor(item.power * (item.qualityMultiplier || 1) * (1 + (item.level || 0) * 0.4))}</div>
+        <div style="font-size:11px; color:var(--neon4); margin-top:4px;">Сила: +${Math.floor(item.power * (0.95 + ((item.qualityMultiplier || 1) - 1) * 0.5) * (1 + (item.level || 0) * 0.12))} · Роль: ${getItemRole(item)}</div>
       </div>
       <div style="display:flex; flex-direction:column; gap:6px;">
         <button class="action-btn ${isEquipped ? 'unequip-btn' : ''}" onclick="toggleEquip('${item.instanceId}')">
@@ -1353,7 +1722,7 @@ function getBaseCraftParts(itemId, multiplier = 1, visited = new Set()) {
     } else {
       // Любой компонент, который сам не является результатом крафта,
       // обязательно должен быть базовой запчастью c1..c10.
-      const part = LOOT_ITEMS.find(i => i.id === ingredient.id && i.rarity === 'common');
+      const part = LOOT_ITEMS.find(i => i.id === ingredient.id && /^(c|m)\d+$/.test(i.id));
       if (part) {
         for (let i = 0; i < ingredient.count * multiplier; i++) {
           result.push(part);
@@ -1413,7 +1782,7 @@ function getDismantleParts(item) {
 // Запчасть хранится как обычный inventory item с исходным id c1..c10.
 // Поэтому существующие рецепты крафта автоматически видят её через i.id.
 function createCraftPart(partId) {
-  const base = LOOT_ITEMS.find(x => x.id === partId && /^c\d+$/.test(x.id));
+  const base = LOOT_ITEMS.find(x => x.id === partId && /^(c|m)\d+$/.test(x.id));
   if (!base) return null;
 
   return {
@@ -1429,7 +1798,7 @@ function createCraftPart(partId) {
 // Получаем ВСЕ базовые компоненты предмета по рецептам.
 // Готовые r/e/l предметы никогда не выдаются результатом разбора.
 function collectCraftParts(itemId, result = []) {
-  if (/^c\d+$/.test(String(itemId))) {
+  if (/^(c|m)\d+$/.test(String(itemId))) {
     result.push(String(itemId));
     return result;
   }
@@ -1463,7 +1832,7 @@ function dismantleItem(instanceId) {
 
   // Нельзя разобрать уже являющуюся запчастью.
   // Запчасти нужны непосредственно для крафта.
-  if (item.type === 'craft_part' || item.isCraftPart || /^c\d+$/.test(item.id)) {
+  if (item.type === 'craft_part' || item.isCraftPart || /^(c|m)\d+$/.test(item.id)) {
     showToast('⚠️ Это уже запчасть для крафта');
     return;
   }
@@ -1471,9 +1840,12 @@ function dismantleItem(instanceId) {
   // Получаем реальные базовые компоненты. Для обычных предметов
   // getDismantleParts() вернет запчасти вместо молчаливого уничтожения.
   const dismantleParts = getDismantleParts(item);
+  const salvageBonus = getEquippedItems().filter(i => getItemRole(i) === 'efficiency').reduce((sum, i) => sum + 0.08 + (i.level || 0) * 0.01, 0);
+  const extraSalvage = Math.random() < Math.min(0.35, salvageBonus) ? 1 : 0;
   const partIds = dismantleParts
     .map(part => typeof part === 'string' ? part : part?.id)
     .filter(Boolean);
+  if (extraSalvage && partIds.length) partIds.push(partIds[Math.floor(Math.random() * partIds.length)]);
 
   // Предмет УДАЛЯЕТСЯ полностью.
   state.equipped = state.equipped.filter(
@@ -1580,13 +1952,15 @@ function renderCraft() {
 
   CRAFT_RECIPES.forEach(recipe => {
     const targetItem = LOOT_ITEMS.find(i => i.id === recipe.resultId);
-    const hasCoins = state.coins >= recipe.costCoins;
+    const unlocked = state.coins >= (recipe.unlockCoins || 0);
+    const recipeCost = getRecipeCost(recipe);
+    const hasCoins = state.coins >= recipeCost;
     const hasIngs = recipe.check(state.inventory);
-    const canCraft = hasCoins && hasIngs;
+    const canCraft = unlocked && hasCoins && hasIngs;
 
     let ingHtml = '';
     recipe.ingredients.forEach(ing => {
-      const playerHasCount = state.inventory.filter(i => i.id === ing.id && (i.isCraftPart || /^c\d+$/.test(i.id))).length;
+      const playerHasCount = state.inventory.filter(i => i.id === ing.id).length;
       const isEnough = playerHasCount >= ing.count;
       ingHtml += `
         <div class="ingredient-badge ${isEnough ? 'has' : 'lack'}">
@@ -1607,6 +1981,7 @@ function renderCraft() {
         </div>
       </div>
       
+      <div style="font-size:12px; color:var(--textdim);">Чертёж ${recipe.tier.toUpperCase()} · Открытие: ${recipe.unlockCoins.toLocaleString()} ⚡ · Скидка экипировки: ${Math.round(getCraftDiscount()*100)}%</div>
       <div style="font-size:12px; color:var(--textdim);">Требуемые компоненты:</div>
       <div class="ingredients-grid">
         ${ingHtml}
@@ -1614,11 +1989,11 @@ function renderCraft() {
 
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
         <div style="font-size:13px; font-weight:700; color:${hasCoins ? 'var(--gold)' : 'var(--neon3)'};">
-          ⚡ ${recipe.costCoins.toLocaleString()} монет
+          ⚡ ${recipeCost.toLocaleString()} монет
         </div>
         <button class="action-btn" style="${!canCraft ? 'opacity:0.4; filter:grayscale(100%);' : ''}" 
           onclick="doCraft('${recipe.id}')">
-          Скрафтить
+          ${unlocked ? 'Скрафтить' : '🔒 Закрыто'}
         </button>
       </div>
     `;
@@ -1630,26 +2005,29 @@ function doCraft(recipeId) {
   const recipe = CRAFT_RECIPES.find(r => r.id === recipeId);
   if (!recipe) return;
 
-  const hasCoins = state.coins >= recipe.costCoins;
+  const unlocked = state.coins >= (recipe.unlockCoins || 0);
+  const recipeCost = getRecipeCost(recipe);
+  const hasCoins = state.coins >= recipeCost;
   const hasIngs = recipe.check(state.inventory);
   const hasSpace = state.inventory.length < MAX_INVENTORY_SIZE;
 
-  if (!hasCoins || !hasIngs || !hasSpace) {
+  if (!unlocked || !hasCoins || !hasIngs || !hasSpace) {
     showToast(!hasSpace
       ? '⚠️ Инвентарь заполнен!'
+      : !unlocked ? '🔒 Чертёж ещё не открыт!'
       : '⚠️ Недостаточно ресурсов или монет!');
     playSound('fail');
     return;
   }
 
-  state.coins -= recipe.costCoins;
+  state.coins -= recipeCost;
   recipe.consume(state.inventory);
 
-  const isCritCraft = Math.random() < 0.15; // 15% шанс крит-крафта
+  const isCritCraft = Math.random() < 0.05; // 5% шанс крит-крафта
   const baseItem = LOOT_ITEMS.find(i => i.id === recipe.resultId);
   
   if (baseItem) {
-    const quality = isCritCraft ? 1.5 : 1.1;
+    const quality = isCritCraft ? 1.25 : 1.0;
     state.inventory.push({
       ...baseItem,
       instanceId: newInstanceId(),
@@ -1681,14 +2059,16 @@ function renderUpgrade() {
     return;
   }
   state.inventory.forEach(item => {
-    const cost = Math.max(300, (Math.floor(item.level) || 0) * 500 + 300);
+    const level = Math.max(0, Math.floor(item.level) || 0);
+    const rarityBase = { common: 100, rare: 500, epic: 2500, legendary: 10000 }[item.rarity] || 100;
+    const cost = Math.floor(rarityBase * Math.pow(1.65, level));
     const card = document.createElement('div');
     card.className = `upg-card rarity-${item.rarity}`;
     card.innerHTML = `
       <div style="font-size:28px;">${item.icon}</div>
       <div style="flex:1;">
         <div style="font-weight:900;">${item.name} [+${item.level || 0}]</div>
-        <div style="font-size:11px; color:var(--gold);">Шанс: ${Math.max(30, 90 - (item.level || 0) * 10)}%</div>
+        <div style="font-size:11px; color:var(--gold);">Шанс: ${Math.round(Math.max(35, 85 - (item.level || 0) * 8))}%</div>
         <div style="font-size:11px; color:var(--textdim);">Цена: ${cost} ⚡</div>
       </div>
       <button class="action-btn" onclick="upgradeItem('${item.instanceId}')">Точить</button>
@@ -1712,7 +2092,8 @@ function upgradeItem(instanceId) {
 
   const item = state.inventory[itemIndex];
   const level = Math.max(0, Math.floor(Number(item.level) || 0));
-  const cost = Math.max(300, level * 500 + 300);
+  const rarityBase = { common: 100, rare: 500, epic: 2500, legendary: 10000 }[item.rarity] || 100;
+  const cost = Math.floor(rarityBase * Math.pow(1.65, level));
 
   if (state.coins < cost) {
     showToast('⚠️ Мало монет!');
@@ -1724,7 +2105,7 @@ function upgradeItem(instanceId) {
 
   // Базовый шанс успеха:
   // +0 = 90%, +1 = 80%, +2 = 70% ... минимум 30%.
-  const chance = Math.max(0.3, 0.9 - level * 0.1);
+  const chance = Math.max(0.35, 0.85 - level * 0.08);
 
   if (Math.random() < chance) {
     item.level = level + 1;
@@ -1735,7 +2116,11 @@ function upgradeItem(instanceId) {
   } else {
     // Неудача = ПОЛНОЕ РАЗРУШЕНИЕ предмета.
     // Щит спасает предмет, если он есть.
-    if (state.shields > 0) {
+    const protectedByBuild = Math.random() < getUpgradeProtection();
+    if (protectedByBuild) {
+      playSound('success');
+      showToast('🛡️ Защитный модуль сохранил предмет!');
+    } else if (state.shields > 0) {
       state.shields--;
       playSound('success');
       showToast('🛡️ Щит спас предмет от разрушения!');
