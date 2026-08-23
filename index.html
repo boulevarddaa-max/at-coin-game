@@ -1576,51 +1576,52 @@ function playSound(type) {
 const LOOT_ITEMS = [
   { id: 'c1', name: 'Ржавый Болт', icon: '🔩', rarity: 'common', power: 1, baseValue: 100, desc: 'Покрыт вековой коррозией, но всё еще держит конструкцию.' },
   { id: 'c2', name: 'Старый Чип', icon: '💾', rarity: 'common', power: 1, baseValue: 150, desc: 'Память забита устаревшими системными логами прошлых эпох.' },
-  { id: 'c3', name: 'Медная Проволока', icon: '〰️', rarity: 'common', power: 1, baseValue: 200, desc: 'Отрезок кабеля с остатками изоляции.' },
-  { id: 'c4', name: 'Сломанная Шестеренка', icon: '⚙️', rarity: 'common', power: 1, baseValue: 250, desc: 'Зубья стерты от интенсивного трения в механизме.' },
-  { id: 'c5', name: 'Осколок Стекла', icon: '🔹', rarity: 'common', power: 1, baseValue: 300, desc: 'Острый кусочек закаленного дисплейного стекла.' },
-  { id: 'c6', name: 'Гнутый Штифт', icon: '📌', rarity: 'common', power: 2, baseValue: 350, desc: 'Металлический стержень неизвестного назначения.' },
-  { id: 'c7', name: 'Пыльный Конденсатор', icon: '🔋', rarity: 'common', power: 2, baseValue: 400, desc: 'Емкость почти исчерпана, но внутри теплится заряд.' },
-  { id: 'c8', name: 'Обрывок Схемы', icon: '📜', rarity: 'common', power: 2, baseValue: 450, desc: 'Бумажная чертежная вырезка со стертыми дорожками.' },
-  { id: 'c9', name: 'Старая Гайка', icon: '⬡', rarity: 'common', power: 2, baseValue: 500, desc: 'Шестигранная деталь стандартного кибер-калибра.' },
-  { id: 'c10', name: 'Окалина Пластиков', icon: '🪨', rarity: 'common', power: 2, baseValue: 550, desc: 'Запекшийся кусок термопластика из шахтных глубин.' },
+  { id: 'c3', name: 'Медная Проволока', icon: '〰️', rarity: 'common', power: 2, baseValue: 200, desc: 'Отрезок кабеля с остатками изоляции.' },
+  { id: 'c4', name: 'Сломанная Шестеренка', icon: '⚙️', rarity: 'common', power: 2, baseValue: 250, desc: 'Зубья стерты от интенсивного трения в механизме.' },
+  { id: 'c5', name: 'Осколок Стекла', icon: '🔹', rarity: 'common', power: 3, baseValue: 300, desc: 'Острый кусочек закаленного дисплейного стекла.' },
+  { id: 'c6', name: 'Гнутый Штифт', icon: '📌', rarity: 'common', power: 3, baseValue: 350, desc: 'Металлический стержень неизвестного назначения.' },
+  { id: 'c7', name: 'Пыльный Конденсатор', icon: '🔋', rarity: 'common', power: 4, baseValue: 400, desc: 'Емкость почти исчерпана, но внутри теплится заряд.' },
+  { id: 'c8', name: 'Обрывок Схемы', icon: '📜', rarity: 'common', power: 4, baseValue: 450, desc: 'Бумажная чертежная вырезка со стертыми дорожками.' },
+  { id: 'c9', name: 'Старая Гайка', icon: '⬡', rarity: 'common', power: 5, baseValue: 500, desc: 'Шестигранная деталь стандартного кибер-калибра.' },
+  { id: 'c10', name: 'Окалина Пластиков', icon: '🪨', rarity: 'common', power: 5, baseValue: 550, desc: 'Запекшийся кусок термопластика из шахтных глубин.' },
   { id: 'm1', name: 'Неоновый Кристалл', icon: '💠', rarity: 'rare', power: 0, baseValue: 900, desc: 'Редкий кристалл, необходимый для продвинутого синтеза.', type: 'craft_material', isCraftPart: true },
   { id: 'm2', name: 'Квантовый Фрагмент', icon: '🧬', rarity: 'epic', power: 0, baseValue: 5000, desc: 'Осколок нестабильной материи из глубин шахты.', type: 'craft_material', isCraftPart: true },
   { id: 'm3', name: 'Ядро Энергии', icon: '🔆', rarity: 'epic', power: 0, baseValue: 12000, desc: 'Сгусток энергии для высокоуровневых схем.', type: 'craft_material', isCraftPart: true },
   { id: 'm4', name: 'Фрагмент Сингулярности', icon: '🌀', rarity: 'legendary', power: 0, baseValue: 50000, desc: 'Почти невозможный к получению материал для финальных артефактов.', type: 'craft_material', isCraftPart: true },
 
-  { id: 'r1', name: 'Неоновый Акум', icon: '⚡', rarity: 'rare', power: 3, baseValue: 1000, desc: 'Излучает стабильное синее свечение под напряжением.' },
-  { id: 'r2', name: 'Плазма-Кабель', icon: '🔌', rarity: 'rare', power: 3, baseValue: 1400, desc: 'Проводит высокоэнергетический ионизированный поток.' },
-  { id: 'r3', name: 'Кристаллическая Пластина', icon: '🧊', rarity: 'rare', power: 3, baseValue: 1900, desc: 'Преломляет свет неоновых ламп шахты.' },
-  { id: 'r4', name: 'Ускоритель Тактов', icon: '⏱️', rarity: 'rare', power: 4, baseValue: 2500, desc: 'Небольшой модуль для форсирования процессоров.' },
-  { id: 'r5', name: 'Импульсный Реле', icon: '🎚️', rarity: 'rare', power: 4, baseValue: 3200, desc: 'Мгновенно переключает высокочастотные каналы.' },
-  { id: 'r6', name: 'Магнитный Сердечник', icon: '🧲', rarity: 'rare', power: 4, baseValue: 4000, desc: 'Создает мощное локальное поле при подключении.' },
-  { id: 'r7', name: 'Квантовый Резистор', icon: '🟪', rarity: 'rare', power: 5, baseValue: 4900, desc: 'Держит нагрузку, от которой обычные детали плавятся.' },
-  { id: 'r8', name: 'Сенсорный Модуль', icon: '👁️', rarity: 'rare', power: 5, baseValue: 5900, desc: 'Улавливает малейшие колебания энергетического поля.' },
-  { id: 'r9', name: 'Титановый Штифт', icon: '🔩', rarity: 'rare', power: 5, baseValue: 7000, desc: 'Сверхпрочный крепеж для тяжелых каркасов.' },
-  { id: 'r10', name: 'Оптическая Линза', icon: '🔍', rarity: 'rare', power: 5, baseValue: 8200, desc: 'Фокусирует лазерный луч без потерь интенсивности.' },
+  { id: 'r1', name: 'Неоновый Акум', icon: '⚡', rarity: 'rare', power: 6, baseValue: 1000, desc: 'Излучает стабильное синее свечение под напряжением.' },
+  { id: 'r2', name: 'Плазма-Кабель', icon: '🔌', rarity: 'rare', power: 6, baseValue: 1400, desc: 'Проводит высокоэнергетический ионизированный поток.' },
+  { id: 'r3', name: 'Кристаллическая Пластина', icon: '🧊', rarity: 'rare', power: 7, baseValue: 1900, desc: 'Преломляет свет неоновых ламп шахты.' },
+  { id: 'r4', name: 'Ускоритель Тактов', icon: '⏱️', rarity: 'rare', power: 7, baseValue: 2500, desc: 'Небольшой модуль для форсирования процессоров.' },
+  { id: 'r5', name: 'Импульсный Реле', icon: '🎚️', rarity: 'rare', power: 8, baseValue: 3200, desc: 'Мгновенно переключает высокочастотные каналы.' },
+  { id: 'r6', name: 'Магнитный Сердечник', icon: '🧲', rarity: 'rare', power: 8, baseValue: 4000, desc: 'Создает мощное локальное поле при подключении.' },
+  { id: 'r7', name: 'Квантовый Резистор', icon: '🟪', rarity: 'rare', power: 9, baseValue: 4900, desc: 'Держит нагрузку, от которой обычные детали плавятся.' },
+  { id: 'r8', name: 'Сенсорный Модуль', icon: '👁️', rarity: 'rare', power: 9, baseValue: 5900, desc: 'Улавливает малейшие колебания энергетического поля.' },
+  { id: 'r9', name: 'Титановый Штифт', icon: '🔩', rarity: 'rare', power: 9, baseValue: 7000, desc: 'Сверхпрочный крепеж для тяжелых каркасов.' },
+  { id: 'r10', name: 'Оптическая Линза', icon: '🔍', rarity: 'rare', power: 9, baseValue: 8200, desc: 'Фокусирует лазерный луч без потерь интенсивности.' },
 
-  { id: 'e1', name: 'Кибер Видеокарта', icon: '🖥️', rarity: 'epic', power: 6, baseValue: 10000, desc: 'Легендарная плата для расчетов и добычи крипто-активов.' },
-  { id: 'e2', name: 'Квантовый Процессор', icon: '🎛️', rarity: 'epic', power: 6, baseValue: 13000, desc: 'Выполняет миллионы вычислений одновременно в разных реальностях.' },
-  { id: 'e3', name: 'Антигравитационный Модуль', icon: '🛸', rarity: 'epic', power: 7, baseValue: 17000, desc: 'Локально искривляет пространство вокруг себя.' },
-  { id: 'e4', name: 'Плазменный Реактор', icon: '🔋', rarity: 'epic', power: 7, baseValue: 22000, desc: 'Автономный мини-источник термоядерной энергии.' },
-  { id: 'e5', name: 'Нейронная Матрица', icon: '🧠', rarity: 'epic', power: 8, baseValue: 28000, desc: 'Имитирует работу искусственного интеллекта высшего порядка.' },
-  { id: 'e6', name: 'Гравитационный Якорь', icon: '⚓', rarity: 'epic', power: 8, baseValue: 35000, desc: 'Стабилизирует любые колебания в системе.' },
-  { id: 'e7', name: 'Фотонный Усилитель', icon: '💡', rarity: 'epic', power: 9, baseValue: 43000, desc: 'Многократно наращивает мощность световых потоков.' },
-  { id: 'e8', name: 'Синтезатор Материи', icon: '🧪', rarity: 'epic', power: 9, baseValue: 52000, desc: 'Способен перестраивать атомную решетку элементов.' },
-  { id: 'e9', name: 'Плазменный Ствол', icon: '🔫', rarity: 'epic', power: 10, baseValue: 62000, desc: 'Компонент вооружения повышенной мощности.' },
-  { id: 'e10', name: 'Ионный Стабилизатор', icon: '🌀', rarity: 'epic', power: 10, baseValue: 73000, desc: 'Выравнивает штормы в ионизированных камерах.' },
+  { id: 'e1', name: 'Кибер Видеокарта', icon: '🖥️', rarity: 'epic', power: 10, baseValue: 10000, desc: 'Легендарная плата для расчетов и добычи крипто-активов.' },
+  { id: 'e2', name: 'Квантовый Процессор', icon: '🎛️', rarity: 'epic', power: 10, baseValue: 13000, desc: 'Выполняет миллионы вычислений одновременно в разных реальностях.' },
+  { id: 'e3', name: 'Антигравитационный Модуль', icon: '🛸', rarity: 'epic', power: 10, baseValue: 17000, desc: 'Локально искривляет пространство вокруг себя.' },
+  { id: 'e4', name: 'Плазменный Реактор', icon: '🔋', rarity: 'epic', power: 11, baseValue: 22000, desc: 'Автономный мини-источник термоядерной энергии.' },
+  { id: 'e5', name: 'Нейронная Матрица', icon: '🧠', rarity: 'epic', power: 11, baseValue: 28000, desc: 'Имитирует работу искусственного интеллекта высшего порядка.' },
+  { id: 'e6', name: 'Гравитационный Якорь', icon: '⚓', rarity: 'epic', power: 11, baseValue: 35000, desc: 'Стабилизирует любые колебания в системе.' },
+  { id: 'e7', name: 'Фотонный Усилитель', icon: '💡', rarity: 'epic', power: 12, baseValue: 43000, desc: 'Многократно наращивает мощность световых потоков.' },
+  { id: 'e8', name: 'Синтезатор Материи', icon: '🧪', rarity: 'epic', power: 12, baseValue: 52000, desc: 'Способен перестраивать атомную решетку элементов.' },
+  { id: 'e9', name: 'Плазменный Ствол', icon: '🔫', rarity: 'epic', power: 12, baseValue: 62000, desc: 'Компонент вооружения повышенной мощности.' },
+  { id: 'e10', name: 'Ионный Стабилизатор', icon: '🌀', rarity: 'epic', power: 12, baseValue: 73000, desc: 'Выравнивает штормы в ионизированных камерах.' },
 
-  { id: 'l1', name: 'Квантовое Ядро', icon: '💎', rarity: 'legendary', power: 11, baseValue: 90000, desc: 'Чистая энергия сгустилась в этот идеальный кристалл.' },
-  { id: 'l2', name: 'Глаз Сингулярности', icon: '👁️', rarity: 'legendary', power: 11, baseValue: 120000, desc: 'Внутри этого артефакта вращается миниатюрная черная дыра.' },
-  { id: 'l3', name: 'Сердце Кибервселенной', icon: '🌌', rarity: 'legendary', power: 12, baseValue: 160000, desc: 'Реликтовый артефакт, питающий всю сеть AT COIN.' },
-  { id: 'l4', name: 'Осколок Измерения', icon: '💠', rarity: 'legendary', power: 12, baseValue: 210000, desc: 'Кусок выпавший из параллельной реальности.' },
-  { id: 'l5', name: 'Звездный Сейф', icon: '🔐', rarity: 'legendary', power: 13, baseValue: 270000, desc: 'Хранилище заблокированной энергии сверхновой.' },
-  { id: 'l6', name: 'Абсолютный Резонатор', icon: '📡', rarity: 'legendary', power: 13, baseValue: 340000, desc: 'Настраивает частоту владельца на волну успеха.' },
-  { id: 'l7', name: 'Венец Пространства', icon: '👑', rarity: 'legendary', power: 14, baseValue: 420000, desc: 'Корона древних архитекторов цифрового мира.' },
-  { id: 'l8', name: 'Вечный Двигатель', icon: '⚙️', rarity: 'legendary', power: 14, baseValue: 510000, desc: 'Нарушает законы термодинамики своей работой.' },
+  { id: 'l1', name: 'Квантовое Ядро', icon: '💎', rarity: 'legendary', power: 13, baseValue: 90000, desc: 'Чистая энергия сгустилась в этот идеальный кристалл.' },
+  { id: 'l2', name: 'Глаз Сингулярности', icon: '👁️', rarity: 'legendary', power: 13, baseValue: 120000, desc: 'Внутри этого артефакта вращается миниатюрная черная дыра.' },
+  { id: 'l3', name: 'Сердце Кибервселенной', icon: '🌌', rarity: 'legendary', power: 14, baseValue: 160000, desc: 'Реликтовый артефакт, питающий всю сеть AT COIN.' },
+  { id: 'l4', name: 'Осколок Измерения', icon: '💠', rarity: 'legendary', power: 14, baseValue: 210000, desc: 'Кусок выпавший из параллельной реальности.' },
+  { id: 'l5', name: 'Звездный Сейф', icon: '🔐', rarity: 'legendary', power: 14, baseValue: 270000, desc: 'Хранилище заблокированной энергии сверхновой.' },
+  { id: 'l6', name: 'Абсолютный Резонатор', icon: '📡', rarity: 'legendary', power: 15, baseValue: 340000, desc: 'Настраивает частоту владельца на волну успеха.' },
+  { id: 'l7', name: 'Венец Пространства', icon: '👑', rarity: 'legendary', power: 15, baseValue: 420000, desc: 'Корона древних архитекторов цифрового мира.' },
+  { id: 'l8', name: 'Вечный Двигатель', icon: '⚙️', rarity: 'legendary', power: 15, baseValue: 510000, desc: 'Нарушает законы термодинамики своей работой.' },
   { id: 'l9', name: 'Плод Синтеза', icon: '🍎', rarity: 'legendary', power: 15, baseValue: 610000, desc: 'Легендарный артефакт эволюции технологий.' },
-  { id: 'l10', name: 'Око Создателя', icon: '🧿', rarity: 'legendary', power: 15, baseValue: 750000, desc: 'Величайший артефакт, дающий абсолютную власть над кодом.' }];
+  { id: 'l10', name: 'Око Создателя', icon: '🧿', rarity: 'legendary', power: 15, baseValue: 750000, desc: 'Величайший артефакт, дающий абсолютную власть над кодом.' }
+];
 
 // Проверка ингредиентов с учетом повторяющихся строк рецепта.
 // Например, 2x r2 не должно считаться как 1x r2.
@@ -2039,34 +2040,34 @@ let state = {
 
 // 25 ДОСТИЖЕНИЙ
 const ACHIEVEMENTS = [
-  { id: 'click_10', title: 'Новичок шахты', desc: 'Сделать 25 тапов', target: 25, key: 'clicks', rewardCoins: 15 },
-  { id: 'click_50', title: 'Первый пот', desc: 'Сделать 100 тапов', target: 100, key: 'clicks', rewardCoins: 30 },
-  { id: 'click_100', title: 'Первые шаги', desc: 'Сделать 250 тапов', target: 250, key: 'clicks', rewardCoins: 60 },
-  { id: 'click_500', title: 'Энергичный', desc: 'Сделать 750 тапов', target: 750, key: 'clicks', rewardCoins: 120 },
-  { id: 'click_1000', title: 'Шахтер-любитель', desc: 'Сделать 2 000 тапов', target: 2000, key: 'clicks', rewardCoins: 250 },
-  { id: 'click_2500', title: 'Работяга', desc: 'Сделать 5 000 тапов', target: 5000, key: 'clicks', rewardCoins: 450 },
-  { id: 'click_5000', title: 'Мастер кирко-тапа', desc: 'Сделать 12 500 тапов', target: 12500, key: 'clicks', rewardCoins: 800 },
-  { id: 'click_10000', title: 'Легенда шахты', desc: 'Сделать 30 000 тапов', target: 30000, key: 'clicks', rewardCoins: 1500 },
+  { id: 'click_10', title: 'Новичок шахты', desc: 'Сделать 10 тапов', target: 10, key: 'clicks', rewardCoins: 50 },
+  { id: 'click_50', title: 'Первый пот', desc: 'Сделать 50 тапов', target: 50, key: 'clicks', rewardCoins: 100 },
+  { id: 'click_100', title: 'Первые шаги', desc: 'Сделать 100 тапов', target: 100, key: 'clicks', rewardCoins: 250 },
+  { id: 'click_500', title: 'Энергичный', desc: 'Сделать 500 тапов', target: 500, key: 'clicks', rewardCoins: 500 },
+  { id: 'click_1000', title: 'Шахтер-любитель', desc: 'Сделать 1 000 тапов', target: 1000, key: 'clicks', rewardCoins: 1000 },
+  { id: 'click_2500', title: 'Работяга', desc: 'Сделать 2 500 тапов', target: 2500, key: 'clicks', rewardCoins: 2500 },
+  { id: 'click_5000', title: 'Мастер кирко-тапа', desc: 'Сделать 5 000 тапов', target: 5000, key: 'clicks', rewardCoins: 5000 },
+  { id: 'click_10000', title: 'Легенда шахты', desc: 'Сделать 10 000 тапов', target: 10000, key: 'clicks', rewardCoins: 10000 },
 
-  { id: 'craft_1', title: 'Кузнец', desc: 'Скрафтить 2 предмета', target: 2, key: 'crafts', rewardCoins: 50 },
-  { id: 'craft_3', title: 'Сборщик схем', desc: 'Скрафтить 5 предметов', target: 5, key: 'crafts', rewardCoins: 100 },
-  { id: 'craft_5', title: 'Инженер синтеза', desc: 'Скрафтить 10 предметов', target: 10, key: 'crafts', rewardCoins: 200 },
-  { id: 'craft_10', title: 'Архитектор материи', desc: 'Скрафтить 25 предметов', target: 25, key: 'crafts', rewardCoins: 400 },
-  { id: 'craft_20', title: 'Повелитель фабрики', desc: 'Скрафтить 50 предметов', target: 50, key: 'crafts', rewardCoins: 800 },
+  { id: 'craft_1', title: 'Кузнец', desc: 'Скрафтить 1 предмет', target: 1, key: 'crafts', rewardCoins: 250 },
+  { id: 'craft_3', title: 'Сборщик схем', desc: 'Скрафтить 3 предмета', target: 3, key: 'crafts', rewardCoins: 500 },
+  { id: 'craft_5', title: 'Инженер синтеза', desc: 'Скрафтить 5 предметов', target: 5, key: 'crafts', rewardCoins: 1000 },
+  { id: 'craft_10', title: 'Архитектор материи', desc: 'Скрафтить 10 предметов', target: 10, key: 'crafts', rewardCoins: 2500 },
+  { id: 'craft_20', title: 'Повелитель фабрики', desc: 'Скрафтить 20 предметов', target: 20, key: 'crafts', rewardCoins: 5000 },
 
-  { id: 'upg_1', title: 'Первый удар молота', desc: 'Успешно заточить предмет 2 раза', target: 2, key: 'upgrades', rewardCoins: 40 },
-  { id: 'upg_3', title: 'Закаленная сталь', desc: 'Успешно заточить предмет 5 раз', target: 5, key: 'upgrades', rewardCoins: 80 },
-  { id: 'upg_5', title: 'Мастер заточки', desc: 'Успешно заточить предмет 10 раз', target: 10, key: 'upgrades', rewardCoins: 150 },
-  { id: 'upg_10', title: 'Наковальня судьбы', desc: 'Успешно заточить предмет 20 раз', target: 20, key: 'upgrades', rewardCoins: 300 },
-  { id: 'upg_15', title: 'Искры пламени', desc: 'Успешно заточить предмет 35 раз', target: 35, key: 'upgrades', rewardCoins: 600 },
-  { id: 'upg_25', title: 'Божественный кузнец', desc: 'Успешно заточить предмет 60 раз', target: 60, key: 'upgrades', rewardCoins: 1200 },
+  { id: 'upg_1', title: 'Первый удар молота', desc: 'Заточить предмет 1 раз', target: 1, key: 'upgrades', rewardCoins: 100 },
+  { id: 'upg_3', title: 'Закаленная сталь', desc: 'Заточить предметы 3 раза', target: 3, key: 'upgrades', rewardCoins: 250 },
+  { id: 'upg_5', title: 'Мастер заточки', desc: 'Заточить предметы 5 раз', target: 5, key: 'upgrades', rewardCoins: 500 },
+  { id: 'upg_10', title: 'Наковальня судьбы', desc: 'Заточить предметы 10 раз', target: 10, key: 'upgrades', rewardCoins: 1000 },
+  { id: 'upg_15', title: 'Искры пламени', desc: 'Заточить предметы 15 раз', target: 15, key: 'upgrades', rewardCoins: 2500 },
+  { id: 'upg_25', title: 'Божественный кузнец', desc: 'Заточить предметы 25 раз', target: 25, key: 'upgrades', rewardCoins: 5000 },
 
-  { id: 'coins_1000', title: 'Карманные деньги', desc: 'Накопить 2,500 монет', target: 2500, key: 'coins_milestone', rewardCoins: 100 },
-  { id: 'coins_10000', title: 'Состоятельный', desc: 'Накопить 15,000 монет', target: 15000, key: 'coins_milestone', rewardCoins: 300 },
-  { id: 'coins_50000', title: 'Крипто-барон', desc: 'Накопить 75,000 монет', target: 75000, key: 'coins_milestone', rewardCoins: 1000 },
-  { id: 'coins_200000', title: 'Магнат сетей', desc: 'Накопить 300,000 монет', target: 300000, key: 'coins_milestone', rewardCoins: 3000 },
-  { id: 'coins_1000000', title: 'Крипто-миллионер', desc: 'Накопить 1,500,000 монет', target: 1500000, key: 'coins_milestone', rewardCoins: 15000 },
-  { id: 'coins_5000000', title: 'Властелин вселенной', desc: 'Накопить 7,500,000 монет', target: 7500000, key: 'coins_milestone', rewardCoins: 75000 }
+  { id: 'coins_1000', title: 'Карманные деньги', desc: 'Накопить 1,000 монет', target: 1000, key: 'coins_milestone', rewardCoins: 250 },
+  { id: 'coins_10000', title: 'Состоятельный', desc: 'Накопить 10,000 монет', target: 10000, key: 'coins_milestone', rewardCoins: 1000 },
+  { id: 'coins_50000', title: 'Крипто-барон', desc: 'Накопить 50,000 монет', target: 50000, key: 'coins_milestone', rewardCoins: 5000 },
+  { id: 'coins_200000', title: 'Магнат сетей', desc: 'Накопить 200,000 монет', target: 200000, key: 'coins_milestone', rewardCoins: 20000 },
+  { id: 'coins_1000000', title: 'Крипто-миллионер', desc: 'Накопить 1,000,000 монет', target: 1000000, key: 'coins_milestone', rewardCoins: 100000 },
+  { id: 'coins_5000000', title: 'Властелин вселенной', desc: 'Накопить 5,000,000 монет', target: 5000000, key: 'coins_milestone', rewardCoins: 500000 }
 ];
 
 function getUserId() {
@@ -2182,7 +2183,7 @@ function getEquippedItems() {
 }
 
 function getLuckBonus() {
-  return getEquippedItems().filter(i => getItemRole(i) === 'luck').reduce((sum, i) => sum + 0.008 + Math.min(15, i.level || 0) * 0.0015, 0);
+  return getEquippedItems().filter(i => getItemRole(i) === 'luck').reduce((sum, i) => sum + 0.015 + (i.level || 0) * 0.003, 0);
 }
 
 function getCraftDiscount() {
@@ -2196,14 +2197,14 @@ function getUpgradeProtection() {
 
 // ==================== ПРОФИЛЬ + ЕЖЕДНЕВНЫЕ КОНТРАКТЫ ====================
 const CONTRACT_POOL = [
-  { id:'mine_1500', icon:'⛏️', title:'Разведка жилы', desc:'Сделать 1 500 тапов по ядру', key:'clicks', target:1500, reward:60 },
-  { id:'mine_5000', icon:'🔥', title:'Глубокая добыча', desc:'Сделать 5 000 тапов по ядру', key:'clicks', target:5000, reward:150 },
-  { id:'craft_2', icon:'🔨', title:'Малый заказ', desc:'Создать 2 предмета на верстаке', key:'crafts', target:2, reward:80 },
-  { id:'craft_5', icon:'🧪', title:'Синтез партии', desc:'Создать 5 предметов на верстаке', key:'crafts', target:5, reward:180 },
-  { id:'upgrade_2', icon:'⚡', title:'Настройка снаряжения', desc:'Успешно заточить предмет 2 раза', key:'upgrades', target:2, reward:100 },
-  { id:'upgrade_4', icon:'🔧', title:'Кузнечный заказ', desc:'Успешно заточить предмет 4 раза', key:'upgrades', target:4, reward:220 },
-  { id:'loot_2', icon:'🎁', title:'Случайная находка', desc:'Получить 2 предмета из шахты', key:'loot', target:2, reward:80 },
-  { id:'loot_5', icon:'💎', title:'Охота за добычей', desc:'Получить 5 предметов из шахты', key:'loot', target:5, reward:200 }
+  { id:'mine_1500', icon:'⛏️', title:'Разведка жилы', desc:'Сделать 1 500 тапов по ядру', key:'clicks', target:1500, reward:150 },
+  { id:'mine_5000', icon:'🔥', title:'Глубокая добыча', desc:'Сделать 5 000 тапов по ядру', key:'clicks', target:5000, reward:350 },
+  { id:'craft_2', icon:'🔨', title:'Малый заказ', desc:'Создать 2 предмета на верстаке', key:'crafts', target:2, reward:200 },
+  { id:'craft_5', icon:'🧪', title:'Синтез партии', desc:'Создать 5 предметов на верстаке', key:'crafts', target:5, reward:400 },
+  { id:'upgrade_2', icon:'⚡', title:'Настройка снаряжения', desc:'Успешно заточить предмет 2 раза', key:'upgrades', target:2, reward:250 },
+  { id:'upgrade_4', icon:'🔧', title:'Кузнечный заказ', desc:'Успешно заточить предмет 4 раза', key:'upgrades', target:4, reward:500 },
+  { id:'loot_2', icon:'🎁', title:'Случайная находка', desc:'Получить 2 предмета из шахты', key:'loot', target:2, reward:200 },
+  { id:'loot_5', icon:'💎', title:'Охота за добычей', desc:'Получить 5 предметов из шахты', key:'loot', target:5, reward:450 }
 ];
 
 function localDateKey() {
@@ -2360,16 +2361,13 @@ function getRecipeCost(recipe) {
 function calculateClickPower() {
   let basePower = 0.1;
   state.inventory.forEach(item => {
-    if (state.equipped.includes(String(item.instanceId))) {
-      const level = Math.min(15, Math.max(0, Number(item.level) || 0));
-      const levelBonus = 1 + level * 0.05;
-      const quality = 0.98 + ((item.qualityMultiplier || 1) - 1) * 0.35;
-      // Предметы дают небольшой буст: даже три легендарки +15
-      // не превращают тап в десятки/сотни монет.
-      basePower += Math.min(15, Number(item.power) || 0) * quality * levelBonus * 0.03;
+    if (state.equipped.includes(item.instanceId)) {
+      const levelBonus = 1 + (item.level || 0) * 0.12;
+      const quality = 0.95 + ((item.qualityMultiplier || 1) - 1) * 0.5;
+      basePower += item.power * quality * levelBonus;
     }
   });
-  return Math.min(5, basePower);
+  return basePower;
 }
 
 function updateUI(shouldSave = true) {
@@ -2650,50 +2648,69 @@ function switchSideTab(tabId, btn) {
   if (tabId === 'games') updateCasinoBalance();
 }
 
-// ВЕРОЯТНОСТЬ ВЫПАДЕНИЯ ПРЕДМЕТОВ
-const DROP_CHANCE = 0.0012; 
+// ==================== СИСТЕМА ДРОПА ====================
+// Базовый шанс предмета с одного клика: 1 / 400 (0.25%).
+// Экипировка удачи может поднять его, но общий потолок — 0.6%.
+const DROP_CHANCE = 0.0025;
+const MAX_DROP_CHANCE = 0.006;
+
+function pickRandomItemByRarity(rarity) {
+  const availableItems = LOOT_ITEMS.filter(i => i.rarity === rarity && !i.isCraftPart && i.type !== 'craft_material');
+  if (!availableItems.length) return null;
+  return availableItems[Math.floor(Math.random() * availableItems.length)];
+}
 
 function tryDropLoot() {
-  const effectiveDropChance = Math.min(0.004, DROP_CHANCE + getLuckBonus());
-  if (Math.random() > effectiveDropChance) return;
+  const effectiveDropChance = Math.min(MAX_DROP_CHANCE, DROP_CHANCE + getLuckBonus());
+  if (Math.random() >= effectiveDropChance) return;
 
-  // Редкие материалы для продвинутых чертежей
+  // Сначала небольшой шанс на материал для продвинутых чертежей.
+  // Материалы не конкурируют с обычными предметами по power.
   const materialRoll = Math.random();
   let materialId = null;
-  if (materialRoll < 0.003) materialId = 'm4';
-  else if (materialRoll < 0.015) materialId = 'm3';
-  else if (materialRoll < 0.045) materialId = 'm2';
-  else if (materialRoll < 0.12) materialId = 'm1';
+  if (materialRoll < 0.002) materialId = 'm4';          // 0.2% среди дропов
+  else if (materialRoll < 0.010) materialId = 'm3';     // 0.8%
+  else if (materialRoll < 0.030) materialId = 'm2';     // 2.0%
+  else if (materialRoll < 0.090) materialId = 'm1';     // 6.0%
 
   if (materialId) {
     const material = LOOT_ITEMS.find(i => i.id === materialId);
     if (material && state.inventory.length < MAX_INVENTORY_SIZE) {
-      state.inventory.push({ ...material, instanceId: newInstanceId(), level: 0, qualityMultiplier: 1, type: 'craft_material', isCraftPart: true });
+      state.inventory.push({
+        ...material,
+        instanceId: newInstanceId(),
+        level: 0,
+        qualityMultiplier: 1,
+        type: 'craft_material',
+        isCraftPart: true
+      });
       sanitizeState();
+      updateContractProgress('loot', 1);
       playSound('success');
-      showToast(`💠 РЕДКИЙ МАТЕРИАЛ: ${material.icon} ${material.name}!`);
+      showToast(`💠 МАТЕРИАЛ: ${material.icon} ${material.name}!`);
       updateUI(false);
       return;
     }
   }
 
+  // Редкость обычного предмета среди нематериальных дропов.
+  // Common 80%, Rare 17%, Epic 2.5%, Legendary 0.5%.
   const rand = Math.random();
   let rarityPool = 'common';
-  if (rand < 0.002) rarityPool = 'legendary';
-  else if (rand < 0.012) rarityPool = 'epic';
-  else if (rand < 0.12) rarityPool = 'rare';
+  if (rand < 0.005) rarityPool = 'legendary';
+  else if (rand < 0.030) rarityPool = 'epic';
+  else if (rand < 0.200) rarityPool = 'rare';
 
-  const availableItems = LOOT_ITEMS.filter(i => i.rarity === rarityPool);
-  if (availableItems.length === 0) return;
+  const baseItem = pickRandomItemByRarity(rarityPool);
+  if (!baseItem) return;
 
-  const baseItem = availableItems[Math.floor(Math.random() * availableItems.length)];
-  const qualityMultiplier = parseFloat((Math.random() * 0.30 + 0.85).toFixed(2));
-  
+  // Небольшой разброс качества, но power всегда берётся из LOOT_ITEMS.
+  const qualityMultiplier = parseFloat((Math.random() * 0.20 + 0.90).toFixed(2));
   const newItem = {
     ...baseItem,
     instanceId: newInstanceId(),
     level: 0,
-    qualityMultiplier: qualityMultiplier
+    qualityMultiplier
   };
 
   if (state.inventory.length >= MAX_INVENTORY_SIZE) {
@@ -2705,7 +2722,7 @@ function tryDropLoot() {
   updateContractProgress('loot', 1);
   sanitizeState();
   playSound('success');
-  showToast(`🎁 НАХОДКА: ${newItem.icon} ${newItem.name}!`);
+  showToast(`🎁 НАХОДКА: ${newItem.icon} ${newItem.name} [+${newItem.power}]!`);
   updateUI(false);
 }
 
@@ -2715,9 +2732,9 @@ document.getElementById('core-btn').addEventListener('pointerdown', (e) => {
   updateContractProgress('clicks', 1);
   let clickPower = calculateClickPower();
   
-  let isCrit = Math.random() < 0.03;
+  let isCrit = Math.random() < 0.05;
   if (isCrit) {
-    clickPower *= 1.35;
+    clickPower *= 1.5;
     playSound('crit');
   } else {
     playSound('click');
@@ -2792,7 +2809,7 @@ function renderInventory(){
   renderEquipSlots(); const listEl=document.getElementById('inventory-list'); const countEl=document.getElementById('inventory-count'); if(!listEl)return; const items=getInventoryDisplayItems(); if(countEl)countEl.textContent=`${items.length.toLocaleString()} из ${state.inventory.length.toLocaleString()} предметов`; listEl.innerHTML='';
   if(!state.inventory.length){listEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--textdim);">Инвентарь пуст. Тапай в шахте!</div>';return;}
   if(!items.length){listEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--textdim);">Ничего не найдено. Измени фильтр или поиск.</div>';return;}
-  items.forEach(item=>{const eq=state.equipped.includes(String(item.instanceId));const level=Math.min(15,Math.max(0,Number(item.level)||0));const power=Math.min(15,Math.round((Number(item.power||0))*(0.98+((Number(item.qualityMultiplier||1)-1)*0.35))*(1+level*0.05)));const card=document.createElement('div');card.className=`upg-card rarity-${item.rarity}`;card.innerHTML=`<div style="font-size:32px;">${item.icon}</div><div style="flex:1;"><div style="font-weight:900;font-size:14px;">${escapeHtml(item.name)} <span style="font-size:11px;color:var(--neon1);">[+${item.level||0}]</span></div><div style="font-size:11px;color:var(--textdim);margin-top:2px;">${escapeHtml(item.desc||'')}</div><div style="font-size:11px;color:var(--neon4);margin-top:4px;">Сила: +${power} · Качество: ${(Number(item.qualityMultiplier||1)).toFixed(2)}× · ${getItemRole(item)}</div></div><div style="display:flex;flex-direction:column;gap:6px;"><button class="action-btn ${eq?'unequip-btn':''}" onclick="toggleEquip('${item.instanceId}')">${eq?'Снять':'Надеть'}</button><button class="action-btn dismantle-btn" onclick="window.dismantleItem('${item.instanceId}')">Разобрать</button><button class="action-btn" style="background:var(--border);" onclick="openSellModal('${item.instanceId}')">Продать</button></div>`;listEl.appendChild(card);});
+  items.forEach(item=>{const eq=state.equipped.includes(String(item.instanceId));const power=Math.floor(Number(item.power||0)*(0.95+((Number(item.qualityMultiplier||1)-1)*0.5))*(1+(Number(item.level||0)*0.12)));const card=document.createElement('div');card.className=`upg-card rarity-${item.rarity}`;card.innerHTML=`<div style="font-size:32px;">${item.icon}</div><div style="flex:1;"><div style="font-weight:900;font-size:14px;">${escapeHtml(item.name)} <span style="font-size:11px;color:var(--neon1);">[+${item.level||0}]</span></div><div style="font-size:11px;color:var(--textdim);margin-top:2px;">${escapeHtml(item.desc||'')}</div><div style="font-size:11px;color:var(--neon4);margin-top:4px;">Сила: +${power} · Качество: ${(Number(item.qualityMultiplier||1)).toFixed(2)}× · ${getItemRole(item)}</div></div><div style="display:flex;flex-direction:column;gap:6px;"><button class="action-btn ${eq?'unequip-btn':''}" onclick="toggleEquip('${item.instanceId}')">${eq?'Снять':'Надеть'}</button><button class="action-btn dismantle-btn" onclick="window.dismantleItem('${item.instanceId}')">Разобрать</button><button class="action-btn" style="background:var(--border);" onclick="openSellModal('${item.instanceId}')">Продать</button></div>`;listEl.appendChild(card);});
 }
 
 function toggleEquip(instanceId) {
@@ -3246,14 +3263,9 @@ function upgradeItem(instanceId) {
   }
 
   const item = state.inventory[itemIndex];
-  const level = Math.min(15, Math.max(0, Math.floor(Number(item.level) || 0)));
-  if (level >= 15) {
-    showToast('🔒 Максимальная заточка: +15');
-    playSound('fail');
-    return;
-  }
-  const rarityBase = { common: 150, rare: 700, epic: 3500, legendary: 15000 }[item.rarity] || 150;
-  const cost = Math.floor(rarityBase * Math.pow(1.55, level));
+  const level = Math.max(0, Math.floor(Number(item.level) || 0));
+  const rarityBase = { common: 100, rare: 500, epic: 2500, legendary: 10000 }[item.rarity] || 100;
+  const cost = Math.floor(rarityBase * Math.pow(1.65, level));
 
   if (state.coins < cost) {
     showToast('⚠️ Мало монет!');
@@ -3265,7 +3277,7 @@ function upgradeItem(instanceId) {
 
   // Базовый шанс успеха:
   // +0 = 90%, +1 = 80%, +2 = 70% ... минимум 30%.
-  const chance = Math.max(0.25, 0.78 - level * 0.035);
+  const chance = Math.max(0.35, 0.85 - level * 0.08);
 
   if (Math.random() < chance) {
     item.level = level + 1;
