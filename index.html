@@ -815,6 +815,14 @@ html, body { min-height: 100%; }
 }
 </style>
 
+
+<style id="full-leaderboard-css">
+.lb-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:9px}
+.lb-mode{min-height:34px;padding:6px 4px!important;border:1px solid var(--border)!important;border-radius:8px!important;background:rgba(255,255,255,.025)!important;color:var(--textdim)!important;font-size:9px!important;line-height:1.1!important;box-shadow:none!important}
+.lb-mode.active{color:var(--text)!important;border-color:rgba(104,201,220,.35)!important;background:rgba(104,201,220,.08)!important}
+@media(max-width:390px){.lb-modes{grid-template-columns:repeat(2,1fr)}}
+</style>
+
 </head>
 <body>
 
@@ -934,8 +942,16 @@ html, body { min-height: 100%; }
 
     <!-- ТОП -->
     <div class="tab-view" id="tab-leaderboard">
-      <div class="form-title" style="margin-bottom: 10px;">🏆 ТОП ИГРОКОВ</div>
-      <div style="font-size:13px; color:var(--textdim); margin-bottom:14px;">Самые богатые шахтеры этой вселенной.</div>
+      <div class="form-title" style="margin-bottom: 10px;">🏆 МНОГОМЕРНЫЙ ТОП</div>
+      <div class="lb-modes" id="lb-modes">
+        <button class="lb-mode active" data-mode="wealth" onclick="setLeaderboardMode('wealth')">💰 Богатство</button>
+        <button class="lb-mode" data-mode="mining" onclick="setLeaderboardMode('mining')">⛏️ Добыча</button>
+        <button class="lb-mode" data-mode="crafting" onclick="setLeaderboardMode('crafting')">🔨 Крафт</button>
+        <button class="lb-mode" data-mode="collection" onclick="setLeaderboardMode('collection')">📚 Коллекция</button>
+        <button class="lb-mode" data-mode="upgrade" onclick="setLeaderboardMode('upgrade')">⚡ Заточка</button>
+        <button class="lb-mode" data-mode="trading" onclick="setLeaderboardMode('trading')">🏪 Торговля</button>
+      </div>
+      <div id="lb-description" style="font-size:11px; color:var(--textdim); margin-bottom:10px;">Самые богатые игроки.</div>
       <div class="card-list" id="lb-list">
         <div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>
       </div>
@@ -1214,6 +1230,17 @@ const LOOT_ITEMS = [
   { id: 'l10', name: 'Око Создателя', icon: '🧿', rarity: 'legendary', power: 4500, baseValue: 750000, desc: 'Величайший артефакт, дающий абсолютную власть над кодом.' }
 ];
 
+// Проверка ингредиентов с учетом повторяющихся строк рецепта.
+// Например, 2x r2 не должно считаться как 1x r2.
+function hasRequiredIngredients(inv, ingredients) {
+  const counts = {};
+  (inv || []).forEach(item => {
+    const id = String(item?.id || '');
+    if (id) counts[id] = (counts[id] || 0) + 1;
+  });
+  return (ingredients || []).every(ing => (counts[String(ing.id)] || 0) >= Number(ing.count || 0));
+}
+
 // РАСШИРЕННЫЕ РЕЦЕПТЫ КРАФТА
 const CRAFT_RECIPES = [
   {
@@ -1224,7 +1251,7 @@ const CRAFT_RECIPES = [
       { id: 'c3', count: 1, name: 'Медная Проволока' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1235,7 +1262,7 @@ const CRAFT_RECIPES = [
       { id: 'c7', count: 2, name: 'Пыльный Конденсатор' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1247,7 +1274,7 @@ const CRAFT_RECIPES = [
       { id: 'c9', count: 1, name: 'Старая Гайка' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1260,7 +1287,7 @@ const CRAFT_RECIPES = [
       { id: 'm1', count: 1, name: 'Неоновый Кристалл' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1273,7 +1300,7 @@ const CRAFT_RECIPES = [
       { id: 'm1', count: 1, name: 'Неоновый Кристалл' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1286,7 +1313,7 @@ const CRAFT_RECIPES = [
       { id: 'm1', count: 2, name: 'Неоновый Кристалл' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1299,7 +1326,7 @@ const CRAFT_RECIPES = [
       { id: 'm1', count: 2, name: 'Неоновый Кристалл' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1312,7 +1339,7 @@ const CRAFT_RECIPES = [
       { id: 'm1', count: 2, name: 'Неоновый Кристалл' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1325,7 +1352,7 @@ const CRAFT_RECIPES = [
       { id: 'm1', count: 2, name: 'Неоновый Кристалл' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1338,7 +1365,7 @@ const CRAFT_RECIPES = [
       { id: 'm1', count: 2, name: 'Неоновый Кристалл' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1349,7 +1376,7 @@ const CRAFT_RECIPES = [
       { id: 'r1', count: 1, name: 'Неоновый Акум' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1360,7 +1387,7 @@ const CRAFT_RECIPES = [
       { id: 'r2', count: 1, name: 'Плазма-Кабель' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1372,7 +1399,7 @@ const CRAFT_RECIPES = [
       { id: 'm2', count: 1, name: 'Квантовый Фрагмент' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1384,7 +1411,7 @@ const CRAFT_RECIPES = [
       { id: 'm2', count: 1, name: 'Квантовый Фрагмент' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1396,7 +1423,7 @@ const CRAFT_RECIPES = [
       { id: 'm2', count: 1, name: 'Квантовый Фрагмент' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1409,7 +1436,7 @@ const CRAFT_RECIPES = [
       { id: 'r4', count: 1, name: 'Ускоритель Тактов' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1421,7 +1448,7 @@ const CRAFT_RECIPES = [
       { id: 'm2', count: 2, name: 'Квантовый Фрагмент' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1433,7 +1460,7 @@ const CRAFT_RECIPES = [
       { id: 'm2', count: 2, name: 'Квантовый Фрагмент' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1446,7 +1473,7 @@ const CRAFT_RECIPES = [
       { id: 'r7', count: 1, name: 'Квантовый Резистор' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1458,7 +1485,7 @@ const CRAFT_RECIPES = [
       { id: 'm2', count: 2, name: 'Квантовый Фрагмент' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1470,7 +1497,7 @@ const CRAFT_RECIPES = [
       { id: 'r2', count: 2, name: 'Плазма-Кабель' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1483,7 +1510,7 @@ const CRAFT_RECIPES = [
       { id: 'm3', count: 1, name: 'Ядро Энергии' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1496,7 +1523,7 @@ const CRAFT_RECIPES = [
       { id: 'm3', count: 1, name: 'Ядро Энергии' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1509,7 +1536,7 @@ const CRAFT_RECIPES = [
       { id: 'm3', count: 1, name: 'Ядро Энергии' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1522,7 +1549,7 @@ const CRAFT_RECIPES = [
       { id: 'm3', count: 1, name: 'Ядро Энергии' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1535,7 +1562,7 @@ const CRAFT_RECIPES = [
       { id: 'm3', count: 2, name: 'Ядро Энергии' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1549,7 +1576,7 @@ const CRAFT_RECIPES = [
       { id: 'm4', count: 1, name: 'Фрагмент Сингулярности' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1563,7 +1590,7 @@ const CRAFT_RECIPES = [
       { id: 'm4', count: 1, name: 'Фрагмент Сингулярности' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1577,7 +1604,7 @@ const CRAFT_RECIPES = [
       { id: 'm4', count: 1, name: 'Фрагмент Сингулярности' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   },
@@ -1591,7 +1618,7 @@ const CRAFT_RECIPES = [
       { id: 'm4', count: 1, name: 'Фрагмент Сингулярности' }
     ],
     check(inv) {
-      return this.ingredients.every(ing => inv.filter(i => i.id === ing.id).length >= ing.count);
+      return hasRequiredIngredients(inv, this.ingredients);
     },
     consume(inv) { this.ingredients.forEach(ing => removeItemsById(inv, ing.id, ing.count)); }
   }
@@ -1662,31 +1689,27 @@ function getUserName() {
 let saveTimeout = null;
 let saveInFlight = false;
 let saveQueued = false;
+let dataLoaded = false;
 
 async function saveDataNow() {
-  if (!db || !getUserId()) return false;
-  if (saveInFlight) {
-    saveQueued = true;
-    return false;
-  }
+  if (!db || !getUserId() || !dataLoaded) return false;
+  if (saveInFlight) { saveQueued = true; return false; }
 
   saveInFlight = true;
   let ok = false;
   try {
     sanitizeState();
-
     const payload = {
       telegram_id: getUserId(),
       username: getUserName(),
-      coins: Math.floor(state.coins),
+      coins: Math.floor(Number(state.coins) || 0),
       inventory: state.inventory,
       equipped: state.equipped,
-      shields: state.shields,
+      shields: Number(state.shields) || 0,
       stats: state.stats,
       claimed_achievements: state.claimedAchievements,
       updated_at: new Date().toISOString()
     };
-
     const { error } = await db.from('users').upsert(payload, { onConflict: 'telegram_id' });
     if (error) throw error;
     ok = true;
@@ -1695,23 +1718,20 @@ async function saveDataNow() {
     showToast('⚠️ Не удалось сохранить прогресс');
   } finally {
     saveInFlight = false;
-    if (saveQueued) {
-      saveQueued = false;
-      saveData();
-    }
+    if (saveQueued) { saveQueued = false; saveData(); }
   }
   return ok;
 }
 
 function saveData() {
-  if (!db || !getUserId()) return;
+  if (!db || !getUserId() || !dataLoaded) return;
   clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(saveDataNow, 800);
+  saveTimeout = setTimeout(saveDataNow, 400);
 }
 
 async function loadData() {
   if (!db || !requireTelegramUser()) return;
-
+  dataLoaded = false;
   try {
     const { data, error } = await db
       .from('users')
@@ -1726,20 +1746,32 @@ async function loadData() {
       state.inventory = Array.isArray(data.inventory) ? data.inventory : [];
       state.equipped = Array.isArray(data.equipped) ? data.equipped : [];
       state.shields = Number(data.shields) || 0;
-      state.stats = data.stats || { clicks: 0, crafts: 0, upgrades: 0 };
+      state.stats = (data.stats && typeof data.stats === 'object') ? data.stats : { clicks:0, crafts:0, upgrades:0 };
       state.claimedAchievements = Array.isArray(data.claimed_achievements) ? data.claimed_achievements : [];
       sanitizeState();
     } else {
+      // Только для действительно нового Telegram ID создаём запись.
       sanitizeState();
+      dataLoaded = true;
       await saveDataNow();
     }
-  } catch (e) {
-    console.error('loadData:', e);
-    showToast('⚠️ Не удалось загрузить прогресс');
-  }
 
-  updateUI(false);
+    dataLoaded = true;
+    updateUI(false);
+    renderInventory();
+    renderCraft();
+    renderUpgrade();
+  } catch (e) {
+    dataLoaded = false;
+    console.error('loadData:', e);
+    showToast('⚠️ Не удалось загрузить прогресс — данные не перезаписываем');
+    updateUI(false);
+  }
 }
+
+// Надёжное сохранение при закрытии/сворачивании Mini App.
+window.addEventListener('pagehide', () => { if (dataLoaded) { clearTimeout(saveTimeout); saveDataNow(); } });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && dataLoaded) { clearTimeout(saveTimeout); saveDataNow(); } });
 
 function getItemRole(item) {
   const n = Number(String(item.id).match(/\d+$/)?.[0] || 0);
@@ -2283,27 +2315,46 @@ async function confirmSellItem() {
   }
 
   try {
-    const { error } = await db.from('market_lots').insert({
+    const normalizedForMarket = normalizeItem(localItem);
+    const { data: createdLot, error } = await db.from('market_lots').insert({
       seller_id: getUserId(),
       seller_name: getUserName(),
-      item: normalizeItem(localItem),
+      item: normalizedForMarket,
       price,
       created_at: new Date().toISOString()
-    });
+    }).select('id').maybeSingle();
 
     if (error) throw error;
 
+    const previousInventory = state.inventory.map(x => ({ ...x }));
+    const previousEquipped = [...state.equipped];
+
     const eqIdx = state.equipped.findIndex(id => String(id) === instanceId);
     if (eqIdx !== -1) state.equipped.splice(eqIdx, 1);
-
     state.inventory = state.inventory.filter(i => String(i.instanceId) !== instanceId);
     sanitizeState();
+
+    // Лот и профиль должны измениться вместе. Если профиль не сохранился,
+    // возвращаем предмет в локальное состояние и удаляем созданный лот.
+    const saved = await saveDataNow();
+    if (!saved) {
+      state.inventory = previousInventory;
+      state.equipped = previousEquipped;
+      sanitizeState();
+      if (createdLot?.id) {
+        await db.from('market_lots').delete().eq('id', createdLot.id);
+      }
+      showToast('⚠️ Продажа отменена: прогресс не сохранён');
+      renderInventory();
+      updateUI(false);
+      return;
+    }
 
     closeMarketModal();
     playSound('success');
     showToast('✅ Предмет выставлен!');
     renderInventory();
-    updateUI();
+    updateUI(false);
   } catch (e) {
     console.error('confirmSellItem:', e);
     showToast('⚠️ Не удалось выставить предмет');
@@ -2563,7 +2614,7 @@ async function fetchMarketLots() {
 
     const { data, error } = await query
       .order('created_at', { ascending: false })
-      .limit(100);
+      .limit(200);
 
     if (error) throw error;
 
@@ -3001,32 +3052,68 @@ async function sendCoinsToPlayer() {
   }
 }
 
+let leaderboardMode = 'wealth';
+const LEADERBOARD_META = {
+  wealth: { title:'Самые богатые игроки.', field:'coins', icon:'💰', suffix:' ⚡' },
+  mining: { title:'Больше всего добыли тапами.', field:'clicks', icon:'⛏️', suffix:' тапов' },
+  crafting: { title:'Больше всего предметов создали.', field:'crafts', icon:'🔨', suffix:' крафтов' },
+  collection: { title:'Самые большие коллекции.', field:'collection', icon:'📚', suffix:' предметов' },
+  upgrade: { title:'Больше всего попыток заточки.', field:'upgrades', icon:'⚡', suffix:' заточек' },
+  trading: { title:'Самые активные продавцы биржи.', field:'trading', icon:'🏪', suffix:' лотов' }
+};
+
+function setLeaderboardMode(mode) {
+  leaderboardMode = LEADERBOARD_META[mode] ? mode : 'wealth';
+  document.querySelectorAll('.lb-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === leaderboardMode));
+  const meta = LEADERBOARD_META[leaderboardMode];
+  const d = document.getElementById('lb-description');
+  if (d) d.textContent = meta.title;
+  fetchLeaderboard();
+}
+
 async function fetchLeaderboard() {
   const list = document.getElementById('lb-list');
+  if (!list) return;
   list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>';
-  if (!db) {
-    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">База данных недоступна</div>';
-    return;
-  }
+  if (!db) { list.innerHTML='<div style="text-align:center;padding:20px;color:var(--textdim);">База данных недоступна</div>'; return; }
   try {
-    const { data } = await db.from('users').select('username, coins').order('coins', { ascending: false }).limit(10);
-    if (!data || data.length === 0) {
-      list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Топ пуст</div>';
-      return;
+    const { data: users, error } = await db.from('users').select('telegram_id,username,coins,inventory,stats');
+    if (error) throw error;
+    if (!users || users.length === 0) { list.innerHTML='<div style="text-align:center;padding:20px;color:var(--textdim);">Топ пуст</div>'; return; }
+
+    let rows = users.map(u => {
+      const stats = (u.stats && typeof u.stats === 'object') ? u.stats : {};
+      let value = 0;
+      if (leaderboardMode === 'wealth') value = Number(u.coins) || 0;
+      if (leaderboardMode === 'mining') value = Number(stats.clicks) || 0;
+      if (leaderboardMode === 'crafting') value = Number(stats.crafts) || 0;
+      if (leaderboardMode === 'upgrade') value = Number(stats.upgrades) || 0;
+      if (leaderboardMode === 'collection') value = Array.isArray(u.inventory) ? u.inventory.length : 0;
+      return { username:u.username || 'Игрок', value:Math.max(0, Math.floor(value)) };
+    });
+
+    if (leaderboardMode === 'trading') {
+      const { data: lots, error: lotsError } = await db.from('market_lots').select('seller_id');
+      if (lotsError) throw lotsError;
+      const counts = {};
+      (lots || []).forEach(l => { const id=String(l.seller_id); counts[id]=(counts[id]||0)+1; });
+      rows = users.map(u => ({ username:u.username || 'Игрок', value:counts[String(u.telegram_id)] || 0 }));
     }
-    list.innerHTML = '';
-    data.forEach((user, idx) => {
-      const card = document.createElement('div');
-      card.className = `upg-card`;
-      card.innerHTML = `
-        <div style="font-weight:900; color:var(--neon1); width:24px;">#${idx + 1}</div>
-        <div style="flex:1; font-weight:700;">${escapeHtml(user.username || 'Игрок')}</div>
-        <div style="color:var(--gold); font-weight:900;">${Math.floor(Number(user.coins) || 0).toLocaleString()} ⚡</div>
-      `;
+
+    rows.sort((a,b)=>b.value-a.value || a.username.localeCompare(b.username));
+    rows = rows.slice(0,10);
+
+    list.innerHTML='';
+    const meta=LEADERBOARD_META[leaderboardMode];
+    rows.forEach((user,idx)=>{
+      const card=document.createElement('div');
+      card.className='upg-card';
+      card.innerHTML=`<div style="font-weight:900;color:var(--neon1);width:28px;">#${idx+1}</div><div style="flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(user.username)}</div><div style="color:var(--gold);font-weight:900;white-space:nowrap;">${meta.icon} ${user.value.toLocaleString()}${meta.suffix}</div>`;
       list.appendChild(card);
     });
   } catch(e) {
-    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Ошибка загрузки топа</div>';
+    console.error('fetchLeaderboard:',e);
+    list.innerHTML='<div style="text-align:center;padding:20px;color:var(--textdim);">Ошибка загрузки топа</div>';
   }
 }
 
