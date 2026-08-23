@@ -27,8 +27,8 @@
     --text:      #e0e0ff;
     --textdim:   #7070a0;
     --gold:      #ffd700;
-    --radius:    18px;
-    --radius-sm: 10px;
+    --radius:    22px;
+    --radius-sm: 14px;
   }
 
   html, body {
@@ -38,6 +38,7 @@
     color: var(--text);
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     touch-action: none;
+    font-size: 16px;
   }
 
   #app {
@@ -55,13 +56,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px 8px;
+    padding: 16px 18px 12px;
     background: linear-gradient(180deg, #0d0d1f 0%, transparent 100%);
     z-index: 10;
   }
 
   #game-title {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 900;
     letter-spacing: 4px;
     background: linear-gradient(90deg, var(--neon1), var(--neon2));
@@ -73,44 +74,44 @@
   .online-indicator {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3px 8px;
-    font-size: 10px;
+    border-radius: 24px;
+    padding: 5px 10px;
+    font-size: 12px;
     color: var(--textdim);
   }
   .online-dot {
-    width: 7px;
-    height: 7px;
+    width: 9px;
+    height: 9px;
     background-color: var(--neon4);
     border-radius: 50%;
-    box-shadow: 0 0 6px var(--neon4);
+    box-shadow: 0 0 8px var(--neon4);
     animation: pulse-dot 1.5s infinite;
   }
   @keyframes pulse-dot {
     0% { transform: scale(0.9); opacity: 0.7; }
-    50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 10px var(--neon4); }
+    50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px var(--neon4); }
     100% { transform: scale(0.9); opacity: 0.7; }
   }
 
   #level-badge {
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 12px;
+    border-radius: 24px;
+    padding: 6px 14px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--neon4);
     letter-spacing: 1px;
   }
 
-  #stats-area { flex-shrink: 0; padding: 6px 16px 0; z-index: 10; }
-  #currency-display { text-align: center; margin-bottom: 8px; }
+  #stats-area { flex-shrink: 0; padding: 8px 18px 0; z-index: 10; }
+  #currency-display { text-align: center; margin-bottom: 12px; }
 
   #currency-value {
-    font-size: 42px;
+    font-size: 52px;
     font-weight: 900;
     letter-spacing: -1px;
     background: linear-gradient(135deg, var(--gold), #ff9d00);
@@ -118,30 +119,30 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     line-height: 1;
-    filter: drop-shadow(0 0 12px rgba(255,215,0,0.4));
+    filter: drop-shadow(0 0 15px rgba(255,215,0,0.4));
   }
 
   #currency-label {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--textdim);
     letter-spacing: 3px;
     text-transform: uppercase;
-    margin-top: 2px;
+    margin-top: 4px;
   }
 
-  #mini-stats { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
+  #mini-stats { display: flex; gap: 10px; justify-content: center; margin-bottom: 12px; }
 
   .mini-stat {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    padding: 5px 12px;
-    font-size: 11px;
+    padding: 8px 14px;
+    font-size: 13px;
     color: var(--textdim);
-    display: flex; align-items: center; gap: 4px;
+    display: flex; align-items: center; gap: 6px;
   }
 
-  .mini-stat span { color: var(--neon1); font-weight: 700; font-size: 12px; }
+  .mini-stat span { color: var(--neon1); font-weight: 700; font-size: 14px; }
 
   #views-container { flex: 1; position: relative; overflow: hidden; }
 
@@ -149,7 +150,7 @@
     position: absolute; inset: 0;
     display: none;
     flex-direction: column;
-    padding: 10px;
+    padding: 16px;
     overflow-y: auto;
   }
 
@@ -166,11 +167,11 @@
   }
 
   #core-btn {
-    width: 180px; height: 180px;
+    width: 230px; height: 230px;
     border-radius: 50%;
     border: none;
     background: radial-gradient(circle at 38% 35%, #2a0a4a 0%, #1a0535 40%, #0d0220 100%);
-    box-shadow: 0 0 30px rgba(191,0,255,0.2);
+    box-shadow: 0 0 45px rgba(191,0,255,0.3);
     cursor: pointer;
     position: relative;
     display: flex;
@@ -185,22 +186,22 @@
 
   #core-btn:active { transform: scale(0.91); }
 
-  .core-icon { font-size: 56px; line-height: 1; pointer-events: none; }
+  .core-icon { font-size: 72px; line-height: 1; pointer-events: none; }
 
   #equip-slots-container {
     display: flex;
     justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: 10px;
+    margin-bottom: 16px;
     background: rgba(26, 26, 46, 0.6);
     border: 1px dashed var(--border);
     border-radius: var(--radius);
-    padding: 8px;
+    padding: 12px;
   }
 
   .equip-slot {
     flex: 1;
-    height: 70px;
+    height: 85px;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
@@ -214,39 +215,39 @@
 
   .equip-slot.filled {
     border-color: var(--neon1);
-    box-shadow: 0 0 8px rgba(0,245,255,0.2);
+    box-shadow: 0 0 12px rgba(0,245,255,0.25);
   }
 
-  .equip-slot-icon { font-size: 22px; }
-  .equip-slot-name { font-size: 8px; text-align: center; color: var(--textdim); margin-top: 2px; }
+  .equip-slot-icon { font-size: 28px; }
+  .equip-slot-name { font-size: 11px; text-align: center; color: var(--textdim); margin-top: 4px; }
 
-  .card-list { display: flex; flex-direction: column; gap: 8px; }
+  .card-list { display: flex; flex-direction: column; gap: 12px; }
 
   .upg-card {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 10px 14px;
+    padding: 14px 18px;
   }
 
   .rarity-common { border-color: #7070a0; }
-  .rarity-rare { border-color: var(--neon1); box-shadow: inset 0 0 10px rgba(0,245,255,0.1); }
-  .rarity-epic { border-color: var(--neon2); box-shadow: inset 0 0 10px rgba(191,0,255,0.2); }
-  .rarity-legendary { border-color: var(--gold); box-shadow: inset 0 0 15px rgba(255,215,0,0.3); }
+  .rarity-rare { border-color: var(--neon1); box-shadow: inset 0 0 12px rgba(0,245,255,0.12); }
+  .rarity-epic { border-color: var(--neon2); box-shadow: inset 0 0 12px rgba(191,0,255,0.25); }
+  .rarity-legendary { border-color: var(--gold); box-shadow: inset 0 0 18px rgba(255,215,0,0.35); }
 
-  .form-title { font-size: 12px; font-weight: 900; color: var(--neon1); text-transform: uppercase; letter-spacing: 1px; }
+  .form-title { font-size: 15px; font-weight: 900; color: var(--neon1); text-transform: uppercase; letter-spacing: 1px; }
 
   .action-btn {
     background: linear-gradient(135deg, var(--neon1), var(--neon2));
     border: none;
     border-radius: var(--radius-sm);
     color: #fff;
-    padding: 6px 12px;
+    padding: 9px 16px;
     font-weight: 900;
-    font-size: 10px;
+    font-size: 12px;
     cursor: pointer;
     touch-action: manipulation;
   }
@@ -259,7 +260,7 @@
     display: flex;
     background: var(--panel);
     border-top: 1px solid var(--border);
-    padding: 6px 0;
+    padding: 10px 4px;
     z-index: 10;
   }
 
@@ -268,23 +269,23 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     background: none;
     border: none;
     color: var(--textdim);
-    font-size: 8px;
+    font-size: 10px;
     font-weight: 700;
     cursor: pointer;
   }
 
   .nav-btn.active { color: var(--neon1); }
-  .nav-btn-icon { font-size: 15px; }
+  .nav-btn-icon { font-size: 20px; }
 
   .float-num {
     position: fixed;
     pointer-events: none;
     font-weight: 900;
-    font-size: 22px;
+    font-size: 26px;
     color: var(--neon4);
     z-index: 1000;
     animation: float-up 1.1s ease-out forwards;
@@ -300,7 +301,7 @@
 
   @keyframes float-up {
     0%   { transform: translateY(0) scale(1); opacity: 1; }
-    100% { transform: translateY(-90px) scale(0.8); opacity: 0; }
+    100% { transform: translateY(-110px) scale(0.8); opacity: 0; }
   }
 
   @keyframes particle-burst {
@@ -310,13 +311,13 @@
 
   #toast {
     position: fixed;
-    bottom: 70px; left: 50%;
+    bottom: 80px; left: 50%;
     transform: translateX(-50%) translateY(20px);
     background: var(--panel);
     border: 1px solid var(--neon2);
-    border-radius: 20px;
-    padding: 8px 20px;
-    font-size: 12px;
+    border-radius: 24px;
+    padding: 10px 24px;
+    font-size: 14px;
     color: var(--neon2);
     z-index: 2000;
     opacity: 0;
@@ -327,10 +328,10 @@
 
   .progress-bar-bg {
     width: 100%;
-    height: 6px;
+    height: 8px;
     background: rgba(255,255,255,0.1);
-    border-radius: 3px;
-    margin-top: 4px;
+    border-radius: 4px;
+    margin-top: 6px;
     overflow: hidden;
   }
   .progress-bar-fill {
@@ -352,8 +353,8 @@
       <span id="online-text">Онлайн</span>
     </div>
 
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div id="user-name" style="font-size: 12px; color: var(--neon1);">Игрок</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div id="user-name" style="font-size: 14px; color: var(--neon1);">Игрок</div>
       <div id="level-badge">LVL <span id="lvl-val">1</span></div>
     </div>
   </div>
@@ -376,14 +377,14 @@
       <div id="click-zone">
         <button id="core-btn">
           <div class="core-icon">⚛️</div>
-          <div style="font-size:10px; color:var(--neon1); margin-top:5px;">TAP FOR LOOT</div>
+          <div style="font-size:12px; color:var(--neon1); margin-top:8px;">TAP FOR LOOT</div>
         </button>
       </div>
     </div>
 
     <!-- ИНВЕНТАРЬ -->
     <div class="tab-view" id="tab-inventory">
-      <div class="form-title" style="margin: 4px 0 6px;">⚔️ СЛОТЫ ЭКИПИРОВКИ (МАКС. 3)</div>
+      <div class="form-title" style="margin: 6px 0 10px;">⚔️ СЛОТЫ ЭКИПИРОВКИ (МАКС. 3)</div>
       
       <div id="equip-slots-container">
         <div class="equip-slot" id="slot-0" onclick="unequipBySlotIndex(0)">
@@ -400,14 +401,14 @@
         </div>
       </div>
 
-      <div class="form-title" style="margin: 6px 0 12px;">🎒 ТВОЙ ИНВЕНТАРЬ:</div>
+      <div class="form-title" style="margin: 10px 0 14px;">🎒 ТВОЙ ИНВЕНТАРЬ:</div>
       <div class="card-list" id="inventory-list"></div>
     </div>
 
     <!-- КРАФТ -->
     <div class="tab-view" id="tab-craft">
-      <div class="form-title" style="margin-bottom: 6px;">🔨 СЛОЖНЫЙ ВЕРСТАК КРАФТА</div>
-      <div style="font-size:11px; color:var(--textdim); margin-bottom:12px;">
+      <div class="form-title" style="margin-bottom: 8px;">🔨 СЛОЖНЫЙ ВЕРСТАК КРАФТА</div>
+      <div style="font-size:13px; color:var(--textdim); margin-bottom:14px;">
         Для создания продвинутых вещей требуются конкретные компоненты и вложения энергии.
       </div>
       <div class="card-list" id="craft-list"></div>
@@ -415,8 +416,8 @@
 
     <!-- ЗАТОЧКА -->
     <div class="tab-view" id="tab-upgrade">
-      <div class="form-title" style="margin-bottom: 6px;">⚡ КУЗНИЦА (ЗАТОЧКА)</div>
-      <div style="font-size:11px; color:var(--textdim); margin-bottom:12px;">
+      <div class="form-title" style="margin-bottom: 8px;">⚡ КУЗНИЦА (ЗАТОЧКА)</div>
+      <div style="font-size:13px; color:var(--textdim); margin-bottom:14px;">
         Увеличивает силу предмета и его ценность. Высокий уровень может <b style="color:var(--neon3);">сломать</b> вещь!
       </div>
       <div class="card-list" id="upgrade-list"></div>
@@ -424,14 +425,14 @@
 
     <!-- ДОСТИЖЕНИЯ -->
     <div class="tab-view" id="tab-achievements">
-      <div class="form-title" style="margin-bottom: 8px;">🏅 ДОСТИЖЕНИЯ</div>
+      <div class="form-title" style="margin-bottom: 10px;">🏅 ДОСТИЖЕНИЯ</div>
       <div class="card-list" id="achievements-list"></div>
     </div>
 
     <!-- БИРЖА -->
     <div class="tab-view" id="tab-market">
-      <div class="form-title" style="margin-bottom: 8px;">🏪 РЫНОК И БИРЖА</div>
-      <div style="font-size:11px; color:var(--textdim); margin-bottom:10px;">Выставляйте свои редкие предметы или покупайте лоты других игроков.</div>
+      <div class="form-title" style="margin-bottom: 10px;">🏪 РЫНОК И БИРЖА</div>
+      <div style="font-size:13px; color:var(--textdim); margin-bottom:12px;">Выставляйте свои редкие предметы или покупайте лоты других игроков.</div>
       <div class="card-list" id="market-list">
         <div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка биржи...</div>
       </div>
@@ -439,8 +440,8 @@
 
     <!-- ТОП -->
     <div class="tab-view" id="tab-leaderboard">
-      <div class="form-title" style="margin-bottom: 8px;">🏆 ТОП ИГРОКОВ</div>
-      <div style="font-size:11px; color:var(--textdim); margin-bottom:12px;">Самые богатые шахтеры этой вселенной.</div>
+      <div class="form-title" style="margin-bottom: 10px;">🏆 ТОП ИГРОКОВ</div>
+      <div style="font-size:13px; color:var(--textdim); margin-bottom:14px;">Самые богатые шахтеры этой вселенной.</div>
       <div class="card-list" id="lb-list">
         <div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>
       </div>
@@ -744,7 +745,7 @@ function spawnFloatNum(x, y, text, isCrit) {
   num.style.top = `${y}px`;
   if (isCrit) {
     num.style.color = 'var(--gold)';
-    num.style.fontSize = '30px';
+    num.style.fontSize = '34px';
   }
   document.body.appendChild(num);
   setTimeout(() => num.remove(), 1100);
@@ -756,12 +757,12 @@ function spawnParticles(x, y, color) {
     p.className = 'particle';
     p.style.left = `${x}px`;
     p.style.top = `${y}px`;
-    p.style.width = `${Math.random() * 6 + 4}px`;
+    p.style.width = `${Math.random() * 8 + 5}px`;
     p.style.height = p.style.width;
     p.style.background = color || 'var(--neon1)';
 
     const angle = Math.random() * Math.PI * 2;
-    const dist = Math.random() * 50 + 20;
+    const dist = Math.random() * 60 + 25;
     p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
     p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
 
@@ -784,7 +785,6 @@ function switchTab(tabId, btn) {
   if (tabId === 'leaderboard') fetchLeaderboard();
 }
 
-// ШАНС ВЫПАДЕНИЯ УМЕНЬШЕН В 3 РАЗА (0.33% вместо 1%)
 const DROP_CHANCE = 0.0033; 
 
 function tryDropLoot() {
@@ -854,14 +854,14 @@ function renderAchievements() {
     const card = document.createElement('div');
     card.className = 'upg-card';
     card.innerHTML = `
-      <div style="font-size:26px;">${isClaimed ? '✅' : (isCompleted ? '🎁' : '🔒')}</div>
+      <div style="font-size:32px;">${isClaimed ? '✅' : (isCompleted ? '🎁' : '🔒')}</div>
       <div style="flex:1;">
-        <div style="font-size:12px; font-weight:700;">${ach.title}</div>
-        <div style="font-size:10px; color:var(--textdim);">${ach.desc}</div>
+        <div style="font-size:14px; font-weight:700;">${ach.title}</div>
+        <div style="font-size:12px; color:var(--textdim);">${ach.desc}</div>
         <div class="progress-bar-bg">
           <div class="progress-bar-fill" style="width: ${progressPercent}%;"></div>
         </div>
-        <div style="font-size:9px; color:var(--neon1); margin-top:2px;">${currentProgress} / ${ach.target}</div>
+        <div style="font-size:11px; color:var(--neon1); margin-top:4px;">${currentProgress} / ${ach.target}</div>
       </div>
       <button class="action-btn" ${(!isCompleted || isClaimed) ? 'style="opacity:0.4;" disabled' : ''} onclick="claimAchievement('${ach.id}', ${ach.rewardCoins})">
         ${isClaimed ? 'ЗАБРАНО' : `+${ach.rewardCoins} ⚡`}
@@ -908,7 +908,7 @@ function renderInventory() {
   list.innerHTML = '';
 
   if (state.inventory.length === 0) {
-    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:20px;">Инвентарь пуст. Потапайте в шахте!</div>`;
+    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:25px; font-size:14px;">Инвентарь пуст. Потапайте в шахте!</div>`;
     return;
   }
 
@@ -920,13 +920,13 @@ function renderInventory() {
     const card = document.createElement('div');
     card.className = `upg-card rarity-${item.rarity}`;
     card.innerHTML = `
-      <div style="font-size:26px;">${item.icon}</div>
+      <div style="font-size:32px;">${item.icon}</div>
       <div style="flex:1;">
-        <div style="font-size:12px; font-weight:700;">${item.name} ${item.level ? `+${item.level}` : ''}</div>
-        <div style="font-size:10px; color:var(--neon4);">Сила: +${calculatedPower} | Качество: x${item.qualityMultiplier}</div>
-        <div style="font-size:9px; color:var(--gold);">Ценность: ${calculatedValue} ⚡</div>
+        <div style="font-size:14px; font-weight:700;">${item.name} ${item.level ? `+${item.level}` : ''}</div>
+        <div style="font-size:12px; color:var(--neon4);">Сила: +${calculatedPower} | Качество: x${item.qualityMultiplier}</div>
+        <div style="font-size:11px; color:var(--gold);">Ценность: ${calculatedValue} ⚡</div>
       </div>
-      <div style="display:flex; flex-direction:column; gap:4px;">
+      <div style="display:flex; flex-direction:column; gap:6px;">
         <button class="action-btn ${isEquipped ? 'unequip-btn' : ''}" onclick="toggleEquip(${item.instanceId})">
           ${isEquipped ? 'СНЯТЬ' : 'НАДЕТЬ'}
         </button>
@@ -975,11 +975,11 @@ function renderCraft() {
     const card = document.createElement('div');
     card.className = `upg-card rarity-${targetItemBase.rarity}`;
     card.innerHTML = `
-      <div style="font-size:26px;">${targetItemBase.icon}</div>
+      <div style="font-size:32px;">${targetItemBase.icon}</div>
       <div style="flex:1;">
-        <div style="font-size:12px; font-weight:700;">Создать: ${targetItemBase.name}</div>
-        <div style="font-size:10px; color:var(--textdim);">Требуется: ${recipe.reqName}</div>
-        <div style="font-size:10px; color:var(--gold);">Цена: ${recipe.costCoins.toLocaleString()} ⚡</div>
+        <div style="font-size:14px; font-weight:700;">Создать: ${targetItemBase.name}</div>
+        <div style="font-size:12px; color:var(--textdim);">Требуется: ${recipe.reqName}</div>
+        <div style="font-size:12px; color:var(--gold);">Цена: ${recipe.costCoins.toLocaleString()} ⚡</div>
       </div>
       <button class="action-btn" ${!canCraft ? 'style="opacity:0.4;" disabled' : ''} onclick="executeCraft('${recipe.id}')">
         СКРАФТИТЬ
@@ -993,28 +993,27 @@ function executeCraft(recipeId) {
   const recipe = CRAFT_RECIPES.find(r => r.id === recipeId);
   if (!recipe) return;
 
-  if (state.coins < recipe.costCoins || !recipe.check(state.inventory)) {
-    showToast('Недостаточно ресурсов или монет!');
+  if (!recipe.check(state.inventory) || state.coins < recipe.costCoins) {
+    showToast('Недостаточно ресурсов или энергии!');
     return;
   }
 
   state.coins -= recipe.costCoins;
   recipe.consume(state.inventory);
-  state.stats.crafts++;
 
-  const targetItemBase = LOOT_ITEMS.find(i => i.id === recipe.resultId);
-  const qualityMultiplier = parseFloat((Math.random() * 0.4 + 1.2).toFixed(2));
-
+  const targetBase = LOOT_ITEMS.find(i => i.id === recipe.resultId);
   const newItem = {
-    ...targetItemBase,
+    ...targetBase,
     instanceId: Date.now() + Math.random(),
     level: 0,
-    qualityMultiplier: qualityMultiplier
+    qualityMultiplier: 1.0
   };
 
   state.inventory.push(newItem);
+  state.stats.crafts++;
+
   playSound('success');
-  showToast(`УСПЕШНЫЙ КРАФТ: ${newItem.icon} ${newItem.name}!`);
+  showToast(`🔨 УСПЕШНЫЙ КРАФТ: ${targetBase.icon} ${targetBase.name}!`);
   renderCraft();
   updateUI();
 }
@@ -1025,59 +1024,56 @@ function renderUpgrade() {
   list.innerHTML = '';
 
   if (state.inventory.length === 0) {
-    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:20px;">Нет предметов для заточки</div>`;
+    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:25px; font-size:14px;">Нет предметов для заточки!</div>`;
     return;
   }
 
   state.inventory.forEach((item, index) => {
-    const currentLvl = item.level || 0;
-    const cost = Math.floor((currentLvl + 1) * 500 * (item.power * 0.5));
+    const currentLevel = item.level || 0;
+    const upgradeCost = Math.floor(500 * Math.pow(1.8, currentLevel));
+    const successChance = Math.max(20, 95 - currentLevel * 12);
 
     const card = document.createElement('div');
     card.className = `upg-card rarity-${item.rarity}`;
     card.innerHTML = `
-      <div style="font-size:26px;">${item.icon}</div>
+      <div style="font-size:32px;">${item.icon}</div>
       <div style="flex:1;">
-        <div style="font-size:12px; font-weight:700;">${item.name} +${currentLvl}</div>
-        <div style="font-size:10px; color:var(--gold);">Цена улучшения: ${cost.toLocaleString()} ⚡</div>
+        <div style="font-size:14px; font-weight:700;">${item.name} +${currentLevel}</div>
+        <div style="font-size:12px; color:var(--neon1);">Шанс успеха: ${successChance}%</div>
+        <div style="font-size:12px; color:var(--gold);">Цена: ${upgradeCost.toLocaleString()} ⚡</div>
       </div>
-      <button class="action-btn" onclick="executeUpgrade(${index})">ЗАТОЧИТЬ</button>
+      <button class="action-btn" onclick="upgradeItem(${index}, ${upgradeCost}, ${successChance})">
+        ЗАТОЧИТЬ
+      </button>
     `;
     list.appendChild(card);
   });
 }
 
-function executeUpgrade(index) {
-  const item = state.inventory[index];
-  const currentLvl = item.level || 0;
-  const cost = Math.floor((currentLvl + 1) * 500 * (item.power * 0.5));
-
+function upgradeItem(index, cost, chance) {
   if (state.coins < cost) {
-    showToast(`НУЖНО ${cost.toLocaleString()} МОНЕТ`);
+    showToast('Не хватает AT Coins!');
     return;
   }
 
   state.coins -= cost;
   state.stats.upgrades++;
 
-  if (Math.random() < 0.6) {
-    item.level = currentLvl + 1;
+  const roll = Math.random() * 100;
+  if (roll <= chance) {
+    state.inventory[index].level = (state.inventory[index].level || 0) + 1;
     playSound('success');
-    showToast(`УСПЕХ! ${item.name} +${item.level}`);
+    showToast(`⚡ УСПЕХ! Предмет заточен до +${state.inventory[index].level}`);
   } else {
+    playSound('fail');
     if (state.shields > 0) {
       state.shields--;
-      playSound('fail');
-      showToast('ЗАТОЧКА НЕ УДАЛАСЬ! Щит спас предмет!');
-    } else if (currentLvl >= 3) {
-      const eqIdx = state.equipped.indexOf(item.instanceId);
-      if (eqIdx !== -1) state.equipped.splice(eqIdx, 1);
-      state.inventory.splice(index, 1);
-      playSound('fail');
-      showToast('ПРЕДМЕТ СЛОМАЛСЯ!');
+      showToast('🛡️ Защита спасла предмет от поломки!');
     } else {
-      playSound('fail');
-      showToast('ЗАТОЧКА НЕ УДАЛАСЬ!');
+      const broken = state.inventory.splice(index, 1)[0];
+      const eqIdx = state.equipped.indexOf(broken.instanceId);
+      if (eqIdx !== -1) state.equipped.splice(eqIdx, 1);
+      showToast(`💥 НЕУДАЧА! Предмет сломался и уничтожен!`);
     }
   }
 
@@ -1085,102 +1081,96 @@ function executeUpgrade(index) {
   updateUI();
 }
 
-/* ================= БИРЖА (МАРКЕТ) ================= */
+/* ================= БИРЖА ================= */
 async function fetchMarketLots() {
-  const marketList = document.getElementById('market-list');
-  marketList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка лотов биржи...</div>`;
+  const list = document.getElementById('market-list');
+  list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка биржи...</div>`;
 
   if (!db) {
-    marketList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Биржа недоступна</div>`;
+    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:20px;">Биржа недоступна</div>`;
     return;
   }
 
   try {
-    const { data: lots, error } = await db
+    const { data, error } = await db
       .from('market_lots')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(20);
 
     if (error) throw error;
 
-    marketList.innerHTML = '';
-    if (!lots || lots.length === 0) {
-      marketList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">На бирже пока нет лотов. Выставите свой предмет первым!</div>`;
+    list.innerHTML = '';
+    if (!data || data.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding:25px; color:var(--textdim); font-size:14px;">На бирже пока нет лотов.</div>`;
       return;
     }
 
-    const currentUserId = getUserId();
-
-    lots.forEach(lot => {
-      const isMyLot = lot.seller_id === currentUserId;
+    data.forEach(lot => {
+      const item = lot.item;
       const card = document.createElement('div');
-      card.className = `upg-card rarity-${lot.item.rarity}`;
+      card.className = `upg-card rarity-${item.rarity || 'common'}`;
       card.innerHTML = `
-        <div style="font-size:26px;">${lot.item.icon}</div>
+        <div style="font-size:32px;">${item.icon || '📦'}</div>
         <div style="flex:1;">
-          <div style="font-size:12px; font-weight:700;">${lot.item.name} ${lot.item.level ? `+${lot.item.level}` : ''}</div>
-          <div style="font-size:10px; color:var(--neon4);">Цена: ${lot.price.toLocaleString()} ⚡</div>
-          <div style="font-size:9px; color:var(--textdim);">Продавец: ${lot.seller_name || 'Игрок'}</div>
+          <div style="font-size:14px; font-weight:700;">${item.name} ${item.level ? `+${item.level}` : ''}</div>
+          <div style="font-size:12px; color:var(--textdim);">Продавец: ${lot.seller_name || 'Игрок'}</div>
+          <div style="font-size:13px; color:var(--gold); font-weight:bold;">Цена: ${lot.price.toLocaleString()} ⚡</div>
         </div>
-        ${isMyLot ? 
-          `<button class="action-btn unequip-btn" onclick="cancelMarketLot('${lot.id}')">СНЯТЬ</button>` : 
-          `<button class="action-btn" onclick="buyMarketLot('${lot.id}', ${lot.price})">КУПИТЬ</button>`
-        }
+        <button class="action-btn" onclick="buyMarketLot('${lot.id}', ${lot.price})">КУПИТЬ</button>
       `;
-      marketList.appendChild(card);
+      list.appendChild(card);
     });
-  } catch (e) {
-    console.error("Ошибка загрузки биржи:", e);
-    marketList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--neon3);">Ошибка загрузки рынка</div>`;
+  } catch(e) {
+    list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--neon3);">Ошибка загрузки рынка</div>`;
   }
 }
 
-async function putItemOnMarket(inventoryIndex) {
-  const item = state.inventory[inventoryIndex];
-  if (state.equipped.includes(item.instanceId)) {
-    showToast('Снимите предмет с экипировки перед продажей!');
-    return;
-  }
+async function putItemOnMarket(index) {
+  const item = state.inventory[index];
+  const pricePrompt = prompt(`Укажите цену для "${item.name}" в AT Coins:`, '1000');
+  if (!pricePrompt) return;
 
-  const defaultPrice = Math.floor(item.baseValue * (item.qualityMultiplier || 1) * (1 + (item.level || 0) * 0.5));
-  const priceInput = prompt(`Укажите цену продажи для ${item.name} в монетах:`, defaultPrice);
-  if (!priceInput) return;
-
-  const price = parseInt(priceInput);
+  const price = parseInt(pricePrompt);
   if (isNaN(price) || price <= 0) {
-    showToast('Укажите корректную цену!');
+    showToast('Некорректная цена!');
     return;
   }
 
   if (!db) {
-    showToast('Биржа недоступна');
+    showToast('База данных недоступна!');
     return;
   }
 
   try {
+    const eqIdx = state.equipped.indexOf(item.instanceId);
+    if (eqIdx !== -1) state.equipped.splice(eqIdx, 1);
+
+    state.inventory.splice(index, 1);
+
     const { error } = await db.from('market_lots').insert({
+      user_id: getUserId(),
       seller_id: getUserId(),
       seller_name: getUserName(),
+      item_id: item.instanceId ? String(item.instanceId) : 'item_' + Date.now(),
       item: item,
       price: price
     });
 
     if (error) throw error;
 
-    state.inventory.splice(inventoryIndex, 1);
     playSound('success');
-    showToast('Предмет успешно выставлен на биржу!');
+    showToast('✅ Лот успешно выставлен на биржу!');
     renderInventory();
     updateUI();
-  } catch (e) {
-    console.error(e);
-    showToast('Ошибка при выставлении лота');
+  } catch(e) {
+    showToast('Ошибка выставления на биржу!');
   }
 }
 
 async function buyMarketLot(lotId, price) {
   if (state.coins < price) {
-    showToast('Недостаточно монет для покупки!');
+    showToast('У вас недостаточно AT Coins!');
     return;
   }
 
@@ -1194,108 +1184,81 @@ async function buyMarketLot(lotId, price) {
       .single();
 
     if (fetchErr || !lot) {
-      showToast('Лот уже продан или удален!');
+      showToast('Этот лот уже купили!');
       fetchMarketLots();
       return;
     }
 
+    if (lot.seller_id === getUserId()) {
+      showToast('Нельзя покупать свои собственные лоты!');
+      return;
+    }
+
+    const { error: delErr } = await db
+      .from('market_lots')
+      .delete()
+      .eq('id', lotId);
+
+    if (delErr) throw delErr;
+
     state.coins -= price;
     state.inventory.push(lot.item);
 
-    await db.from('market_lots').delete().eq('id', lotId);
-
     playSound('success');
-    showToast(`Вы купили ${lot.item.name}!`);
+    showToast('🎉 Вы успешно купили предмет!');
     fetchMarketLots();
     updateUI();
-  } catch (e) {
-    console.error(e);
+  } catch(e) {
     showToast('Ошибка при покупке лота');
   }
 }
 
-async function cancelMarketLot(lotId) {
-  if (!db) return;
-  try {
-    const { data: lot, error: fetchErr } = await db
-      .from('market_lots')
-      .select('*')
-      .eq('id', lotId)
-      .single();
-
-    if (fetchErr || !lot) {
-      showToast('Лот не найден');
-      return;
-    }
-
-    state.inventory.push(lot.item);
-    await db.from('market_lots').delete().eq('id', lotId);
-
-    playSound('success');
-    showToast('Лот снят с продажи');
-    fetchMarketLots();
-    updateUI();
-  } catch (e) {
-    console.error(e);
-    showToast('Не удалось снять лот');
-  }
-}
-
-/* ================= ТОП ИГРОКОВ ================= */
+/* ================= ТОП ================= */
 async function fetchLeaderboard() {
-  const lbList = document.getElementById('lb-list');
-  lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>`;
+  const list = document.getElementById('lb-list');
+  list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>`;
 
   if (!db) {
-    lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Топ недоступен</div>`;
+    list.innerHTML = `<div style="text-align:center; color:var(--textdim); padding:20px;">Топ недоступен</div>`;
     return;
   }
 
   try {
-    const { data: users, error } = await db
+    const { data, error } = await db
       .from('users')
-      .select('username, coins, telegram_id')
+      .select('username, coins')
       .order('coins', { ascending: false })
-      .limit(20);
+      .limit(10);
 
     if (error) throw error;
 
-    lbList.innerHTML = '';
-    if (!users || users.length === 0) {
-      lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--textdim);">Пока нет игроков в топе.</div>`;
+    list.innerHTML = '';
+    if (!data || data.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding:25px; color:var(--textdim); font-size:14px;">Список лидеров пуст.</div>`;
       return;
     }
 
-    users.forEach((u, index) => {
-      const isMe = u.telegram_id === getUserId();
+    data.forEach((user, idx) => {
+      const medals = ['🥇', '🥈', '🥉'];
+      const rankBadge = medals[idx] || `#${idx + 1}`;
+
       const card = document.createElement('div');
       card.className = 'upg-card';
-      if (isMe) card.style.borderColor = 'var(--neon1)';
-
-      let medal = `#${index + 1}`;
-      if (index === 0) medal = '🥇';
-      if (index === 1) medal = '🥈';
-      if (index === 2) medal = '🥉';
-
       card.innerHTML = `
-        <div style="font-size:18px; font-weight:900; width:30px; text-align:center;">${medal}</div>
+        <div style="font-size:24px; font-weight:900; width:35px; text-align:center;">${rankBadge}</div>
         <div style="flex:1;">
-          <div style="font-size:12px; font-weight:700; color:${isMe ? 'var(--neon1)' : 'var(--text);'}">${u.username || 'Игрок'} ${isMe ? '(Вы)' : ''}</div>
+          <div style="font-size:14px; font-weight:700;">${user.username || 'Игрок'}</div>
+          <div style="font-size:12px; color:var(--gold);">Баланс: ${Math.floor(user.coins || 0).toLocaleString()} ⚡</div>
         </div>
-        <div style="font-size:12px; font-weight:900; color:var(--gold);">${Math.floor(u.coins).toLocaleString()} ⚡</div>
       `;
-      lbList.appendChild(card);
+      list.appendChild(card);
     });
-  } catch (e) {
-    console.error(e);
-    lbList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--neon3);">Ошибка загрузки топа</div>`;
+  } catch(e) {
+    list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--neon3);">Ошибка загрузки топа</div>`;
   }
 }
 
-window.addEventListener('load', async () => {
-  await loadData();
-  updateUI();
-});
+loadData();
 </script>
 </body>
 </html>
