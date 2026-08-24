@@ -609,7 +609,10 @@
 /* final clean core overrides */
 #core-btn::before{display:none!important;content:none!important;border:0!important;box-shadow:none!important}
 #game-title{font-weight:500!important}
-\n/* ===== CLANS V1 ===== */
+\n\n/* ===== CLAN DIRECTORY ===== */
+.clan-directory{margin-top:12px;border:1px solid rgba(143,158,205,.12);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),#0b101b;padding:14px}.clan-directory-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.clan-directory-title{font-size:11px;font-weight:900;letter-spacing:.6px}.clan-directory-count{font-size:8px;color:#687490}.clan-search{width:100%;box-sizing:border-box;margin-bottom:9px}.clan-list{display:flex;flex-direction:column;gap:7px;max-height:280px;overflow:auto}.clan-list-card{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:9px;padding:9px;border-radius:14px;border:1px solid rgba(143,158,205,.11);background:rgba(255,255,255,.018)}.clan-list-emblem{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:rgba(104,201,220,.06);border:1px solid rgba(104,201,220,.12);font-size:21px}.clan-list-name{font-size:10px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.clan-list-meta{font-size:7px;color:#687490;margin-top:3px}.clan-list-desc{font-size:7px;color:#858da6;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.clan-join-btn{padding:7px 9px!important;font-size:8px!important;white-space:nowrap}.clan-empty-list{text-align:center;padding:18px 8px;color:#687490;font-size:9px}.clan-directory-note{font-size:7px;color:#505975;margin-top:8px;text-align:center}
+
+/* ===== CLANS V1 ===== */
 #tab-clans{padding-bottom:18px}.clan-head-v1{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}.clan-kicker{font-size:8px;letter-spacing:1.7px;color:#687490;font-weight:800;margin-bottom:3px}.clan-sub{font-size:9px;color:#687490;line-height:1.4;margin-top:4px}.clan-wallet{padding:8px 10px;border:1px solid rgba(104,201,220,.14);border-radius:12px;background:rgba(255,255,255,.02);text-align:right;min-width:90px}.clan-wallet span{display:block;font-size:7px;color:#687490}.clan-wallet b{font-size:12px;color:#f1d779}.clan-create-v1,.clan-card-v1{border:1px solid rgba(143,158,205,.12);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),#0b101b;box-shadow:inset 0 1px rgba(255,255,255,.04),0 18px 38px rgba(0,0,0,.22);padding:18px}.clan-create-v1{text-align:center}.clan-empty-icon{width:70px;height:70px;display:grid;place-items:center;margin:0 auto 10px;border-radius:22px;background:rgba(104,201,220,.06);border:1px solid rgba(104,201,220,.15);font-size:34px}.clan-big-title{font-size:16px;font-weight:800;letter-spacing:.7px}.clan-price{margin:14px 0;color:#f1d779;font-size:18px;font-weight:900}.clan-price span{font-size:8px;color:#687490;font-weight:500}.clan-form-grid{display:grid;grid-template-columns:1fr 110px;gap:7px;margin:12px 0}.clan-textarea{grid-column:1/-1;min-height:70px;resize:none}.clan-create-btn{width:100%;margin-top:3px}.clan-banner{display:flex;align-items:center;gap:11px;padding:12px;border-radius:15px;background:rgba(255,255,255,.018);border:1px solid rgba(143,158,205,.08)}.clan-emblem{width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:rgba(104,201,220,.07);font-size:26px}.clan-tag{font-size:7px;letter-spacing:1.5px;color:#697590}.clan-name{font-size:18px;font-weight:800}.clan-description{font-size:9px;color:#687490;margin-top:2px}.clan-role{margin-left:auto;font-size:8px;color:#d5c37c;white-space:nowrap}.clan-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.clan-stats>div{padding:10px 6px;text-align:center;border-radius:12px;background:rgba(255,255,255,.018);border:1px solid rgba(143,158,205,.07)}.clan-stats b{display:block;font-size:13px;color:#dfe8ff}.clan-stats span{display:block;margin-top:2px;font-size:6px;letter-spacing:1px;color:#65708d}.clan-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.clan-actions .action-btn{font-size:9px}.clan-members{margin-top:8px}.clan-member{display:flex;align-items:center;gap:8px;padding:9px;border-bottom:1px solid rgba(143,158,205,.06);font-size:9px}.clan-member span{color:#58627c;width:22px}.clan-member b{flex:1}.clan-member em{font-style:normal}.clan-loading,.clan-error{text-align:center;padding:22px;color:#687490;font-size:10px}.clan-error{color:#e37a91}@media(max-width:420px){.clan-head-v1{flex-direction:column}.clan-wallet{align-self:stretch;text-align:left}.clan-form-grid{grid-template-columns:1fr}.clan-textarea{grid-column:auto}.clan-role{font-size:7px}.clan-stats b{font-size:11px}}\n
 </style>
 
@@ -3046,11 +3049,19 @@ function renderClan(){
   if(!currentClan){
     root.innerHTML=`<div class="clan-create-v1">
       <div class="clan-empty-icon">🛡️</div><div class="clan-big-title">ТЫ ЕЩЁ НЕ В КЛАНЕ</div>
-      <div class="clan-sub">Создай свой клан или позже присоединись к существующему.</div>
+      <div class="clan-sub">Создай свой клан за 500 000 ⚡ или выбери уже существующий ниже.</div>
       <div class="clan-price">500 000 ⚡ <span>за создание</span></div>
       <div class="clan-form-grid"><input id="clan-create-name" class="market-input" maxlength="28" placeholder="Название клана"><input id="clan-create-tag" class="market-input" maxlength="5" placeholder="Тег, например ATC"><textarea id="clan-create-desc" class="market-input clan-textarea" maxlength="160" placeholder="Короткое описание"></textarea></div>
       <button class="action-btn clan-create-btn" onclick="createClan()">🛡️ СОЗДАТЬ КЛАН ЗА 500 000 ⚡</button>
-    </div>`; return;
+    </div>
+    <div class="clan-directory">
+      <div class="clan-directory-head"><div class="clan-directory-title">🔎 ВЫБЕРИ КЛАН</div><div class="clan-directory-count" id="clan-directory-count">Загрузка...</div></div>
+      <input id="clan-search" class="market-input clan-search" placeholder="Поиск по названию или тегу..." oninput="filterClanDirectory()">
+      <div id="clan-directory-list" class="clan-list"><div class="clan-empty-list">Загрузка доступных кланов...</div></div>
+      <div class="clan-directory-note">Вступление бесплатно · Места ограничены лимитом клана</div>
+    </div>`;
+    loadClanDirectory();
+    return;
   }
   const role=currentClan.role==='leader'?'👑 Лидер':currentClan.role==='officer'?'⭐ Офицер':'Участник';
   root.innerHTML=`<div class="clan-card-v1">
@@ -3059,6 +3070,54 @@ function renderClan(){
     <div class="clan-actions"><button class="action-btn" onclick="depositClan()">💰 ПОПОЛНИТЬ КАЗНУ</button><button class="action-btn" onclick="loadClanMembers()">👥 УЧАСТНИКИ</button></div>
     <div id="clan-members" class="clan-members"></div>
   </div>`;
+}
+
+let clanDirectoryCache=[];
+async function loadClanDirectory(){
+  const box=document.getElementById('clan-directory-list');
+  if(!box || !db) return;
+  try{
+    const {data,error}=await db.rpc('get_clan_directory',{p_search:'',p_limit:30});
+    if(error) throw error;
+    clanDirectoryCache=Array.isArray(data)?data:[];
+    renderClanDirectory(clanDirectoryCache);
+  }catch(e){
+    console.error('loadClanDirectory:',e);
+    box.innerHTML='<div class="clan-empty-list">Не удалось загрузить список кланов.</div>';
+    const c=document.getElementById('clan-directory-count'); if(c) c.textContent='Ошибка';
+  }
+}
+function filterClanDirectory(){
+  const q=(document.getElementById('clan-search')?.value||'').trim().toLowerCase();
+  const rows=clanDirectoryCache.filter(c=>!q||String(c.name||'').toLowerCase().includes(q)||String(c.tag||'').toLowerCase().includes(q));
+  renderClanDirectory(rows);
+}
+function renderClanDirectory(rows){
+  const box=document.getElementById('clan-directory-list'); if(!box) return;
+  const count=document.getElementById('clan-directory-count'); if(count) count.textContent=`${rows.length} доступно`;
+  if(!rows.length){ box.innerHTML='<div class="clan-empty-list">Пока нет подходящих кланов.<br>Создай свой первым.</div>'; return; }
+  box.innerHTML=rows.map(c=>{
+    const members=Number(c.member_count||0), limit=Number(c.member_limit||25);
+    const full=members>=limit;
+    return `<div class="clan-list-card">
+      <div class="clan-list-emblem">${clanEscape(c.emblem||'🛡️')}</div>
+      <div style="min-width:0"><div class="clan-list-name">${clanEscape(c.name)} <span style="color:#687490;font-weight:700">[${clanEscape(c.tag)}]</span></div>
+      <div class="clan-list-meta">LVL ${Number(c.level||1)} · 👥 ${members}/${limit}</div>
+      <div class="clan-list-desc">${clanEscape(c.description||'Без описания')}</div></div>
+      <button class="action-btn clan-join-btn" ${full?'disabled style="opacity:.45;cursor:not-allowed"':''} onclick="joinClan('${c.clan_id}')">${full?'ЗАПОЛНЕН':'ВСТУПИТЬ'}</button>
+    </div>`;
+  }).join('');
+}
+async function joinClan(clanId){
+  if(!clanId) return;
+  try{
+    const {error}=await db.rpc('join_clan',{p_telegram_id:getUserId(),p_clan_id:clanId});
+    if(error) throw error;
+    showToast('🛡️ Ты вступил в клан');
+    await loadData();
+    await loadClan();
+    updateUI(true);
+  }catch(e){ console.error(e); showToast('❌ '+(e.message||'Не удалось вступить в клан')); }
 }
 
 async function createClan(){
