@@ -609,6 +609,8 @@
 /* final clean core overrides */
 #core-btn::before{display:none!important;content:none!important;border:0!important;box-shadow:none!important}
 #game-title{font-weight:500!important}
+\n/* ===== CLANS V1 ===== */
+#tab-clans{padding-bottom:18px}.clan-head-v1{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}.clan-kicker{font-size:8px;letter-spacing:1.7px;color:#687490;font-weight:800;margin-bottom:3px}.clan-sub{font-size:9px;color:#687490;line-height:1.4;margin-top:4px}.clan-wallet{padding:8px 10px;border:1px solid rgba(104,201,220,.14);border-radius:12px;background:rgba(255,255,255,.02);text-align:right;min-width:90px}.clan-wallet span{display:block;font-size:7px;color:#687490}.clan-wallet b{font-size:12px;color:#f1d779}.clan-create-v1,.clan-card-v1{border:1px solid rgba(143,158,205,.12);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),#0b101b;box-shadow:inset 0 1px rgba(255,255,255,.04),0 18px 38px rgba(0,0,0,.22);padding:18px}.clan-create-v1{text-align:center}.clan-empty-icon{width:70px;height:70px;display:grid;place-items:center;margin:0 auto 10px;border-radius:22px;background:rgba(104,201,220,.06);border:1px solid rgba(104,201,220,.15);font-size:34px}.clan-big-title{font-size:16px;font-weight:800;letter-spacing:.7px}.clan-price{margin:14px 0;color:#f1d779;font-size:18px;font-weight:900}.clan-price span{font-size:8px;color:#687490;font-weight:500}.clan-form-grid{display:grid;grid-template-columns:1fr 110px;gap:7px;margin:12px 0}.clan-textarea{grid-column:1/-1;min-height:70px;resize:none}.clan-create-btn{width:100%;margin-top:3px}.clan-banner{display:flex;align-items:center;gap:11px;padding:12px;border-radius:15px;background:rgba(255,255,255,.018);border:1px solid rgba(143,158,205,.08)}.clan-emblem{width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:rgba(104,201,220,.07);font-size:26px}.clan-tag{font-size:7px;letter-spacing:1.5px;color:#697590}.clan-name{font-size:18px;font-weight:800}.clan-description{font-size:9px;color:#687490;margin-top:2px}.clan-role{margin-left:auto;font-size:8px;color:#d5c37c;white-space:nowrap}.clan-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.clan-stats>div{padding:10px 6px;text-align:center;border-radius:12px;background:rgba(255,255,255,.018);border:1px solid rgba(143,158,205,.07)}.clan-stats b{display:block;font-size:13px;color:#dfe8ff}.clan-stats span{display:block;margin-top:2px;font-size:6px;letter-spacing:1px;color:#65708d}.clan-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.clan-actions .action-btn{font-size:9px}.clan-members{margin-top:8px}.clan-member{display:flex;align-items:center;gap:8px;padding:9px;border-bottom:1px solid rgba(143,158,205,.06);font-size:9px}.clan-member span{color:#58627c;width:22px}.clan-member b{flex:1}.clan-member em{font-style:normal}.clan-loading,.clan-error{text-align:center;padding:22px;color:#687490;font-size:10px}.clan-error{color:#e37a91}@media(max-width:420px){.clan-head-v1{flex-direction:column}.clan-wallet{align-self:stretch;text-align:left}.clan-form-grid{grid-template-columns:1fr}.clan-textarea{grid-column:auto}.clan-role{font-size:7px}.clan-stats b{font-size:11px}}\n
 </style>
 
 <style id="mobile-layout-fix">
@@ -1596,6 +1598,17 @@ input:focus,select:focus,textarea:focus{
       </div>
     </div>
 
+    <!-- КЛАНЫ -->
+    <div class="tab-view" id="tab-clans">
+      <div class="clan-head-v1">
+        <div><div class="clan-kicker">AT COIN / COMMUNITY</div><div class="form-title" style="margin:0;">🛡️ КЛАНЫ</div><div class="clan-sub">Объединяйтесь, развивайте клан и поднимайтесь в клановом рейтинге.</div></div>
+        <div class="clan-wallet"><span>ТВОЙ БАЛАНС</span><b id="clan-my-coins">0 ⚡</b></div>
+      </div>
+      <div id="clan-content">
+        <div class="clan-loading">Загрузка клана...</div>
+      </div>
+    </div>
+
     <!-- ИГРЫ -->
     <div class="tab-view" id="tab-games">
       <div id="casino-home" class="casino-home">
@@ -1749,6 +1762,10 @@ input:focus,select:focus,textarea:focus{
     <button class="side-nav-btn" onclick="switchSideTab('contracts', this)">
       <span class="nav-btn-icon">🎯</span>
       <span>Контракты</span>
+    </button>
+    <button class="side-nav-btn" onclick="switchSideTab('clans', this)">
+      <span class="nav-btn-icon">🛡️</span>
+      <span>Кланы</span>
     </button>
   </div>
 </div>
@@ -2974,6 +2991,7 @@ function switchTab(tabId, btn) {
   if (tabId === 'leaderboard') fetchLeaderboard();
   if (tabId === 'profile') renderProfile();
   if (tabId === 'contracts') renderContracts();
+  if (tabId === 'clans') loadClan();
   if (tabId === 'games') updateCasinoBalance();
 }
 
@@ -3004,6 +3022,63 @@ function restoreSideShelfState() {
   }
 }
 
+let currentClan = null;
+
+function clanEscape(v){ return escapeHtml(String(v ?? '')); }
+function clanMoney(v){ return Math.floor(Number(v)||0).toLocaleString('ru-RU'); }
+
+async function loadClan(){
+  const root=document.getElementById('clan-content');
+  if(!root || !db || !getUserId()) return;
+  root.innerHTML='<div class="clan-loading">Загрузка клана...</div>';
+  try{
+    const {data,error}=await db.rpc('get_my_clan',{p_telegram_id:getUserId()});
+    if(error) throw error;
+    currentClan = Array.isArray(data) ? (data[0] || null) : data;
+    renderClan();
+    const {data:balance}=await db.from('users').select('coins').eq('telegram_id',getUserId()).maybeSingle();
+    document.getElementById('clan-my-coins').textContent=clanMoney(balance?.coins||0)+' ⚡';
+  }catch(e){ console.error('loadClan:',e); root.innerHTML='<div class="clan-error">Не удалось загрузить кланы. Проверь SQL для системы кланов.</div>'; }
+}
+
+function renderClan(){
+  const root=document.getElementById('clan-content'); if(!root) return;
+  if(!currentClan){
+    root.innerHTML=`<div class="clan-create-v1">
+      <div class="clan-empty-icon">🛡️</div><div class="clan-big-title">ТЫ ЕЩЁ НЕ В КЛАНЕ</div>
+      <div class="clan-sub">Создай свой клан или позже присоединись к существующему.</div>
+      <div class="clan-price">500 000 ⚡ <span>за создание</span></div>
+      <div class="clan-form-grid"><input id="clan-create-name" class="market-input" maxlength="28" placeholder="Название клана"><input id="clan-create-tag" class="market-input" maxlength="5" placeholder="Тег, например ATC"><textarea id="clan-create-desc" class="market-input clan-textarea" maxlength="160" placeholder="Короткое описание"></textarea></div>
+      <button class="action-btn clan-create-btn" onclick="createClan()">🛡️ СОЗДАТЬ КЛАН ЗА 500 000 ⚡</button>
+    </div>`; return;
+  }
+  const role=currentClan.role==='leader'?'👑 Лидер':currentClan.role==='officer'?'⭐ Офицер':'Участник';
+  root.innerHTML=`<div class="clan-card-v1">
+    <div class="clan-banner"><div class="clan-emblem">${clanEscape(currentClan.emblem||'🛡️')}</div><div><div class="clan-tag">[${clanEscape(currentClan.tag)}]</div><div class="clan-name">${clanEscape(currentClan.name)}</div><div class="clan-description">${clanEscape(currentClan.description||'Без описания')}</div></div><div class="clan-role">${role}</div></div>
+    <div class="clan-stats"><div><b>${Number(currentClan.level||1)}</b><span>УРОВЕНЬ</span></div><div><b>${Number(currentClan.member_count||0)} / ${Number(currentClan.member_limit||25)}</b><span>УЧАСТНИКИ</span></div><div><b>${clanMoney(currentClan.treasury||0)}</b><span>КАЗНА ⚡</span></div></div>
+    <div class="clan-actions"><button class="action-btn" onclick="depositClan()">💰 ПОПОЛНИТЬ КАЗНУ</button><button class="action-btn" onclick="loadClanMembers()">👥 УЧАСТНИКИ</button></div>
+    <div id="clan-members" class="clan-members"></div>
+  </div>`;
+}
+
+async function createClan(){
+  const name=document.getElementById('clan-create-name')?.value.trim(); const tag=document.getElementById('clan-create-tag')?.value.trim().toUpperCase(); const desc=document.getElementById('clan-create-desc')?.value.trim();
+  if(!name||!tag){ showToast('⚠️ Укажи название и тег'); return; }
+  if(name.length<3||tag.length<2){ showToast('⚠️ Слишком короткое название или тег'); return; }
+  try{ const {data,error}=await db.rpc('create_clan',{p_telegram_id:getUserId(),p_name:name,p_tag:tag,p_description:desc||null}); if(error) throw error; showToast('🛡️ Клан создан'); await loadData(); await loadClan(); updateUI(true); }catch(e){ console.error(e); showToast('❌ '+(e.message||'Не удалось создать клан')); }
+}
+
+async function depositClan(){
+  const amount=Number(prompt('Сколько AT Coins внести в казну?','10000'));
+  if(!Number.isFinite(amount)||amount<100) return;
+  try{ const {error}=await db.rpc('deposit_clan',{p_telegram_id:getUserId(),p_amount:Math.floor(amount)}); if(error) throw error; showToast('💰 Казна пополнена'); await loadData(); await loadClan(); updateUI(true); }catch(e){ showToast('❌ '+(e.message||'Не удалось пополнить казну')); }
+}
+
+async function loadClanMembers(){
+  const box=document.getElementById('clan-members'); if(!box||!currentClan) return; box.innerHTML='<div class="clan-loading">Загрузка участников...</div>';
+  try{ const {data,error}=await db.rpc('get_clan_members',{p_clan_id:currentClan.clan_id}); if(error) throw error; box.innerHTML=(data||[]).map((m,i)=>`<div class="clan-member"><span>#${i+1}</span><b>${clanEscape(m.username||'Игрок')}</b><em>${m.role==='leader'?'👑':m.role==='officer'?'⭐':'•'}</em></div>`).join('')||'<div class="clan-sub">Участников пока нет.</div>'; }catch(e){box.innerHTML='<div class="clan-error">Не удалось загрузить участников.</div>';}
+}
+
 function switchSideTab(tabId, btn) {
   document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-btn, .side-nav-btn').forEach(b => b.classList.remove('active'));
@@ -3013,6 +3088,7 @@ function switchSideTab(tabId, btn) {
   if (tabId === 'leaderboard') fetchLeaderboard();
   if (tabId === 'profile') renderProfile();
   if (tabId === 'contracts') renderContracts();
+  if (tabId === 'clans') loadClan();
   if (tabId === 'games') updateCasinoBalance();
 }
 
