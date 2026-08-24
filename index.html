@@ -614,6 +614,55 @@
 
 /* ===== CLANS V1 ===== */
 #tab-clans{padding-bottom:18px}.clan-head-v1{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}.clan-kicker{font-size:8px;letter-spacing:1.7px;color:#687490;font-weight:800;margin-bottom:3px}.clan-sub{font-size:9px;color:#687490;line-height:1.4;margin-top:4px}.clan-wallet{padding:8px 10px;border:1px solid rgba(104,201,220,.14);border-radius:12px;background:rgba(255,255,255,.02);text-align:right;min-width:90px}.clan-wallet span{display:block;font-size:7px;color:#687490}.clan-wallet b{font-size:12px;color:#f1d779}.clan-create-v1,.clan-card-v1{border:1px solid rgba(143,158,205,.12);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),#0b101b;box-shadow:inset 0 1px rgba(255,255,255,.04),0 18px 38px rgba(0,0,0,.22);padding:18px}.clan-create-v1{text-align:center}.clan-empty-icon{width:70px;height:70px;display:grid;place-items:center;margin:0 auto 10px;border-radius:22px;background:rgba(104,201,220,.06);border:1px solid rgba(104,201,220,.15);font-size:34px}.clan-big-title{font-size:16px;font-weight:800;letter-spacing:.7px}.clan-price{margin:14px 0;color:#f1d779;font-size:18px;font-weight:900}.clan-price span{font-size:8px;color:#687490;font-weight:500}.clan-form-grid{display:grid;grid-template-columns:1fr 110px;gap:7px;margin:12px 0}.clan-textarea{grid-column:1/-1;min-height:70px;resize:none}.clan-create-btn{width:100%;margin-top:3px}.clan-banner{display:flex;align-items:center;gap:11px;padding:12px;border-radius:15px;background:rgba(255,255,255,.018);border:1px solid rgba(143,158,205,.08)}.clan-emblem{width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:rgba(104,201,220,.07);font-size:26px}.clan-tag{font-size:7px;letter-spacing:1.5px;color:#697590}.clan-name{font-size:18px;font-weight:800}.clan-description{font-size:9px;color:#687490;margin-top:2px}.clan-role{margin-left:auto;font-size:8px;color:#d5c37c;white-space:nowrap}.clan-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.clan-stats>div{padding:10px 6px;text-align:center;border-radius:12px;background:rgba(255,255,255,.018);border:1px solid rgba(143,158,205,.07)}.clan-stats b{display:block;font-size:13px;color:#dfe8ff}.clan-stats span{display:block;margin-top:2px;font-size:6px;letter-spacing:1px;color:#65708d}.clan-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.clan-actions .action-btn{font-size:9px}.clan-members{margin-top:8px}.clan-member{display:flex;align-items:center;gap:8px;padding:9px;border-bottom:1px solid rgba(143,158,205,.06);font-size:9px}.clan-member span{color:#58627c;width:22px}.clan-member b{flex:1}.clan-member em{font-style:normal}.clan-loading,.clan-error{text-align:center;padding:22px;color:#687490;font-size:10px}.clan-error{color:#e37a91}@media(max-width:420px){.clan-head-v1{flex-direction:column}.clan-wallet{align-self:stretch;text-align:left}.clan-form-grid{grid-template-columns:1fr}.clan-textarea{grid-column:auto}.clan-role{font-size:7px}.clan-stats b{font-size:11px}}\n
+
+/* === GAMES VISUAL REDESIGN 3.0 === */
+.games-topbar,.games-gamebar{align-items:center}
+.games-hub{max-width:1040px}
+.games-feature{min-height:185px;padding:28px 32px;border-radius:24px;background:radial-gradient(circle at 82% 50%,rgba(105,70,255,.25),transparent 28%),radial-gradient(circle at 18% 100%,rgba(0,224,255,.08),transparent 32%),linear-gradient(145deg,#0d1423,#080d16);position:relative}
+.games-feature:after{content:"";position:absolute;inset:1px;border-radius:23px;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.08),transparent 35%,transparent 70%,rgba(0,230,255,.08));}
+.games-feature-orb{width:118px;height:118px;font-size:48px;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 70px rgba(73,93,255,.28),inset 0 0 35px rgba(0,220,255,.08)}
+.games-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.games-tile{min-height:220px;padding:22px 22px 18px;border-radius:22px;position:relative;overflow:hidden;text-align:left;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.games-tile:hover{transform:translateY(-4px);box-shadow:0 24px 55px rgba(0,0,0,.28)}
+.coin-tile{background:radial-gradient(circle at 78% 32%,rgba(255,190,45,.16),transparent 25%),linear-gradient(145deg,#15161e,#0b1018)}
+.roulette-tile{background:radial-gradient(circle at 78% 32%,rgba(255,48,100,.14),transparent 26%),linear-gradient(145deg,#15131b,#0b1018)}
+.casino-game-icon{width:58px;height:58px;display:grid;place-items:center;border-radius:18px;background:rgba(255,255,255,.045);font-size:32px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.22)}
+.games-page{max-width:1040px}
+.casino-back{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);padding:8px 12px;border-radius:10px;color:var(--textdim);font-size:10px;margin-bottom:10px}
+.mode-switcher{background:rgba(7,10,17,.72);padding:5px;border-radius:15px;border:1px solid rgba(255,255,255,.07);display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px;backdrop-filter:blur(12px)}
+.mode-btn{min-height:48px;border:0;border-radius:11px;background:transparent;color:var(--textdim);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:.2s}
+.mode-btn b{font-size:9px;letter-spacing:.1em}.mode-btn small{font-size:8px;opacity:.7}.mode-btn.active{background:linear-gradient(145deg,rgba(47,222,255,.13),rgba(139,85,255,.12));color:#fff;box-shadow:inset 0 0 0 1px rgba(74,226,255,.2),0 8px 25px rgba(0,0,0,.18)}
+.games-stage{border-radius:28px!important;padding:28px 28px 22px!important;min-height:590px!important;position:relative;overflow:hidden!important;background:radial-gradient(circle at 50% 32%,rgba(51,224,255,.055),transparent 25%),radial-gradient(circle at 50% 65%,rgba(125,72,255,.06),transparent 34%),linear-gradient(180deg,#0d1420,#080d15)!important;border:1px solid rgba(255,255,255,.08)!important;box-shadow:0 30px 90px rgba(0,0,0,.34)!important}
+.games-stage:before{content:"";position:absolute;left:8%;right:8%;top:155px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);pointer-events:none}
+.coin-stage .coinflip-object{width:240px;height:240px;margin:38px auto 18px;display:grid;place-items:center;position:relative}
+.coin-stage .coinflip-glow{width:185px;height:185px;border-radius:50%;background:radial-gradient(circle,rgba(255,210,80,.2),rgba(0,0,0,0) 68%);filter:blur(5px);animation:gameGlow 2.8s ease-in-out infinite}
+.coin-stage .coinflip-coin{position:absolute;width:176px;height:176px;filter:drop-shadow(0 25px 30px rgba(0,0,0,.48));}
+.coin-stage .coinflip-face{border-width:5px;box-shadow:inset 0 0 0 5px rgba(255,255,255,.16),inset 0 -16px 25px rgba(80,40,0,.32),0 0 55px rgba(255,193,7,.2)}
+.coin-stage .coinflip-face strong{font-size:48px}.coin-stage .coinflip-face small{font-size:9px;letter-spacing:4px}
+@keyframes gameGlow{50%{transform:scale(1.12);opacity:.72}}
+.casino-stage-title{font-size:15px!important;letter-spacing:.16em!important;font-weight:900!important;color:#f5f7ff!important}
+.casino-stage-sub{font-size:10px!important;color:#8e9aae!important}
+.casino-game-controls{max-width:520px;margin:18px auto 0}
+.casino-input{height:46px!important;border-radius:12px!important;background:rgba(255,255,255,.035)!important;border:1px solid rgba(255,255,255,.09)!important;font-size:15px!important;text-align:center}
+.casino-big-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:9px}
+.casino-big-actions .casino-btn{height:50px;border-radius:13px;font-weight:900;letter-spacing:.04em}
+.casino-result{max-width:520px!important;margin:12px auto 0!important;min-height:42px;display:grid;place-items:center;border-radius:12px!important;background:rgba(255,255,255,.025)!important;border:1px solid rgba(255,255,255,.06)!important;font-size:10px!important}
+.roulette-stage .roulette-object{width:360px;height:360px;margin:22px auto 12px}
+.roulette-stage .roulette-wheel{width:320px;height:320px;box-shadow:inset 0 0 0 10px #080a10,inset 0 0 0 12px rgba(255,255,255,.08),0 28px 55px rgba(0,0,0,.5),0 0 70px rgba(255,50,95,.08)}
+.roulette-stage .roulette-wheel:before{inset:25px;box-shadow:inset 0 0 0 14px rgba(0,0,0,.2),inset 0 0 35px rgba(0,0,0,.5)}
+.roulette-stage .roulette-wheel:after{inset:83px}
+.roulette-stage .roulette-center{width:92px;height:92px;background:radial-gradient(circle at 35% 30%,#263147,#080c14 72%);box-shadow:0 0 0 5px rgba(255,255,255,.045),0 0 35px rgba(0,220,255,.12);border:1px solid rgba(255,255,255,.1)}
+.roulette-stage .roulette-center .num{font-size:26px;font-weight:900}.roulette-stage .roulette-center .label{font-size:7px;letter-spacing:.18em;color:#8491a6}
+.roulette-ball{position:absolute;width:17px;height:17px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff,#dce5ed 35%,#7c8794 70%,#303844);box-shadow:0 3px 10px rgba(0,0,0,.65),0 0 12px rgba(255,255,255,.18);z-index:5;top:38px;left:50%;transform:translateX(-50%);transform-origin:8px 142px;animation:ballOrbit 3.8s linear infinite}
+.roulette-ball:after{content:"";position:absolute;inset:3px;border-radius:50%;background:rgba(255,255,255,.35);filter:blur(1px)}
+@keyframes ballOrbit{to{transform:translateX(-50%) rotate(360deg)}}
+.roulette-pointer{z-index:8!important;filter:drop-shadow(0 3px 5px rgba(0,0,0,.6))}
+.roulette-picks{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.roulette-pick{height:43px;border-radius:11px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);color:#aeb7c7;font-size:9px;font-weight:800;transition:.2s}
+.roulette-pick.active{color:#fff;background:linear-gradient(145deg,rgba(255,65,100,.16),rgba(120,70,255,.1));border-color:rgba(255,80,110,.3);box-shadow:0 8px 25px rgba(0,0,0,.2)}
+.casino-mini-history{max-width:520px!important;margin:10px auto!important;min-height:24px}
+.games-footer-note{text-align:center;padding:16px 0 4px;font-size:8px;color:#647085;letter-spacing:.04em}
+@media(max-width:700px){.games-grid{grid-template-columns:1fr}.games-feature{padding:20px;min-height:150px}.games-feature-orb{width:82px;height:82px;font-size:34px}.games-stage{padding:20px 14px 18px!important;min-height:540px!important}.mode-switcher{grid-template-columns:repeat(2,1fr)}.coin-stage .coinflip-object{width:200px;height:200px;margin-top:25px}.coin-stage .coinflip-coin{width:150px;height:150px}.coin-stage .coinflip-face strong{font-size:40px}.roulette-stage .roulette-object{width:290px;height:290px}.roulette-stage .roulette-wheel{width:255px;height:255px}.roulette-stage .roulette-wheel:after{inset:68px}.roulette-stage .roulette-center{width:78px;height:78px}.roulette-picks{grid-template-columns:1fr}.games-wallet{min-width:125px}.games-title,.games-page-title{font-size:20px}}
 </style>
 
 <style id="mobile-layout-fix">
@@ -1424,6 +1473,10 @@ input:focus,select:focus,textarea:focus{
   .side-nav-btn{width:48px!important;min-width:48px!important;height:48px!important;min-height:48px!important}
 }
 
+
+/* ===== GAMES 2.0 ===== */
+.games-hub,.casino-page{max-width:980px;margin:0 auto}.games-topbar,.games-gamebar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px}.games-kicker{font-size:9px;letter-spacing:.18em;color:var(--cyan);font-weight:800;margin-bottom:3px}.games-title,.games-page-title{font-size:24px;letter-spacing:.04em}.games-subtitle{font-size:11px;color:var(--textdim);margin-top:4px}.games-wallet{min-width:150px;padding:10px 14px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015));text-align:right}.games-wallet span{display:block;font-size:8px;letter-spacing:.14em;color:var(--textdim)}.games-wallet b{display:block;font-size:19px;margin-top:2px}.games-feature{min-height:150px;border:1px solid rgba(80,220,255,.16);border-radius:20px;padding:24px;display:flex;align-items:center;justify-content:space-between;overflow:hidden;background:radial-gradient(circle at 85% 50%,rgba(89,80,255,.22),transparent 34%),linear-gradient(135deg,#0d1422,#0a101a);box-shadow:0 18px 55px rgba(0,0,0,.22);margin-bottom:18px}.games-feature-copy{max-width:600px}.games-feature-label{font-size:8px;letter-spacing:.2em;color:var(--cyan);font-weight:900}.games-feature h2{margin:6px 0;font-size:27px}.games-feature p{margin:0;color:var(--textdim);font-size:11px}.games-feature-orb{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;font-size:38px;border:1px solid rgba(255,255,255,.12);background:radial-gradient(circle,#24355a,#101827 68%);box-shadow:0 0 50px rgba(85,120,255,.25)}.games-section-head{display:flex;justify-content:space-between;align-items:center;margin:12px 2px 9px;font-size:10px;font-weight:900;letter-spacing:.12em}.games-section-head small{font-size:9px;color:var(--textdim);letter-spacing:0}.games-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.games-tile{padding:18px!important;text-align:left!important;min-height:205px;position:relative;overflow:hidden}.games-tile:before{content:"";position:absolute;inset:-60px auto auto -50px;width:180px;height:180px;border-radius:50%;background:rgba(66,220,255,.07);filter:blur(10px)}.games-tile.roulette-tile:before{background:rgba(155,92,255,.08)}.games-tile-top,.games-tile-bottom{display:flex;justify-content:space-between;align-items:center}.games-pill{font-size:8px;padding:5px 8px;border:1px solid var(--border);border-radius:999px;color:var(--textdim);letter-spacing:.08em}.games-tile .casino-game-icon{font-size:34px;margin:0 0 20px}.games-tile .casino-game-name{font-size:20px;letter-spacing:.04em}.games-tile .casino-game-desc{max-width:330px;line-height:1.5}.games-tile-bottom{margin-top:22px;font-size:9px;color:var(--textdim)}.games-tile-bottom b{color:var(--cyan);font-size:9px}.games-footer-note{font-size:9px;color:var(--textdim);text-align:center;margin-top:12px}.games-gamebar{align-items:center}.games-page-title{font-weight:900}.mode-switcher{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}.mode-btn{border:1px solid var(--border);background:rgba(255,255,255,.025);border-radius:11px;padding:9px 7px;text-align:left;color:var(--textdim);cursor:pointer}.mode-btn b{display:block;font-size:9px;color:var(--text)}.mode-btn small{display:block;font-size:8px;margin-top:3px}.mode-btn.active{border-color:rgba(55,230,255,.55);background:rgba(55,230,255,.07);box-shadow:inset 0 0 22px rgba(55,230,255,.035)}.mode-btn.active b{color:var(--cyan)}.games-stage{min-height:500px}.games-mode-info{font-size:9px;letter-spacing:.08em;color:var(--textdim);text-align:center;margin-bottom:10px}.streak-meter{display:none;max-width:260px;margin:0 auto 10px;padding:7px 10px;border:1px solid var(--border);border-radius:10px;justify-content:space-between;font-size:9px}.streak-meter b{color:var(--cyan);font-size:12px}.number-pick{margin:10px auto 0;max-width:360px}.number-pick>span{display:block;text-align:center;font-size:8px;color:var(--textdim);letter-spacing:.12em;margin-bottom:6px}.number-pick #roulette-number-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}.number-pick button{border:1px solid var(--border);background:rgba(255,255,255,.025);color:var(--text);border-radius:8px;padding:7px 2px;font-size:9px}.number-pick button.active{border-color:var(--cyan);color:var(--cyan);background:rgba(55,230,255,.08)}
+@media(max-width:700px){.games-topbar,.games-gamebar{gap:8px}.games-wallet{min-width:110px}.games-feature{padding:18px;min-height:125px}.games-feature h2{font-size:21px}.games-feature-orb{width:68px;height:68px;font-size:28px}.games-grid{grid-template-columns:1fr}.mode-switcher{grid-template-columns:repeat(2,1fr)}.games-stage{min-height:450px}.games-title,.games-page-title{font-size:20px}}
 </style>
 </head>
 <body>
@@ -1614,91 +1667,54 @@ input:focus,select:focus,textarea:focus{
 
     <!-- ИГРЫ -->
     <div class="tab-view" id="tab-games">
-      <div id="casino-home" class="casino-home">
-        <div class="form-title" style="margin-bottom:0;">🎰 ИГРЫ</div>
-        <div class="casino-hero">
-          <div class="casino-hero-title">МИНИ-ИГРЫ AT COIN</div>
-          <div class="casino-hero-sub">Выбери игру. Здесь используются только внутриигровые AT Coins — без вывода реальных денег.</div>
+      <div id="casino-home" class="casino-home games-hub">
+        <div class="games-topbar"><div><div class="games-kicker">AT COIN / ARCADE</div><div class="form-title games-title">🎮 ИГРЫ</div><div class="games-subtitle">Мини-игры на внутриигровые AT Coins. Выбирай режим и риск.</div></div><div class="games-wallet"><span>БАЛАНС</span><b id="casino-balance">0 ⚡</b></div></div>
+        <div class="games-feature"><div class="games-feature-copy"><span class="games-feature-label">HOT MODE</span><h2>🎲 РИСК И НАГРАДА</h2><p>Короткие раунды, понятные коэффициенты и несколько способов играть.</p></div><div class="games-feature-orb">⚡</div></div>
+        <div class="games-section-head"><span>ВЫБЕРИ ИГРУ</span><small>2 игры · 8 режимов</small></div>
+        <div class="casino-game-grid games-grid">
+          <button class="casino-game-tile games-tile coin-tile" onclick="openCasinoGame('coinflip')"><div class="games-tile-top"><div class="casino-game-icon">🪙</div><span class="games-pill">4 РЕЖИМА</span></div><div class="casino-game-name">МОНЕТКА</div><div class="casino-game-desc">От классического 50/50 до серии и риск-режима.</div><div class="games-tile-bottom"><span>от 10 ⚡</span><b>ИГРАТЬ →</b></div></button>
+          <button class="casino-game-tile games-tile roulette-tile" onclick="openCasinoGame('roulette')"><div class="games-tile-top"><div class="casino-game-icon">🎡</div><span class="games-pill">4 РЕЖИМА</span></div><div class="casino-game-name">МИНИ-РУЛЕТКА</div><div class="casino-game-desc">Цвет, число и рискованный режим с повышенным коэффициентом.</div><div class="games-tile-bottom"><span>от 10 ⚡</span><b>ИГРАТЬ →</b></div></button>
         </div>
-        <div class="casino-balance">
-          <div><div style="font-size:10px;color:var(--textdim);">ДОСТУПНО</div><div class="v" id="casino-balance">0 ⚡</div></div>
-          <div style="font-size:26px;">🎰</div>
-        </div>
-        <div class="casino-game-grid">
-          <button class="casino-game-tile" onclick="openCasinoGame('coinflip')">
-            <div class="casino-game-icon">🪙</div>
-            <div class="casino-game-name">Монетка</div>
-            <div class="casino-game-desc">Орёл или решка. Быстрая игра на одну ставку.</div>
-            <div class="casino-game-arrow">›</div>
-          </button>
-          <button class="casino-game-tile" onclick="openCasinoGame('roulette')">
-            <div class="casino-game-icon">🎡</div>
-            <div class="casino-game-name">Мини-рулетка</div>
-            <div class="casino-game-desc">Красное, чёрное или зелёное 0.</div>
-            <div class="casino-game-arrow">›</div>
-          </button>
-        </div>
-        <div class="casino-note">💡 Ставка: от 10 ⚡ до 10 000 ⚡. Игры являются внутриигровыми мини-играми.</div>
+        <div class="games-footer-note">⚡ Все ставки используют только игровую валюту. Реальные деньги не участвуют.</div>
       </div>
 
       <div id="casino-page-coinflip" class="casino-page">
         <button class="casino-back" onclick="closeCasinoGame()">‹ Все игры</button>
-        <div class="casino-balance">
-          <div><div style="font-size:10px;color:var(--textdim);">ДОСТУПНО</div><div class="v" id="casino-balance-coinflip">0 ⚡</div></div>
-          <div style="font-size:24px;">🪙</div>
+        <div class="games-gamebar"><div><div class="games-kicker">COINFLIP</div><div class="games-page-title">🪙 МОНЕТКА</div></div><div class="games-wallet"><span>БАЛАНС</span><b id="casino-balance-coinflip">0 ⚡</b></div></div>
+        <div class="mode-switcher" id="coinflip-modes">
+          <button class="mode-btn active" data-mode="classic" onclick="setCoinMode('classic',this)"><b>CLASSIC</b><small>1.9×</small></button>
+          <button class="mode-btn" data-mode="double" onclick="setCoinMode('double',this)"><b>DOUBLE</b><small>3.6×</small></button>
+          <button class="mode-btn" data-mode="risk" onclick="setCoinMode('risk',this)"><b>RISK</b><small>до 5×</small></button>
+          <button class="mode-btn" data-mode="streak" onclick="setCoinMode('streak',this)"><b>STREAK</b><small>серия</small></button>
         </div>
-        <div class="casino-game-stage premium-stage coin-stage">
-          <div class="coinflip-choice-hint">ВЫБЕРИ СТОРОНУ · СДЕЛАЙ СТАВКУ</div>
-          <div class="coinflip-object">
-            <div class="coinflip-glow"></div>
-            <div class="coinflip-coin" id="coinflip-coin">
-              <div class="coinflip-face"><strong>AT</strong><small>COIN</small></div>
-              <div class="coinflip-face back"><strong>⚡</strong><small>COIN</small></div>
-            </div>
-          </div>
-          <div class="casino-stage-title">МОНЕТКА</div>
-          <div class="casino-stage-sub">50/50 · выплата 1.9× · быстрый раунд</div>
-          <div class="casino-game-controls">
-            <div class="casino-row">
-              <input id="coinflip-bet" class="casino-input" type="number" min="10" step="10" value="100" inputmode="numeric" placeholder="Ставка">
-            </div>
-            <div class="casino-big-actions">
-              <button class="casino-btn primary" onclick="playCoinFlip('heads')">🦅 ОРЁЛ</button>
-              <button class="casino-btn" onclick="playCoinFlip('tails')">⚡ РЕШКА</button>
-            </div>
-          </div>
+        <div class="casino-game-stage premium-stage coin-stage games-stage">
+          <div class="games-mode-info" id="coin-mode-info">CLASSIC · 50/50 · выплата 1.9×</div>
+          <div class="coinflip-object"><div class="coinflip-glow"></div><div class="coinflip-coin" id="coinflip-coin"><div class="coinflip-face"><strong>AT</strong><small>COIN</small></div><div class="coinflip-face back"><strong>⚡</strong><small>COIN</small></div></div></div>
+          <div class="casino-stage-title" id="coin-mode-title">CLASSIC</div>
+          <div class="casino-stage-sub" id="coin-mode-sub">Один бросок. Угадай сторону и получи 1.9×.</div>
+          <div class="streak-meter" id="coin-streak-meter"><span>СЕРИЯ</span><b id="coin-streak-value">0</b></div>
+          <div class="casino-game-controls"><div class="casino-row"><input id="coinflip-bet" class="casino-input" type="number" min="10" step="10" value="100" inputmode="numeric" placeholder="Ставка"></div><div class="casino-big-actions"><button class="casino-btn primary" onclick="playCoinFlip('heads')">🦅 ОРЁЛ</button><button class="casino-btn" onclick="playCoinFlip('tails')">⚡ РЕШКА</button></div></div>
           <div id="coinflip-result" class="casino-result">Выбери сторону и сделай ставку</div>
         </div>
       </div>
 
       <div id="casino-page-roulette" class="casino-page">
         <button class="casino-back" onclick="closeCasinoGame()">‹ Все игры</button>
-        <div class="casino-balance">
-          <div><div style="font-size:10px;color:var(--textdim);">ДОСТУПНО</div><div class="v" id="casino-balance-roulette">0 ⚡</div></div>
-          <div style="font-size:24px;">🎡</div>
+        <div class="games-gamebar"><div><div class="games-kicker">ROULETTE</div><div class="games-page-title">🎡 МИНИ-РУЛЕТКА</div></div><div class="games-wallet"><span>БАЛАНС</span><b id="casino-balance-roulette">0 ⚡</b></div></div>
+        <div class="mode-switcher" id="roulette-modes">
+          <button class="mode-btn active" data-mode="classic" onclick="setRouletteMode('classic',this)"><b>CLASSIC</b><small>1.8× / 9×</small></button>
+          <button class="mode-btn" data-mode="number" onclick="setRouletteMode('number',this)"><b>NUMBER</b><small>до 10×</small></button>
+          <button class="mode-btn" data-mode="color" onclick="setRouletteMode('color',this)"><b>COLOR</b><small>2×</small></button>
+          <button class="mode-btn" data-mode="highrisk" onclick="setRouletteMode('highrisk',this)"><b>HIGH RISK</b><small>до 20×</small></button>
         </div>
-        <div class="casino-game-stage premium-stage roulette-stage">
-          <div class="coinflip-choice-hint">МИНИ-РУЛЕТКА · ОДИН РАУНД</div>
-          <div class="roulette-object">
-            <div class="roulette-halo"></div>
-            <div class="roulette-pointer"></div>
-            <div class="roulette-wheel" id="roulette-wheel"></div>
-            <div class="roulette-center"><div class="num" id="roulette-center-number">?</div><div class="label">RESULT</div></div>
-          </div>
-          <div class="casino-stage-title">МИНИ-РУЛЕТКА</div>
-          <div class="casino-stage-sub">Красное 1.8× · чёрное 1.8× · зелёное 9×</div>
+        <div class="casino-game-stage premium-stage roulette-stage games-stage">
+          <div class="games-mode-info" id="roulette-mode-info">CLASSIC · красное 1.8× · чёрное 1.8× · зелёное 9×</div>
+          <div class="roulette-object"><div class="roulette-halo"></div><div class="roulette-pointer"></div><div class="roulette-ball"></div><div class="roulette-wheel" id="roulette-wheel"></div><div class="roulette-center"><div class="num" id="roulette-center-number">?</div><div class="label">RESULT</div></div></div>
+          <div class="casino-stage-title" id="roulette-mode-title">CLASSIC</div>
+          <div class="casino-stage-sub" id="roulette-mode-sub">Выбери цвет. Ноль — редкий результат с высоким коэффициентом.</div>
           <div class="casino-mini-history" id="roulette-history"></div>
-          <div class="casino-game-controls">
-            <div class="roulette-picks">
-              <button class="roulette-pick active" data-color="red" onclick="selectRouletteColor('red')">🔴 КРАСНОЕ</button>
-              <button class="roulette-pick" data-color="black" onclick="selectRouletteColor('black')">⚫ ЧЁРНОЕ</button>
-              <button class="roulette-pick" data-color="green" onclick="selectRouletteColor('green')">🟢 0 · 9×</button>
-            </div>
-            <div class="casino-row" style="margin-top:10px;">
-              <input id="roulette-bet" class="casino-input" type="number" min="10" step="10" value="100" inputmode="numeric" placeholder="Ставка">
-              <button class="casino-btn gold roulette-spin-btn" onclick="playRoulette()">КРУТИТЬ</button>
-            </div>
-          </div>
+          <div class="casino-game-controls"><div class="roulette-picks" id="roulette-picks"><button class="roulette-pick active" data-color="red" onclick="selectRouletteColor('red')">🔴 КРАСНОЕ</button><button class="roulette-pick" data-color="black" onclick="selectRouletteColor('black')">⚫ ЧЁРНОЕ</button><button class="roulette-pick" data-color="green" onclick="selectRouletteColor('green')">🟢 0 · 9×</button></div><div class="casino-row" style="margin-top:10px;"><input id="roulette-bet" class="casino-input" type="number" min="10" step="10" value="100" inputmode="numeric" placeholder="Ставка"><button class="casino-btn gold roulette-spin-btn" onclick="playRoulette()">КРУТИТЬ</button></div></div>
+          <div id="roulette-number-pick" class="number-pick" style="display:none"><span>ЧИСЛО</span><div id="roulette-number-grid"></div></div>
           <div id="roulette-result" class="casino-result">Сделай ставку и крути рулетку</div>
         </div>
       </div>
@@ -2859,122 +2875,55 @@ async function commitCasinoChange() {
   try { await saveDataNow(); } catch(e) { console.error('casino save:', e); }
 }
 
-async function playCoinFlip(choice) {
-  if (casinoBusy) return;
-  const bet = getCasinoBet('coinflip-bet');
-  if (!bet) return;
-  casinoBusy = true;
+let coinMode = 'classic';
+let rouletteMode = 'classic';
+let coinStreak = 0;
+let rouletteNumberPick = 0;
 
-  state.coins -= bet;
-  state.stats = state.stats || {};
-  state.stats.casinoPlayed = (Number(state.stats.casinoPlayed) || 0) + 1;
+function setCoinMode(mode, btn){
+  coinMode=mode; document.querySelectorAll('#coinflip-modes .mode-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active');
+  const info={classic:['CLASSIC · 50/50 · выплата 1.9×','CLASSIC','Один бросок. Угадай сторону и получи 1.9×.'],double:['DOUBLE · два броска · 3.6×','DOUBLE','Нужно угадать обе стороны подряд. Ошибка — ставка сгорает.'],risk:['RISK · растущий коэффициент','RISK','После каждого правильного броска коэффициент растёт. Остановись, чтобы забрать банк.'],streak:['STREAK · серия правильных ответов','STREAK','Каждый правильный выбор увеличивает серию. Ошибка сбрасывает её.']}[mode];
+  document.getElementById('coin-mode-info').textContent=info[0]; document.getElementById('coin-mode-title').textContent=info[1]; document.getElementById('coin-mode-sub').textContent=info[2];
+  document.getElementById('coin-streak-meter').style.display=(mode==='risk'||mode==='streak')?'flex':'none'; coinStreak=0; document.getElementById('coin-streak-value').textContent='0';
+  setCasinoResult('coinflip-result','Выбери сторону и сделай ставку','');
+}
+function setRouletteMode(mode, btn){
+  rouletteMode=mode; document.querySelectorAll('#roulette-modes .mode-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active');
+  const info={classic:['CLASSIC · красное 1.8× · чёрное 1.8× · зелёное 9×','CLASSIC','Выбери цвет. Ноль — редкий результат с высоким коэффициентом.'],number:['NUMBER · ставка на число','NUMBER','Выбери одно число от 0 до 10. Правильное число получает 10×.'],color:['COLOR · только цвет · 2×','COLOR','Три простых цвета. Зелёный остаётся редким бонусом.'],highrisk:['HIGH RISK · редкие комбинации','HIGH RISK','Ставка на число. При попадании выплата 20×.']}[mode];
+  document.getElementById('roulette-mode-info').textContent=info[0]; document.getElementById('roulette-mode-title').textContent=info[1]; document.getElementById('roulette-mode-sub').textContent=info[2];
+  const picks=document.getElementById('roulette-picks'), grid=document.getElementById('roulette-number-pick');
+  if(mode==='number'||mode==='highrisk'){picks.style.display='none'; grid.style.display='block'; renderRouletteNumbers();} else {picks.style.display='flex'; grid.style.display='none';}
+}
+function renderRouletteNumbers(){const g=document.getElementById('roulette-number-grid'); if(!g)return; g.innerHTML=''; for(let i=0;i<=10;i++){const b=document.createElement('button'); b.textContent=i; b.className=i===rouletteNumberPick?'active':''; b.onclick=()=>{rouletteNumberPick=i; [...g.children].forEach(x=>x.classList.remove('active')); b.classList.add('active');}; g.appendChild(b);}}
 
-  const result = Math.random() < 0.5 ? 'heads' : 'tails';
-  const won = result === choice;
-  const label = result === 'heads' ? '🪙 ОРЁЛ' : '⚡ РЕШКА';
-  const coinEl = document.getElementById('coinflip-coin');
-  if (coinEl) {
-    coinEl.classList.remove('flip');
-    void coinEl.offsetWidth;
-    coinEl.classList.add('flip');
-    setTimeout(() => {
-      coinEl.style.transform = result === 'heads' ? 'rotateY(1800deg)' : 'rotateY(1980deg)';
-    }, 1150);
-  }
-
-  if (won) {
-    const payout = Math.floor(bet * 1.9);
-    state.coins += payout;
-    state.stats.casinoWon = (Number(state.stats.casinoWon) || 0) + (payout - bet);
-    playSound('success');
-    setCasinoResult('coinflip-result', `${label}<br><span style="font-size:11px;">Ты выиграл <b>+${(payout-bet).toLocaleString()} ⚡</b></span>`, 'win');
-  } else {
-    state.stats.casinoLost = (Number(state.stats.casinoLost) || 0) + bet;
-    playSound('fail');
-    setCasinoResult('coinflip-result', `${label}<br><span style="font-size:11px;">Ставка проиграна: <b>-${bet.toLocaleString()} ⚡</b></span>`, 'lose');
-  }
-
-  sanitizeState();
-await commitCasinoChange();
-  casinoBusy = false;
+function playCoinFlip(choice) {
+  if (casinoBusy) return; const bet=getCasinoBet('coinflip-bet'); if(!bet)return; casinoBusy=true; state.coins-=bet; state.stats=state.stats||{}; state.stats.casinoPlayed=(Number(state.stats.casinoPlayed)||0)+1;
+  const result=Math.random()<.5?'heads':'tails', label=result==='heads'?'🪙 ОРЁЛ':'⚡ РЕШКА'; const coinEl=document.getElementById('coinflip-coin');
+  if(coinEl){coinEl.classList.remove('flip'); void coinEl.offsetWidth; coinEl.classList.add('flip'); setTimeout(()=>coinEl.style.transform=result==='heads'?'rotateY(1800deg)':'rotateY(1980deg)',1150);}
+  let won=result===choice, payout=0, modeLabel=coinMode.toUpperCase();
+  if(coinMode==='classic'){if(won)payout=Math.floor(bet*1.9);}
+  else if(coinMode==='double'){const second=Math.random()<.5?choice:(choice==='heads'?'tails':'heads'); won=won && second===choice; if(won)payout=Math.floor(bet*3.6);}
+  else if(coinMode==='risk'){if(won){coinStreak++; const mult=Math.min(5,1.35+coinStreak*.65); payout=Math.floor(bet*mult);} else coinStreak=0; document.getElementById('coin-streak-value').textContent=coinStreak;}
+  else {if(won){coinStreak++; payout=Math.floor(bet*(1.25+Math.min(3.75,coinStreak*.5)));}else coinStreak=0; document.getElementById('coin-streak-value').textContent=coinStreak;}
+  if(won){state.coins+=payout; state.stats.casinoWon=(Number(state.stats.casinoWon)||0)+(payout-bet); playSound('success'); setCasinoResult('coinflip-result',`${modeLabel} · ${label}<br><span style="font-size:11px;">Выигрыш <b>+${(payout-bet).toLocaleString()} ⚡</b></span>`,'win');}else{state.stats.casinoLost=(Number(state.stats.casinoLost)||0)+bet; playSound('fail'); setCasinoResult('coinflip-result',`${modeLabel} · ${label}<br><span style="font-size:11px;">Ставка проиграна: <b>-${bet.toLocaleString()} ⚡</b></span>`,'lose');}
+  sanitizeState(); commitCasinoChange().finally(()=>{casinoBusy=false;});
 }
 
-async function playRoulette() {
-  if (casinoBusy) return;
-  const bet = getCasinoBet('roulette-bet');
-  if (!bet) return;
-  casinoBusy = true;
-
-  state.coins -= bet;
-  state.stats = state.stats || {};
-  state.stats.casinoPlayed = (Number(state.stats.casinoPlayed) || 0) + 1;
-
-  const number = Math.floor(Math.random() * 11); // 0..10
-  const resultColor = number === 0 ? 'green' : (number % 2 === 0 ? 'red' : 'black');
-  const wheel = document.getElementById('roulette-wheel');
-  const center = document.getElementById('roulette-center-number');
-  if (wheel) {
-    const turns = 4 + Math.floor(Math.random() * 3);
-    const stop = (number * 36) + (Math.random() * 12 - 6);
-    wheel.style.transform = `rotate(${turns * 360 + (360 - stop)}deg)`;
-  }
-  if (center) center.textContent = '…';
-  setTimeout(() => {
-    if (center) center.textContent = number;
-    const history = document.getElementById('roulette-history');
-    if (history) {
-      const dot = document.createElement('div');
-      dot.className = `casino-history-dot ${resultColor}`;
-      dot.textContent = number;
-      history.prepend(dot);
-      while (history.children.length > 6) history.lastElementChild.remove();
-    }
-  }, 2150);
-  const colorLabel = resultColor === 'green' ? '🟢 ЗЕЛЁНОЕ' : resultColor === 'red' ? '🔴 КРАСНОЕ' : '⚫ ЧЁРНОЕ';
-  const won = resultColor === rouletteColor;
-
-  if (won) {
-    const payout = rouletteColor === 'green' ? bet * 9 : Math.floor(bet * 1.8);
-    state.coins += payout;
-    state.stats.casinoWon = (Number(state.stats.casinoWon) || 0) + (payout - bet);
-    playSound('success');
-    setCasinoResult('roulette-result', `${colorLabel} · <b>${number}</b><br><span style="font-size:11px;">Выигрыш <b>+${(payout-bet).toLocaleString()} ⚡</b></span>`, 'win');
-  } else {
-    state.stats.casinoLost = (Number(state.stats.casinoLost) || 0) + bet;
-    playSound('fail');
-    setCasinoResult('roulette-result', `${colorLabel} · <b>${number}</b><br><span style="font-size:11px;">Ставка проиграна: <b>-${bet.toLocaleString()} ⚡</b></span>`, 'lose');
-  }
-
-  sanitizeState();
-await commitCasinoChange();
-  casinoBusy = false;
+async function playRoulette(){
+  if(casinoBusy)return; const bet=getCasinoBet('roulette-bet'); if(!bet)return; casinoBusy=true; state.coins-=bet; state.stats=state.stats||{}; state.stats.casinoPlayed=(Number(state.stats.casinoPlayed)||0)+1;
+  const number=Math.floor(Math.random()*11), resultColor=number===0?'green':(number%2===0?'red':'black'); const wheel=document.getElementById('roulette-wheel'), center=document.getElementById('roulette-center-number');
+  if(wheel){const turns=4+Math.floor(Math.random()*3); wheel.style.transform=`rotate(${turns*360+(360-(number*36))}deg)`;} if(center)center.textContent='…';
+  setTimeout(()=>{if(center)center.textContent=number; const h=document.getElementById('roulette-history'); if(h){const d=document.createElement('div');d.className=`casino-history-dot ${resultColor}`;d.textContent=number;h.prepend(d);while(h.children.length>6)h.lastElementChild.remove();}},1800);
+  let won=false,payout=0, label=resultColor==='green'?'🟢 ЗЕЛЁНОЕ':resultColor==='red'?'🔴 КРАСНОЕ':'⚫ ЧЁРНОЕ';
+  if(rouletteMode==='number'){won=number===rouletteNumberPick; if(won)payout=bet*10;}
+  else if(rouletteMode==='highrisk'){won=number===rouletteNumberPick; if(won)payout=bet*20;}
+  else if(rouletteMode==='color'){won=resultColor===rouletteColor; if(won)payout=resultColor==='green'?bet*10:bet*2;}
+  else {won=resultColor===rouletteColor; if(won)payout=rouletteColor==='green'?bet*9:Math.floor(bet*1.8);}
+  if(won){state.coins+=payout;state.stats.casinoWon=(Number(state.stats.casinoWon)||0)+(payout-bet);playSound('success');setCasinoResult('roulette-result',`${label} · <b>${number}</b><br><span style="font-size:11px;">Выигрыш <b>+${(payout-bet).toLocaleString()} ⚡</b></span>`,'win');}else{state.stats.casinoLost=(Number(state.stats.casinoLost)||0)+bet;playSound('fail');setCasinoResult('roulette-result',`${label} · <b>${number}</b><br><span style="font-size:11px;">Ставка проиграна: <b>-${bet.toLocaleString()} ⚡</b></span>`,'lose');}
+  sanitizeState(); await commitCasinoChange(); casinoBusy=false;
 }
-
-function openCasinoGame(game) {
-  const home = document.getElementById('casino-home');
-  const coin = document.getElementById('casino-page-coinflip');
-  const roulette = document.getElementById('casino-page-roulette');
-  if (!home || !coin || !roulette) return;
-  home.style.display = 'none';
-  coin.classList.remove('active');
-  roulette.classList.remove('active');
-  const page = game === 'roulette' ? roulette : coin;
-  page.classList.add('active');
-  updateCasinoBalance();
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-
-function closeCasinoGame() {
-  const home = document.getElementById('casino-home');
-  const coin = document.getElementById('casino-page-coinflip');
-  const roulette = document.getElementById('casino-page-roulette');
-  if (!home || !coin || !roulette) return;
-  coin.classList.remove('active');
-  roulette.classList.remove('active');
-  home.style.display = '';
-  updateCasinoBalance();
-  window.scrollTo({top:0, behavior:'smooth'});
-}
+function openCasinoGame(game){const home=document.getElementById('casino-home'),coin=document.getElementById('casino-page-coinflip'),roulette=document.getElementById('casino-page-roulette');if(!home||!coin||!roulette)return;home.style.display='none';coin.classList.remove('active');roulette.classList.remove('active');(game==='roulette'?roulette:coin).classList.add('active');updateCasinoBalance();window.scrollTo({top:0,behavior:'smooth'});}
+function closeCasinoGame(){const home=document.getElementById('casino-home'),coin=document.getElementById('casino-page-coinflip'),roulette=document.getElementById('casino-page-roulette');if(!home||!coin||!roulette)return;coin.classList.remove('active');roulette.classList.remove('active');home.style.display='';updateCasinoBalance();window.scrollTo({top:0,behavior:'smooth'});}
 
 function switchTab(tabId, btn) {
   document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
