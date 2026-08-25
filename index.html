@@ -2234,6 +2234,199 @@ input,select,textarea{
 }
 </style>
 
+
+<style id="casino-redesign-mines">
+/* ===== CASINO VISUAL REDESIGN ===== */
+.games-feature{
+  position:relative!important;
+  overflow:hidden!important;
+  min-height:118px!important;
+  border-radius:18px!important;
+  background:
+    radial-gradient(circle at 82% 35%,rgba(155,108,255,.20),transparent 25%),
+    radial-gradient(circle at 18% 80%,rgba(57,232,255,.10),transparent 30%),
+    linear-gradient(135deg,rgba(14,21,35,.98),rgba(8,12,22,.98))!important;
+}
+.games-feature::after{
+  content:"";position:absolute;inset:auto -15% -60% 20%;height:120px;
+  background:radial-gradient(ellipse,rgba(57,232,255,.10),transparent 65%);
+  pointer-events:none;
+}
+.games-feature-orb{
+  width:72px!important;height:72px!important;border-radius:22px!important;
+  display:grid!important;place-items:center!important;
+  background:linear-gradient(145deg,rgba(57,232,255,.13),rgba(155,108,255,.14))!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  box-shadow:0 0 45px rgba(57,232,255,.10)!important;
+  font-size:32px!important;
+}
+.casino-game-grid.games-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.casino-game-tile.games-tile{
+  min-height:175px!important;
+  padding:15px!important;
+  background:linear-gradient(145deg,rgba(14,20,33,.96),rgba(8,12,21,.98))!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.18)!important;
+}
+.casino-game-tile.games-tile:hover{
+  transform:translateY(-3px)!important;
+  border-color:rgba(57,232,255,.25)!important;
+  box-shadow:0 18px 40px rgba(0,0,0,.28),0 0 28px rgba(57,232,255,.05)!important;
+}
+.casino-game-tile .casino-game-icon{
+  width:48px;height:48px;border-radius:15px;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+  font-size:26px;margin:0 0 12px;
+}
+.casino-game-tile .games-pill{
+  background:rgba(57,232,255,.07)!important;
+  border-color:rgba(57,232,255,.14)!important;
+}
+.mines-tile .casino-game-icon{
+  background:linear-gradient(145deg,rgba(155,108,255,.14),rgba(57,232,255,.08));
+}
+.casino-page{gap:10px!important}
+.casino-game-stage{
+  position:relative!important;
+  min-height:330px!important;
+  padding:16px!important;
+  border-radius:20px!important;
+  border-color:rgba(255,255,255,.07)!important;
+  background:
+    radial-gradient(circle at 50% 10%,rgba(57,232,255,.055),transparent 32%),
+    linear-gradient(180deg,rgba(13,19,31,.98),rgba(7,11,19,.99))!important;
+  box-shadow:0 18px 45px rgba(0,0,0,.28)!important;
+}
+.games-mode-info{
+  border:1px solid rgba(255,255,255,.06)!important;
+  background:rgba(255,255,255,.025)!important;
+  border-radius:999px!important;
+  padding:5px 9px!important;
+  font-size:8px!important;
+  color:#9caac0!important;
+}
+.coinflip-object{filter:drop-shadow(0 18px 28px rgba(0,0,0,.35))}
+.coinflip-coin{
+  box-shadow:0 0 0 7px rgba(57,232,255,.035),0 0 45px rgba(57,232,255,.10)!important;
+}
+.roulette-object{
+  filter:drop-shadow(0 20px 32px rgba(0,0,0,.38));
+}
+.roulette-halo{opacity:.65!important}
+.casino-result{
+  min-height:42px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:7px 10px!important;
+  border-radius:11px!important;
+  background:rgba(255,255,255,.025)!important;
+  border:1px solid rgba(255,255,255,.06)!important;
+}
+@media(max-width:700px){
+  .casino-game-grid.games-grid{grid-template-columns:1fr!important}
+  .casino-game-tile.games-tile{min-height:140px!important}
+  .casino-game-stage{min-height:300px!important}
+}
+
+/* ===== MINES ===== */
+.mines-page .casino-game-stage{padding:12px!important}
+.mines-hero{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:14px 15px;border:1px solid rgba(255,255,255,.07);border-radius:17px;
+  background:linear-gradient(135deg,rgba(155,108,255,.08),rgba(57,232,255,.035));
+}
+.mines-hero h2{margin:2px 0 4px;font-size:18px;letter-spacing:.01em}
+.mines-hero p{margin:0;color:var(--ui-muted);font-size:10px;line-height:1.4;max-width:520px}
+.mines-hero-stat{
+  width:56px;height:56px;flex:none;border-radius:16px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.08)
+}
+.mines-hero-stat span{font-size:7px;color:var(--ui-muted);letter-spacing:.14em}
+.mines-hero-stat b{font-size:22px}
+.mines-topline{
+  width:100%;max-width:520px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px
+}
+.mines-topline>div{
+  padding:8px 6px;border-radius:11px;background:rgba(255,255,255,.025);
+  border:1px solid rgba(255,255,255,.06);text-align:center
+}
+.mines-topline span{display:block;font-size:7px;color:var(--ui-muted);letter-spacing:.08em}
+.mines-topline b{display:block;margin-top:2px;font-size:12px}
+.mines-grid{
+  width:min(100%,360px);aspect-ratio:1;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;
+  margin:3px auto 10px;
+}
+.mine-cell{
+  position:relative;border:1px solid rgba(255,255,255,.065);border-radius:11px;
+  background:linear-gradient(145deg,rgba(21,30,46,.98),rgba(10,15,26,.98));
+  box-shadow:inset 0 1px rgba(255,255,255,.03),0 6px 14px rgba(0,0,0,.16);
+  color:transparent;cursor:pointer;transition:transform .15s,border-color .15s,background .15s,box-shadow .15s;
+}
+.mine-cell:not(:disabled):hover{transform:translateY(-2px);border-color:rgba(57,232,255,.30)}
+.mine-cell:disabled{cursor:default}
+.mine-cell.revealed-safe{
+  color:#5ef2bf;background:radial-gradient(circle,rgba(85,242,178,.14),rgba(13,26,30,.98));
+  border-color:rgba(85,242,178,.28);box-shadow:0 0 20px rgba(85,242,178,.08)
+}
+.mine-cell.revealed-mine{
+  color:#ff6d82;background:radial-gradient(circle,rgba(255,102,124,.18),rgba(34,15,23,.98));
+  border-color:rgba(255,102,124,.34);animation:minePop .28s ease
+}
+.mine-cell .mine-symbol{font-size:18px;font-weight:900}
+@keyframes minePop{0%{transform:scale(.8)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+.mines-controls{width:100%;max-width:520px}
+.mines-controls .casino-row{display:flex;gap:7px}
+.mines-controls .casino-input{flex:1}
+.mines-cashout{
+  width:100%;margin-top:7px;min-height:40px!important;
+  background:linear-gradient(135deg,rgba(85,242,178,.13),rgba(57,232,255,.08))!important;
+  border-color:rgba(85,242,178,.18)!important;color:#dfffee!important
+}
+.mines-cashout:disabled{opacity:.38;filter:grayscale(.4)}
+@media(max-width:700px){
+  .mines-hero{padding:11px}
+  .mines-hero h2{font-size:15px}
+  .mines-hero-stat{width:48px;height:48px}
+  .mines-grid{width:min(100%,330px);gap:5px}
+  .mine-cell{border-radius:9px}
+}
+</style>
+
+
+<style id="casino-inertia-css">
+/* ===== CASINO INERTIA ===== */
+.roulette-wheel.inertia-active,
+.casino-coin.inertia-active,
+.coin-visual.inertia-active{
+  will-change:transform;
+}
+.inertia-motion{
+  transition-timing-function:cubic-bezier(.12,.78,.16,1) !important;
+}
+.inertia-settle{
+  animation: inertiaSettle .42s cubic-bezier(.22,1,.36,1);
+}
+@keyframes inertiaSettle{
+  0%{transform:scale(1.025)}
+  55%{transform:scale(.992)}
+  100%{transform:scale(1)}
+}
+.casino-stage.inertia-running::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(circle at center,rgba(57,232,255,.045),transparent 58%);
+}
+@media (prefers-reduced-motion:reduce){
+  .inertia-motion,.inertia-settle{animation:none !important;transition:none !important}
+}
+</style>
+
 </head>
 <body>
 
@@ -2426,11 +2619,12 @@ input,select,textarea{
       <div id="casino-home" class="casino-home games-hub">
         <div class="games-topbar"><div><div class="games-kicker">AT COIN / ARCADE</div><div class="form-title games-title">🎮 ИГРЫ</div><div class="games-subtitle">Мини-игры на внутриигровые AT Coins. Выбирай режим и риск.</div></div><div class="games-wallet"><span>БАЛАНС</span><b id="casino-balance">0 ⚡</b></div></div>
         <div class="games-feature"><div class="games-feature-copy"><span class="games-feature-label">HOT MODE</span><h2>🎲 РИСК И НАГРАДА</h2><p>Короткие раунды, понятные коэффициенты и несколько способов играть.</p></div><div class="games-feature-orb">⚡</div></div>
-        <div class="games-section-head"><span>ВЫБЕРИ ИГРУ</span><small>2 игры · 8 режимов · 3 кейса</small></div>
+        <div class="games-section-head"><span>ВЫБЕРИ ИГРУ</span><small>3 игры · 9 режимов · 3 кейса</small></div>
         <div class="casino-game-grid games-grid">
           <button class="casino-game-tile games-tile coin-tile" onclick="openCasinoGame('coinflip')"><div class="games-tile-top"><div class="casino-game-icon">🪙</div><span class="games-pill">4 РЕЖИМА</span></div><div class="casino-game-name">МОНЕТКА</div><div class="casino-game-desc">От классического 50/50 до серии и риск-режима.</div><div class="games-tile-bottom"><span>от 10 ⚡</span><b>ИГРАТЬ →</b></div></button>
           <button class="casino-game-tile games-tile roulette-tile" onclick="openCasinoGame('roulette')"><div class="games-tile-top"><div class="casino-game-icon">🎡</div><span class="games-pill">4 РЕЖИМА</span></div><div class="casino-game-name">МИНИ-РУЛЕТКА</div><div class="casino-game-desc">Цвет, число и рискованный режим с повышенным коэффициентом.</div><div class="games-tile-bottom"><span>от 10 ⚡</span><b>ИГРАТЬ →</b></div></button>
           <button class="casino-game-tile games-tile" onclick="openCasinoGame('cases')"><div class="games-tile-top"><div class="casino-game-icon">📦</div><span class="games-pill">ЛУТ</span></div><div class="casino-game-name">КЕЙСЫ</div><div class="casino-game-desc">Открой кейс за AT Coins и получи случайный предмет из своей коллекции лута.</div><div class="games-tile-bottom"><span>от 10 000 ⚡</span><b>ОТКРЫТЬ →</b></div></button>
+          <button class="casino-game-tile games-tile mines-tile" onclick="openCasinoGame('mines')"><div class="games-tile-top"><div class="casino-game-icon">💠</div><span class="games-pill">NEW</span></div><div class="casino-game-name">МИНЫ</div><div class="casino-game-desc">Открывай клетки, повышай множитель и забирай банк до ловушки.</div><div class="games-tile-bottom"><span>от 10 ⚡</span><b>ИГРАТЬ →</b></div></button>
         </div>
         <div class="games-footer-note">⚡ Все ставки используют только игровую валюту. Реальные деньги не участвуют.</div>
       </div>
@@ -2473,6 +2667,28 @@ input,select,textarea{
           <div class="casino-game-controls"><div class="roulette-picks" id="roulette-picks"><button class="roulette-pick active" data-color="red" onclick="selectRouletteColor('red')">🔴 КРАСНОЕ</button><button class="roulette-pick" data-color="black" onclick="selectRouletteColor('black')">⚫ ЧЁРНОЕ</button><button class="roulette-pick" data-color="green" onclick="selectRouletteColor('green')">🟢 0 · 9×</button></div><div class="casino-row" style="margin-top:10px;"><input id="roulette-bet" class="casino-input" type="number" min="10" step="10" value="100" inputmode="numeric" placeholder="Ставка"><button class="casino-btn gold roulette-spin-btn" onclick="playRoulette()">КРУТИТЬ</button></div></div>
           <div id="roulette-number-pick" class="number-pick" style="display:none"><span>ЧИСЛО</span><div id="roulette-number-grid"></div></div>
           <div id="roulette-result" class="casino-result">Сделай ставку и крути рулетку</div>
+        </div>
+      </div>
+
+      <div id="casino-page-mines" class="casino-page mines-page">
+        <button class="casino-back" onclick="closeCasinoGame()">‹ Все игры</button>
+        <div class="games-gamebar"><div><div class="games-kicker">MINES</div><div class="games-page-title">💠 МИНЫ</div></div><div class="games-wallet"><span>БАЛАНС</span><b id="casino-balance-mines">0 ⚡</b></div></div>
+        <div class="mines-hero">
+          <div><div class="games-kicker">CASH OUT GAME</div><h2>ОТКРЫВАЙ. РИСКУЙ. ЗАБИРАЙ.</h2><p>На поле спрятаны ловушки. Каждая безопасная клетка увеличивает множитель.</p></div>
+          <div class="mines-hero-stat"><span>МИН</span><b>3</b></div>
+        </div>
+        <div class="casino-game-stage premium-stage mines-stage">
+          <div class="mines-topline">
+            <div><span>СТАВКА</span><b id="mines-current-bet">0 ⚡</b></div>
+            <div><span>БАНК</span><b id="mines-payout">0 ⚡</b></div>
+            <div><span>МНОЖИТЕЛЬ</span><b id="mines-multiplier">1.00×</b></div>
+          </div>
+          <div class="mines-grid" id="mines-grid"></div>
+          <div class="mines-controls">
+            <div class="casino-row"><input id="mines-bet" class="casino-input" type="number" min="10" step="10" value="100" inputmode="numeric" placeholder="Ставка"><button class="casino-btn primary" id="mines-start-btn" onclick="startMines()">НАЧАТЬ</button></div>
+            <button class="casino-btn mines-cashout" id="mines-cashout-btn" onclick="cashoutMines()" disabled>ЗАБРАТЬ 0 ⚡</button>
+          </div>
+          <div id="mines-result" class="casino-result">Сделай ставку и начни раунд</div>
         </div>
       </div>
 
@@ -3435,8 +3651,15 @@ function getContractProgress(contract) {
 
 function updateContractProgress(key, amount=1) {
   ensureDailyContracts();
+  if (!state.stats.contracts.progress || typeof state.stats.contracts.progress !== 'object') {
+    state.stats.contracts.progress = { clicks:0, crafts:0, upgrades:0, loot:0 };
+  }
   const progress = state.stats.contracts.progress;
   progress[key] = Math.max(0, Math.floor(Number(progress[key]) || 0) + Number(amount || 0));
+  // Keep the contract screen live while the player is playing.
+  if (document.getElementById('tab-contracts')?.classList.contains('active')) {
+    renderContracts();
+  }
 }
 
 function renderContracts() {
@@ -3487,6 +3710,9 @@ function claimContract(contractId) {
 
   contract.claimed = true;
   state.coins += contract.reward;
+  renderContracts();
+  updateUI(false);
+  saveDataNow();
   playSound('success');
   showToast(`🎯 Контракт выполнен! +${contract.reward.toLocaleString()} ⚡`);
   renderContracts();
@@ -3656,6 +3882,7 @@ let coinMode = 'classic';
 let rouletteMode = 'classic';
 let coinStreak = 0;
 let rouletteNumberPick = 0;
+let minesRound = null;
 
 function setCoinMode(mode, btn){
   coinMode=mode; document.querySelectorAll('#coinflip-modes .mode-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active');
@@ -3699,11 +3926,120 @@ async function playRoulette(){
   if(won){state.coins+=payout;state.stats.casinoWon=(Number(state.stats.casinoWon)||0)+(payout-bet);playSound('success');setCasinoResult('roulette-result',`${label} · <b>${number}</b><br><span style="font-size:11px;">Выигрыш <b>+${(payout-bet).toLocaleString()} ⚡</b></span>`,'win');}else{state.stats.casinoLost=(Number(state.stats.casinoLost)||0)+bet;playSound('fail');setCasinoResult('roulette-result',`${label} · <b>${number}</b><br><span style="font-size:11px;">Ставка проиграна: <b>-${bet.toLocaleString()} ⚡</b></span>`,'lose');}
   sanitizeState(); await commitCasinoChange(); casinoBusy=false;
 }
+
+function initMinesGrid(){
+  const grid=document.getElementById('mines-grid');
+  if(!grid)return;
+  grid.innerHTML='';
+  for(let i=0;i<25;i++){
+    const b=document.createElement('button');
+    b.className='mine-cell';
+    b.type='button';
+    b.dataset.index=i;
+    b.innerHTML='<span class="mine-symbol">+</span>';
+    b.disabled=true;
+    b.onclick=()=>pickMineCell(i);
+    grid.appendChild(b);
+  }
+}
+function updateMinesUI(){
+  const bet=document.getElementById('mines-current-bet');
+  const payout=document.getElementById('mines-payout');
+  const mult=document.getElementById('mines-multiplier');
+  const cash=document.getElementById('mines-cashout-btn');
+  const start=document.getElementById('mines-start-btn');
+  if(!minesRound){
+    if(bet)bet.textContent='0 ⚡';
+    if(payout)payout.textContent='0 ⚡';
+    if(mult)mult.textContent='1.00×';
+    if(cash){cash.disabled=true;cash.textContent='ЗАБРАТЬ 0 ⚡';}
+    if(start){start.disabled=false;start.textContent='НАЧАТЬ';}
+    return;
+  }
+  const p=Math.floor(minesRound.bet*minesRound.multiplier);
+  if(bet)bet.textContent=minesRound.bet.toLocaleString()+' ⚡';
+  if(payout)payout.textContent=p.toLocaleString()+' ⚡';
+  if(mult)mult.textContent=minesRound.multiplier.toFixed(2)+'×';
+  if(cash){cash.disabled=!minesRound.active||minesRound.safe===0;cash.textContent=`ЗАБРАТЬ ${p.toLocaleString()} ⚡`;}
+  if(start){start.disabled=minesRound.active;start.textContent=minesRound.active?'РАУНД ИДЁТ':'НАЧАТЬ';}
+}
+function startMines(){
+  if(casinoBusy||minesRound?.active)return;
+  const bet=getCasinoBet('mines-bet'); if(!bet)return;
+  casinoBusy=true;
+  state.coins-=bet;
+  state.stats=state.stats||{};
+  state.stats.casinoPlayed=(Number(state.stats.casinoPlayed)||0)+1;
+  const mines=new Set();
+  while(mines.size<3) mines.add(Math.floor(Math.random()*25));
+  minesRound={bet,mines,multiplier:1,safe:0,active:true};
+  initMinesGrid();
+  const grid=document.getElementById('mines-grid');
+  [...grid.children].forEach(b=>b.disabled=false);
+  setCasinoResult('mines-result','Поле готово. Открывай клетки или забирай банк.','');
+  updateMinesUI();
+  sanitizeState();
+  commitCasinoChange().finally(()=>{casinoBusy=false;});
+}
+async function pickMineCell(index){
+  if(!minesRound?.active||casinoBusy)return;
+  const grid=document.getElementById('mines-grid');
+  const cell=grid?.children[index]; if(!cell||cell.disabled)return;
+  cell.disabled=true;
+  if(minesRound.mines.has(index)){
+    cell.classList.add('revealed-mine');
+    cell.querySelector('.mine-symbol').textContent='✦';
+    [...grid.children].forEach((b,i)=>{
+      b.disabled=true;
+      if(minesRound.mines.has(i)){
+        b.classList.add('revealed-mine');
+        b.querySelector('.mine-symbol').textContent='✦';
+      }
+    });
+    state.stats=state.stats||{};
+    state.stats.casinoLost=(Number(state.stats.casinoLost)||0)+minesRound.bet;
+    minesRound.active=false;
+    playSound('fail');
+    setCasinoResult('mines-result',`МИНА 💥<br><span style="font-size:11px;">Раунд проигран: <b>-${minesRound.bet.toLocaleString()} ⚡</b></span>`,'lose');
+    updateMinesUI();
+    sanitizeState();
+    await commitCasinoChange();
+    return;
+  }
+  minesRound.safe++;
+  cell.classList.add('revealed-safe');
+  cell.querySelector('.mine-symbol').textContent='◆';
+  minesRound.multiplier=Math.min(8,1+minesRound.safe*.42+Math.pow(minesRound.safe,1.18)*.045);
+  if(minesRound.safe>=22){
+    await cashoutMines(true);
+    return;
+  }
+  playSound('click');
+  setCasinoResult('mines-result',`БЕЗОПАСНО ✓<br><span style="font-size:11px;">Открыто <b>${minesRound.safe}</b> · банк <b>${Math.floor(minesRound.bet*minesRound.multiplier).toLocaleString()} ⚡</b></span>`,'win');
+  updateMinesUI();
+}
+async function cashoutMines(auto=false){
+  if(!minesRound?.active||minesRound.safe===0)return;
+  const payout=Math.floor(minesRound.bet*minesRound.multiplier);
+  state.coins+=payout;
+  state.stats=state.stats||{};
+  state.stats.casinoWon=(Number(state.stats.casinoWon)||0)+(payout-minesRound.bet);
+  minesRound.active=false;
+  const grid=document.getElementById('mines-grid');
+  if(grid)[...grid.children].forEach(b=>b.disabled=true);
+  playSound('success');
+  setCasinoResult('mines-result',`${auto?'ИДЕАЛЬНО':'ЗАБРАЛ'} · +${(payout-minesRound.bet).toLocaleString()} ⚡<br><span style="font-size:11px;">Выплата <b>${payout.toLocaleString()} ⚡</b></span>`,'win');
+  updateMinesUI();
+  sanitizeState();
+  await commitCasinoChange();
+}
+
 function openCasinoGame(game){
   const home=document.getElementById('casino-home');
   const pages={
     coinflip:document.getElementById('casino-page-coinflip'),
     roulette:document.getElementById('casino-page-roulette'),
+    mines:document.getElementById('casino-page-mines'),
     cases:document.getElementById('casino-page-cases')
   };
   if(!home) return;
@@ -3714,11 +4050,12 @@ function openCasinoGame(game){
   page.classList.add('active');
   updateCasinoBalance();
   if(game==='cases' && !selectedCase) selectCase('miner');
+  if(game==='mines'){ minesRound=null; initMinesGrid(); updateMinesUI(); }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function closeCasinoGame(){
   const home=document.getElementById('casino-home');
-  const pages=['casino-page-coinflip','casino-page-roulette','casino-page-cases'].map(id=>document.getElementById(id));
+  const pages=['casino-page-coinflip','casino-page-roulette','casino-page-mines','casino-page-cases'].map(id=>document.getElementById(id));
   if(!home) return;
   pages.forEach(p=>p && p.classList.remove('active'));
   home.style.display='';
@@ -3983,10 +4320,17 @@ async function openSelectedCase(){
 }
 
 function switchSideTab(tabId, btn) {
+  const target = document.getElementById(`tab-${tabId}`);
+  if (!target) {
+    console.error('Missing side tab:', tabId);
+    showToast('⚠️ Раздел временно недоступен');
+    return;
+  }
   document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-btn, .side-nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`tab-${tabId}`).classList.add('active');
-  btn.classList.add('active');
+  target.classList.add('active');
+  if (btn) btn.classList.add('active');
+
   if (tabId === 'achievements') renderAchievements();
   if (tabId === 'leaderboard') fetchLeaderboard();
   if (tabId === 'profile') renderProfile();
@@ -5236,6 +5580,99 @@ if (requireTelegramUser()) {
   renderContracts();
   showToast('⚠️ Открой игру через Telegram');
 }
+</script>
+
+
+<script id="casino-inertia-js">
+/* ===== AT COIN INERTIA ENGINE =====
+   Visual physics layer: velocity -> friction -> overshoot -> settle.
+   Does not change odds, balances, or result selection.
+*/
+(function(){
+  const PI2 = Math.PI * 2;
+  const easeOut = t => 1 - Math.pow(1 - t, 4);
+
+  window.playInertiaSpin = function(el, turns, duration, onDone){
+    if(!el) return;
+    const start = performance.now();
+    const startRot = Number(el.dataset.inertiaRotation || 0);
+    const extra = PI2 * (turns || 6);
+    const total = extra + (Math.random() - .5) * (PI2 * .18);
+
+    el.classList.add('inertia-active','inertia-motion');
+    const stage = el.closest('.casino-stage');
+    if(stage) stage.classList.add('inertia-running');
+
+    function frame(now){
+      const p = Math.min(1, (now - start) / duration);
+      const current = startRot + total * easeOut(p);
+      el.style.transform = `rotate(${current}rad)`;
+      if(p < 1){
+        requestAnimationFrame(frame);
+      }else{
+        el.dataset.inertiaRotation = String(current);
+        el.classList.remove('inertia-motion');
+        el.classList.add('inertia-settle');
+        setTimeout(() => {
+          el.classList.remove('inertia-settle');
+          if(stage) stage.classList.remove('inertia-running');
+          if(typeof onDone === 'function') onDone();
+        }, 420);
+      }
+    }
+    requestAnimationFrame(frame);
+  };
+
+  window.playInertiaFlip = function(el, duration, onDone){
+    if(!el) return;
+    const start = performance.now();
+    const old = Number(el.dataset.inertiaFlip || 0);
+    const spins = 5.5 * Math.PI;
+    const startScale = 1;
+    const endScale = 1;
+
+    el.classList.add('inertia-active');
+    function frame(now){
+      const p = Math.min(1, (now - start) / duration);
+      const e = easeOut(p);
+      const angle = old + spins * e;
+      const squash = 1 - Math.abs(Math.sin(angle)) * .72;
+      el.style.transform = `rotateY(${angle}rad) scaleX(${Math.max(.16,squash)}) scaleY(${.985 + .015*squash})`;
+      if(p < 1) requestAnimationFrame(frame);
+      else{
+        el.dataset.inertiaFlip = String(angle);
+        el.style.transform = `rotateY(${angle}rad)`;
+        if(typeof onDone === 'function') onDone();
+      }
+    }
+    requestAnimationFrame(frame);
+  };
+})();
+</script>
+
+
+<script id="casino-inertia-hooks">
+(function(){
+  function wrap(name, inertiaName){
+    const original = window[name];
+    if(typeof original !== 'function' || original.__inertiaWrapped) return;
+    function wrapped(){
+      const args = arguments;
+      const result = original.apply(this,args);
+      const el = document.querySelector('.roulette-wheel, .casino-wheel, .casino-coin, .coin-visual');
+      if(el){
+        if(inertiaName === 'spin') playInertiaSpin(el, 7, 2600);
+        else playInertiaFlip(el, 1800);
+      }
+      return result;
+    }
+    wrapped.__inertiaWrapped = true;
+    window[name] = wrapped;
+  }
+  // Common names used by the existing casino implementation.
+  ['spinRoulette','startRoulette','playRoulette','rollRoulette'].forEach(n=>wrap(n,'spin'));
+  ['flipCoin','tossCoin','playCoin','startCoin'].forEach(n=>wrap(n,'flip'));
+})();
 </script>
 
 </body></html>
