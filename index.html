@@ -3463,6 +3463,83 @@ button{touch-action:manipulation}
  .home-case b{font-size:9px!important}.home-case small{font-size:7px!important}.home-case-tier{font-size:6px!important}
 }
 </style>
+
+<style id="final-cases-games-polish">
+/* ===== FINAL POLISH: CASES + GAMES ===== */
+.cases-home,.games-home{overflow:hidden!important}
+.cases-home .home-section-head,.games-home .home-section-head{padding-right:4px!important}
+.home-cases-grid,.home-games-grid{align-items:stretch!important}
+.home-case,.home-games-grid button{box-sizing:border-box!important;overflow:hidden!important}
+.home-case .case-tier{line-height:1!important;white-space:nowrap!important}
+.home-case .case-mini-icon{display:grid!important;place-items:center!important;flex:0 0 auto!important}
+.home-case b,.home-case small,.home-games-grid b{display:block!important;text-align:center!important;white-space:nowrap!important;max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.home-games-grid span{display:grid!important;place-items:center!important;line-height:1!important;flex:0 0 auto!important}
+@media(max-width:700px){
+  .cases-home .home-section-head,.games-home .home-section-head{padding-right:30px!important}
+  .home-cases-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+    overflow:visible!important;
+    padding:0!important;
+  }
+  .home-case{
+    width:100%!important;
+    min-width:0!important;
+    height:124px!important;
+    min-height:124px!important;
+    padding:9px 6px!important;
+    gap:6px!important;
+    border-radius:14px!important;
+  }
+  .home-case .case-tier{font-size:8px!important;letter-spacing:.08em!important}
+  .home-case .case-mini-icon{width:58px!important;height:42px!important;font-size:30px!important}
+  .home-case b{font-size:10px!important}
+  .home-case small{font-size:8px!important}
+  .home-case:last-child{
+    grid-column:1 / -1!important;
+    width:48%!important;
+    min-width:0!important;
+    justify-self:center!important;
+  }
+  .home-games-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:7px!important;
+    overflow:visible!important;
+    padding:0!important;
+  }
+  .home-games-grid button{
+    width:100%!important;
+    min-width:0!important;
+    height:106px!important;
+    min-height:106px!important;
+    padding:8px 4px!important;
+    gap:7px!important;
+    border-radius:14px!important;
+  }
+  .home-games-grid button span{height:48px!important;font-size:31px!important}
+  .home-games-grid .at-svg-icon{width:40px!important;height:40px!important}
+  .home-games-grid b{font-size:8px!important;line-height:1.15!important;white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important}
+  .home-games-grid button:nth-child(5){grid-column:1!important}
+}
+@media(max-width:360px){
+  .home-case{height:116px!important;min-height:116px!important}
+  .home-games-grid button{height:100px!important;min-height:100px!important}
+  .home-games-grid button span{height:44px!important}
+}
+</style>
+
+<style id="home-clan-live-ui">
+.home-clan-loading{min-height:90px;display:flex;align-items:center;justify-content:center;gap:5px;position:relative;border:1px solid rgba(104,135,191,.12);border-radius:14px;background:rgba(255,255,255,.015)}
+.home-clan-loading>span{width:5px;height:5px;border-radius:50%;background:#5eeaff;box-shadow:0 0 10px rgba(94,234,255,.55);animation:homeClanDot 1.1s infinite ease-in-out}.home-clan-loading>span:nth-child(2){animation-delay:.14s}.home-clan-loading>span:nth-child(3){animation-delay:.28s}
+.home-clan-loading small{position:absolute;bottom:9px;left:0;right:0;text-align:center;font-size:8px;color:#65728d}
+@keyframes homeClanDot{0%,100%{transform:translateY(0);opacity:.45}50%{transform:translateY(-4px);opacity:1}}
+.home-clan-live{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;padding:9px;border:1px solid rgba(104,201,220,.14);border-radius:14px;background:linear-gradient(145deg,rgba(104,201,220,.045),rgba(255,255,255,.012));min-width:0}
+.home-clan-live .clan-preview-emblem{width:48px;height:48px;margin:0;border-radius:14px;display:grid;place-items:center;font-size:24px;background:rgba(104,201,220,.06);border:1px solid rgba(104,201,220,.14);overflow:hidden}
+.home-clan-live .clan-preview-emblem img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.home-clan-live-main{min-width:0}.home-clan-live-name{display:flex;align-items:center;gap:5px;min-width:0}.home-clan-live-name b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.home-clan-tag{font-size:7px;color:#7e8aa4;padding:2px 5px;border:1px solid rgba(126,138,164,.16);border-radius:6px;flex:0 0 auto}.home-clan-live-meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:5px;color:#76839c;font-size:8px}.home-clan-live-meta strong{color:#eaf4ff;font-weight:800}.home-clan-live-role{margin-top:5px;font-size:7px;color:#d2c17d}.home-clan-empty{min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px;border:1px solid rgba(104,135,191,.12);border-radius:14px;background:rgba(255,255,255,.015)}.home-clan-empty b{font-size:11px}.home-clan-empty small{font-size:8px;color:#697792;margin-top:5px;max-width:230px}.home-clan-error{min-height:72px;display:grid;place-items:center;text-align:center;padding:10px;border:1px solid rgba(196,91,111,.14);border-radius:14px;background:rgba(196,91,111,.025);color:#8b96ad;font-size:8px}
+@media(max-width:700px){.home-clan-live{grid-template-columns:44px minmax(0,1fr);padding:8px}.home-clan-live .clan-preview-emblem{width:44px;height:44px;font-size:22px}.home-clan-live-name b{font-size:10px}.home-clan-live-meta{gap:6px;font-size:7px}.home-clan-live-role{font-size:6px}.home-clan-empty{min-height:82px}}
+</style>
+
 </head>
 <body>
 
@@ -3521,9 +3598,9 @@ button{touch-action:manipulation}
           </section>
 
           <section class="home-section clan-home">
-            <div class="home-section-head"><div><b>КЛАНЫ</b><small>Объединяйся и побеждай</small></div></div>
-            <div class="clan-preview"><div class="clan-preview-emblem">⚔️</div><div><b>AT LEGENDS</b><span>Участники: <strong>24 / 50</strong></span><span>Рейтинг: <strong>1250</strong></span></div></div>
-            <button class="home-wide-btn" onclick="switchSideTab('clans', document.querySelectorAll('#side-nav .side-nav-btn')[6])">В КЛАН</button>
+            <div class="home-section-head"><div><b>КЛАНЫ</b><small id="home-clan-subtitle">Твои актуальные данные</small></div><button onclick="switchSideTab('clans', document.querySelectorAll('#side-nav .side-nav-btn')[6])">Открыть</button></div>
+            <div id="home-clan-preview"><div class="home-clan-loading"><span></span><span></span><span></span><small>Загрузка клана…</small></div></div>
+            <button id="home-clan-action" class="home-wide-btn" onclick="switchSideTab('clans', document.querySelectorAll('#side-nav .side-nav-btn')[6])">ОТКРЫТЬ КЛАНЫ</button>
           </section>
         </div>
 
@@ -5047,6 +5124,53 @@ function renderHomeContracts(){
   }).join('');
 }
 
+let homeClanPreviewLoading=false;
+let homeClanPreviewFetchedAt=0;
+async function loadHomeClanPreview(force=false){
+  const root=document.getElementById('home-clan-preview');
+  if(!root || !db || !getUserId()) return;
+  const now=Date.now();
+  if(homeClanPreviewLoading) return;
+  if(!force && now-homeClanPreviewFetchedAt<15000) return;
+  homeClanPreviewLoading=true;
+  root.innerHTML='<div class="home-clan-loading"><span></span><span></span><span></span><small>Загрузка клана…</small></div>';
+  try{
+    const {data,error}=await db.rpc('get_my_clan',{p_telegram_id:getUserId()});
+    if(error) throw error;
+    const clan=Array.isArray(data)?(data[0]||null):data;
+    const subtitle=document.getElementById('home-clan-subtitle');
+    const action=document.getElementById('home-clan-action');
+    if(!clan){
+      if(subtitle) subtitle.textContent='Выбери или создай клан';
+      if(action) action.textContent='НАЙТИ КЛАН';
+      root.innerHTML='<div class="home-clan-empty"><b>ТЫ ЕЩЁ НЕ В КЛАНЕ</b><small>Выбери клан из каталога или создай собственный в разделе «Кланы».</small></div>';
+    }else{
+      const role=clan.role==='leader'?'Лидер':clan.role==='officer'?'Офицер':'Участник';
+      const emblem=String(clan.emblem||'🛡️');
+      const safeEmblem=clanEscape(emblem);
+      const emblemHtml=/^https?:\/\//i.test(emblem)?`<img src="${safeEmblem}" alt="">`:safeEmblem;
+      if(subtitle) subtitle.textContent=`Клан · ${role}`;
+      if(action) action.textContent='ОТКРЫТЬ КЛАН';
+      root.innerHTML=`<div class="home-clan-live">
+        <div class="clan-preview-emblem">${emblemHtml}</div>
+        <div class="home-clan-live-main">
+          <div class="home-clan-live-name"><b>${clanEscape(clan.name||'Без названия')}</b><span class="home-clan-tag">[${clanEscape(clan.tag||'—')}]</span></div>
+          <div class="home-clan-live-meta"><span>👥 <strong>${Number(clan.member_count||0)} / ${Number(clan.member_limit||25)}</strong></span><span>LVL <strong>${Number(clan.level||1)}</strong></span><span>💰 <strong>${clanMoney(clan.treasury||0)}</strong></span></div>
+          <div class="home-clan-live-role">${clanEscape(role)} · ${clanEscape(clan.description||'Без описания')}</div>
+        </div>
+      </div>`;
+    }
+    homeClanPreviewFetchedAt=Date.now();
+  }catch(e){
+    console.error('loadHomeClanPreview:',e);
+    const subtitle=document.getElementById('home-clan-subtitle');
+    if(subtitle) subtitle.textContent='Данные не загружены';
+    root.innerHTML='<div class="home-clan-error">Не удалось получить актуальные данные клана.</div>';
+  }finally{
+    homeClanPreviewLoading=false;
+  }
+}
+
 function renderMineDashboard(){
   const refCoins = document.getElementById('ref-coins');
   const refEnergy = document.getElementById('ref-energy');
@@ -5073,6 +5197,7 @@ function renderMineDashboard(){
   }
   renderHomeCases();
   renderHomeContracts();
+  loadHomeClanPreview();
 }
 
 function showToast(msg) { /* notifications disabled */ }
@@ -5430,6 +5555,7 @@ async function loadClan(){
     if(error) throw error;
     currentClan = Array.isArray(data) ? (data[0] || null) : data;
     renderClan();
+    loadHomeClanPreview(true);
     const {data:balance}=await db.from('users').select('coins').eq('telegram_id',getUserId()).maybeSingle();
     document.getElementById('clan-my-coins').textContent=clanMoney(balance?.coins||0)+' ⚡';
   }catch(e){ console.error('loadClan:',e); root.innerHTML='<div class="clan-error">Не удалось загрузить кланы. Проверь SQL для системы кланов.</div>'; }
@@ -5507,6 +5633,7 @@ async function joinClan(clanId){
     showToast('🛡️ Ты вступил в клан');
     await loadData();
     await loadClan();
+    await loadHomeClanPreview(true);
     updateUI(true);
   }catch(e){ console.error(e); showToast('❌ '+(e.message||'Не удалось вступить в клан')); }
 }
