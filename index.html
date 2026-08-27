@@ -3540,6 +3540,17 @@ button{touch-action:manipulation}
 @media(max-width:700px){.home-clan-live{grid-template-columns:44px minmax(0,1fr);padding:8px}.home-clan-live .clan-preview-emblem{width:44px;height:44px;font-size:22px}.home-clan-live-name b{font-size:10px}.home-clan-live-meta{gap:6px;font-size:7px}.home-clan-live-role{font-size:6px}.home-clan-empty{min-height:82px}}
 </style>
 
+
+<style id="atcoin-admin-ui">
+.admin-only-nav{display:none!important}.admin-only-nav.admin-visible{display:flex!important}
+.admin-shell{display:flex;flex-direction:column;gap:12px;max-width:980px;width:100%;margin:0 auto;padding-bottom:20px}
+.admin-hero{display:flex;justify-content:space-between;gap:12px;align-items:stretch;padding:16px;border:1px solid rgba(83,231,255,.18);border-radius:18px;background:radial-gradient(500px 180px at 0 0,rgba(83,231,255,.08),transparent 70%),linear-gradient(145deg,#0c1524,#070c15);box-shadow:inset 0 1px rgba(255,255,255,.04),0 18px 45px rgba(0,0,0,.24)}
+.admin-kicker{font-size:9px;letter-spacing:.18em;color:var(--cyan);font-weight:900}.admin-hero h2{margin:5px 0 4px;font-size:24px}.admin-hero p{margin:0;color:#7e8da8;font-size:10px}.admin-id-card{min-width:180px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;padding-left:12px}.admin-id-card small{font-size:8px;color:#71819f}.admin-id-card b{font:900 14px ui-monospace,SFMono-Regular,Consolas,monospace;color:#eaf3ff;margin:4px 0 7px}.admin-id-card button{border:1px solid rgba(83,231,255,.2);background:#0c1827;color:var(--cyan);border-radius:9px;padding:6px 9px;font-size:8px;font-weight:900}
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.admin-card{padding:14px;border:1px solid rgba(109,136,190,.16);border-radius:16px;background:linear-gradient(145deg,rgba(11,17,29,.98),rgba(6,10,18,.98));box-shadow:inset 0 1px rgba(255,255,255,.03)}.admin-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}.admin-card-head b{font-size:13px}.admin-card-head span{font-size:8px;color:#70809b}.admin-fields{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:9px}.admin-fields label{font-size:8px;color:#74829e;display:flex;flex-direction:column;gap:4px}.admin-fields input,.admin-card input{width:100%;box-sizing:border-box;border:1px solid rgba(109,136,190,.18);border-radius:10px;background:#09111d;color:#eaf3ff;padding:9px;font-size:12px;outline:none}.admin-btn{min-height:36px;padding:8px 10px;border-radius:10px;border:1px solid rgba(109,136,190,.18);background:linear-gradient(145deg,#172437,#0b121e);color:#d9e8ff;font-size:9px;font-weight:900;letter-spacing:.03em}.admin-btn.primary{border-color:rgba(83,231,255,.30);color:var(--cyan)}.admin-btn.danger{border-color:rgba(255,84,104,.28);color:#ff7c8a}.admin-action-row{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.admin-user-summary{margin:9px 0;padding:10px;border-radius:10px;background:rgba(255,255,255,.025);border:1px solid rgba(109,136,190,.10);color:#93a0b8;font-size:10px;line-height:1.45;min-height:40px}.admin-log{padding:10px 12px;border-radius:10px;background:#060a12;border:1px solid rgba(109,136,190,.12);font:10px ui-monospace,SFMono-Regular,Consolas,monospace;color:#7787a5;white-space:pre-wrap}
+.admin-profile-id{margin-top:10px;padding:10px;border:1px solid rgba(109,136,190,.15);border-radius:12px;background:rgba(255,255,255,.02);display:flex;align-items:center;justify-content:space-between;gap:8px}.admin-profile-id b{font:900 12px ui-monospace,SFMono-Regular,Consolas,monospace}.admin-profile-id button{border:1px solid rgba(83,231,255,.18);background:#0c1725;color:var(--cyan);border-radius:9px;padding:7px 9px;font-size:8px;font-weight:900}
+@media(max-width:700px){.admin-hero{flex-direction:column}.admin-id-card{align-items:flex-start;min-width:0;padding-left:0}.admin-grid{grid-template-columns:1fr}.admin-fields{grid-template-columns:1fr 1fr 1fr}.admin-card{padding:11px}.admin-action-row{grid-template-columns:1fr 1fr}.admin-hero h2{font-size:20px}}
+</style>
+
 </head>
 <body>
 
@@ -3883,6 +3894,57 @@ button{touch-action:manipulation}
       </div>
     </div>
 
+
+    <!-- АДМИН-ПАНЕЛЬ -->
+    <div class="tab-view" id="tab-admin">
+      <div class="at-page-top">
+        <button class="at-back" type="button" onclick="switchTab('mine', document.querySelector('#bottom-nav .nav-btn:first-child'))">
+          <span>‹</span><span>Назад</span>
+        </button>
+        <div class="at-page-title">ADMIN CONTROL</div>
+      </div>
+      <div class="admin-shell">
+        <div class="admin-hero">
+          <div><div class="admin-kicker">AT COIN / CONTROL</div><h2>АДМИН-ПАНЕЛЬ</h2><p id="admin-auth-state">Проверка доступа…</p></div>
+          <div class="admin-id-card"><small>ТВОЙ TELEGRAM ID</small><b id="admin-my-id">—</b><button onclick="copyMyTelegramId()">КОПИРОВАТЬ</button></div>
+        </div>
+        <div class="admin-grid">
+          <section class="admin-card">
+            <div class="admin-card-head"><b>Игрок</b><span id="admin-target-label">Не выбран</span></div>
+            <input id="admin-target-input" class="market-input" type="text" inputmode="numeric" autocomplete="off" placeholder="Telegram ID игрока" />
+            <button class="admin-btn primary" onclick="adminLoadUser()">НАЙТИ ИГРОКА</button>
+            <div class="admin-user-summary" id="admin-user-summary">Введите Telegram ID и нажмите «Найти игрока».</div>
+          </section>
+          <section class="admin-card">
+            <div class="admin-card-head"><b>Экономика</b><span id="admin-economy-state">—</span></div>
+            <div class="admin-fields">
+              <label>Монеты<input id="admin-coins" type="number" min="0" step="1" placeholder="0"></label>
+              <label>Энергия<input id="admin-energy" type="number" min="0" max="1000" step="1" placeholder="1000"></label>
+              <label>Щиты<input id="admin-shields" type="number" min="0" step="1" placeholder="0"></label>
+            </div>
+            <button class="admin-btn primary" onclick="adminSaveEconomy()">СОХРАНИТЬ ЭКОНОМИКУ</button>
+          </section>
+        </div>
+        <div class="admin-grid admin-actions-grid">
+          <section class="admin-card">
+            <div class="admin-card-head"><b>Быстрые действия</b><span>опасные</span></div>
+            <div class="admin-action-row">
+              <button class="admin-btn" onclick="adminAddCoins(100000)">+100K COINS</button>
+              <button class="admin-btn" onclick="adminAddCoins(1000000)">+1M COINS</button>
+              <button class="admin-btn" onclick="adminSetEnergy(1000)">1000 ENERGY</button>
+              <button class="admin-btn danger" onclick="adminResetUser()">ПОЛНЫЙ RESET</button>
+            </div>
+          </section>
+          <section class="admin-card">
+            <div class="admin-card-head"><b>Инвентарь</b><span id="admin-inventory-count">0 предметов</span></div>
+            <div class="admin-user-summary" id="admin-inventory-summary">Загрузка инвентаря…</div>
+            <button class="admin-btn" onclick="adminRefreshUser()">ОБНОВИТЬ ДАННЫЕ</button>
+          </section>
+        </div>
+        <div class="admin-log" id="admin-log">Готово.</div>
+      </div>
+    </div>
+
     <!-- КОНТРАКТЫ -->
     <div class="tab-view" id="tab-contracts">
       <div class="form-title" style="margin-bottom:4px;">🎯 КОНТРАКТЫ ШАХТЁРА</div>
@@ -3948,6 +4010,10 @@ button{touch-action:manipulation}
     <button class="side-nav-btn" onclick="switchSideTab('clans', this)">
       <span class="nav-btn-icon">🛡️</span>
       <span>Кланы</span>
+    </button>
+    <button class="side-nav-btn admin-only-nav" id="admin-nav-btn" onclick="switchSideTab('admin', this)">
+      <span class="nav-btn-icon">⚙️</span>
+      <span>ADMIN</span>
     </button>
   </div>
 </div>
@@ -4016,6 +4082,15 @@ const MAX_MARKET_PRICE = 1_000_000_000;
 const MAX_INVENTORY_SIZE = 5000;
 const MAX_EQUIPPED = 3;
 const MAX_ENERGY = 1000;
+
+// ADMIN: add your Telegram numeric ID here after copying it from the Profile page.
+const ADMIN_TELEGRAM_IDS = ['PASTE_YOUR_TELEGRAM_ID_HERE'];
+function isAdmin(){
+  const uid = getUserId();
+  return !!uid && ADMIN_TELEGRAM_IDS.includes(String(uid));
+}
+function isConfiguredAdmin(){ return ADMIN_TELEGRAM_IDS.some(id => /^\d+$/.test(String(id))); }
+
 const ENERGY_PER_CLICK = 1;
 const ENERGY_REGEN_MS = 3000;
 
@@ -6965,7 +7040,7 @@ async function fetchLeaderboard() {
       if (leaderboardMode === 'crafting') value = Number(stats.crafts) || 0;
       if (leaderboardMode === 'upgrade') value = Number(stats.upgrades) || 0;
       if (leaderboardMode === 'collection') value = Array.isArray(u.inventory) ? u.inventory.length : 0;
-      return { username:u.username || 'Игрок', value:Math.max(0, Math.floor(value)) };
+      return { telegram_id:String(u.telegram_id||''), username:u.username || 'Игрок', value:Math.max(0, Math.floor(value)) };
     });
 
     if (leaderboardMode === 'trading') {
@@ -6973,14 +7048,16 @@ async function fetchLeaderboard() {
       if (lotsError) throw lotsError;
       const counts = {};
       (lots || []).forEach(l => { const id=String(l.seller_id); counts[id]=(counts[id]||0)+1; });
-      rows = users.map(u => ({ username:u.username || 'Игрок', value:counts[String(u.telegram_id)] || 0 }));
+      rows = users.map(u => ({ telegram_id:String(u.telegram_id||''), username:u.username || 'Игрок', value:counts[String(u.telegram_id)] || 0 }));
     }
 
     rows.sort((a,b)=>b.value-a.value || a.username.localeCompare(b.username));
-    rows = rows.slice(0,10);
+    // Показываем всех игроков и каждому присваиваем место после сортировки.
 
     list.innerHTML='';
     const meta=LEADERBOARD_META[leaderboardMode];
+    const descEl=document.getElementById('lb-description');
+    if(descEl) descEl.textContent=`${meta.title} · ${rows.length} игроков`;
     rows.forEach((user,idx)=>{
       const card=document.createElement('div');
       card.className='upg-card';
@@ -7562,4 +7639,71 @@ body > #side-nav.at-rail-mounted.side-shelf-collapsed .side-nav-btn{display:none
 </style>
 
 <style id="remove-bottom-status-final">#ref-status-bar{display:none!important;height:0!important;min-height:0!important;max-height:0!important;padding:0!important;margin:0!important;border:0!important;overflow:hidden!important}</style>
+
+<script id="atcoin-admin-runtime">
+(function(){
+  let adminTargetId=null;
+  let adminTargetData=null;
+  const $=id=>document.getElementById(id);
+  function log(msg){const el=$('admin-log');if(el)el.textContent=`[${new Date().toLocaleTimeString()}] ${msg}`}
+  function setText(id,v){const el=$(id);if(el)el.textContent=v}
+  window.copyMyTelegramId=async function(){
+    const id=getUserId(); if(!id){log('Telegram ID недоступен. Открой Mini App внутри Telegram.');return}
+    try{await navigator.clipboard.writeText(id);log(`Скопирован Telegram ID: ${id}`)}catch(e){log(`Telegram ID: ${id}`)}
+  }
+  window.adminLoadUser=async function(){
+    if(!isAdmin()){log('Нет доступа к ADMIN');return}
+    const id=String($('admin-target-input')?.value||'').trim();
+    if(!/^\d+$/.test(id)){log('Укажи числовой Telegram ID');return}
+    if(!db){log('Supabase недоступен');return}
+    try{
+      const {data,error}=await db.from('users').select('telegram_id,username,coins,inventory,equipped,shields,stats,claimed_achievements').eq('telegram_id',id).maybeSingle();
+      if(error)throw error;
+      if(!data){adminTargetId=null;adminTargetData=null;setText('admin-target-label','Не найден');setText('admin-user-summary','Игрок не найден в users.');return}
+      adminTargetId=id;adminTargetData=data;
+      setText('admin-target-label',`@${data.username||'игрок'} · ${id}`);
+      $('admin-coins').value=Math.floor(Number(data.coins)||0);$('admin-energy').value=Math.floor(Number(data.stats?.energy??1000)||0);$('admin-shields').value=Math.floor(Number(data.shields)||0);
+      setText('admin-economy-state',`${Math.floor(Number(data.coins)||0).toLocaleString()} coins`);
+      setText('admin-inventory-count',`${Array.isArray(data.inventory)?data.inventory.length:0} предметов`);
+      $('admin-user-summary').textContent=`ID: ${id}\nUsername: @${data.username||'—'}\nЭкипировано: ${Array.isArray(data.equipped)?data.equipped.length:0}\nКлики: ${Number(data.stats?.clicks)||0}\nКрафты: ${Number(data.stats?.crafts)||0}\nЗаточки: ${Number(data.stats?.upgrades)||0}`;
+      $('admin-inventory-summary').textContent=(Array.isArray(data.inventory)&&data.inventory.length)?data.inventory.slice(0,14).map(x=>`${x.name||x.id}${x.level?` +${x.level}`:''}`).join(' · '):'Инвентарь пуст';
+      log(`Загружен игрок ${id}`)
+    }catch(e){console.error(e);log(`Ошибка загрузки: ${e.message||e}`)}
+  }
+  window.adminRefreshUser=async function(){if(adminTargetId){$('admin-target-input').value=adminTargetId;await adminLoadUser()}}
+  async function updateTarget(patch){
+    if(!isAdmin()){log('Нет доступа к ADMIN');return false}
+    if(!adminTargetId){log('Сначала выбери игрока');return false}
+    if(!db){log('Supabase недоступен');return false}
+    try{
+      const {error}=await db.from('users').update(patch).eq('telegram_id',adminTargetId); if(error)throw error; log(`Изменения сохранены для ${adminTargetId}`); await adminRefreshUser(); return true
+    }catch(e){console.error(e);log(`Ошибка сохранения: ${e.message||e}`);return false}
+  }
+  window.adminSaveEconomy=async function(){
+    const coins=Math.max(0,Math.floor(Number($('admin-coins')?.value)||0));const energy=Math.min(1000,Math.max(0,Math.floor(Number($('admin-energy')?.value)||0)));const shields=Math.max(0,Math.floor(Number($('admin-shields')?.value)||0));
+    await updateTarget({coins,shields,stats:{...(adminTargetData?.stats||{}),energy,energyUpdatedAt:Date.now()}})
+  }
+  window.adminAddCoins=async function(amount){if(!adminTargetData){log('Сначала выбери игрока');return}; $('admin-coins').value=Math.floor(Number(adminTargetData.coins)||0)+amount; await adminSaveEconomy()}
+  window.adminSetEnergy=async function(amount){$('admin-energy').value=amount;await adminSaveEconomy()}
+  window.adminResetUser=async function(){
+    if(!adminTargetId){log('Сначала выбери игрока');return}
+    const ok=window.confirm(`СБРОСИТЬ ПРОГРЕСС игрока ${adminTargetId}?\n\nМонеты, инвентарь, экипировка, щиты, энергия, контракты, статистика и достижения будут обнулены.`); if(!ok)return;
+    await updateTarget({coins:0,inventory:[],equipped:[],shields:0,stats:{clicks:0,crafts:0,upgrades:0,energy:1000,energyUpdatedAt:Date.now(),contracts:null,records:{}},claimed_achievements:[]});
+  }
+  window.renderAdminAccess=function(){
+    const ok=isAdmin();document.querySelectorAll('.admin-only-nav').forEach(el=>el.classList.toggle('admin-visible',ok));
+    const tab=$('tab-admin');if(tab)tab.style.display=ok?'':'none';
+    setText('admin-auth-state', ok ? 'Доступ подтверждён для этого Telegram аккаунта.' : 'Доступ закрыт.');
+    setText('admin-my-id',getUserId()||'—');
+  }
+  function ensureProfileIdCard(){
+    const profile=$('tab-profile'); if(!profile||profile.querySelector('.admin-profile-id'))return;
+    const card=document.createElement('div');card.className='admin-profile-id';card.innerHTML=`<div><small>TELEGRAM ID</small><br><b>${getUserId()||'—'}</b></div><button type="button">КОПИРОВАТЬ</button>`;card.querySelector('button').onclick=copyMyTelegramId;
+    profile.appendChild(card);
+  }
+  window.addEventListener('load',()=>{renderAdminAccess();ensureProfileIdCard();});
+  document.addEventListener('DOMContentLoaded',()=>{renderAdminAccess();ensureProfileIdCard();});
+})();
+</script>
+
 </body></html>
