@@ -3551,6 +3551,15 @@ button{touch-action:manipulation}
 @media(max-width:700px){.admin-hero{flex-direction:column}.admin-id-card{align-items:flex-start;min-width:0;padding-left:0}.admin-grid{grid-template-columns:1fr}.admin-fields{grid-template-columns:1fr 1fr 1fr}.admin-card{padding:11px}.admin-action-row{grid-template-columns:1fr 1fr}.admin-hero h2{font-size:20px}}
 </style>
 
+
+<style id="admin-lock-final">
+/* ADMIN is hidden by default; active state cannot override this lock. */
+#tab-admin{display:none!important;}
+#tab-admin.admin-unlocked{display:flex!important;}
+.admin-only-nav{display:none!important;}
+.admin-only-nav.admin-visible{display:flex!important;}
+</style>
+
 </head>
 <body>
 
@@ -4084,12 +4093,13 @@ const MAX_EQUIPPED = 3;
 const MAX_ENERGY = 1000;
 
 // ADMIN: add your Telegram numeric ID here after copying it from the Profile page.
-const ADMIN_TELEGRAM_IDS = ['PASTE_YOUR_TELEGRAM_ID_HERE'];
+const ADMIN_TELEGRAM_IDS = ['5725332802'].filter(id => /^\d+$/.test(String(id)));
 function isAdmin(){
   const uid = getUserId();
-  return !!uid && ADMIN_TELEGRAM_IDS.includes(String(uid));
+  return !!uid && /^\d+$/.test(String(uid)) && ADMIN_TELEGRAM_IDS.includes(String(uid));
 }
 function isConfiguredAdmin(){ return ADMIN_TELEGRAM_IDS.some(id => /^\d+$/.test(String(id))); }
+if(!isConfiguredAdmin()) console.info('[AT COIN] ADMIN disabled: set one numeric Telegram ID in ADMIN_TELEGRAM_IDS.');
 
 const ENERGY_PER_CLICK = 1;
 const ENERGY_REGEN_MS = 3000;
@@ -5517,7 +5527,6 @@ async function cashoutMines(auto=false){
 let duelState={player:100,enemy:100,active:false};
 function resetDuel(){
   duelState={player:100,enemy:100,active:false};
-  const p=$id=>'duel-player-hp'=== $id?document.getElementById($id):document.getElementById($id);
   ['duel-player-hp','duel-enemy-hp'].forEach((id)=>{const e=document.getElementById(id);if(e)e.textContent='100';});
   const pb=document.getElementById('duel-player-bar'), eb=document.getElementById('duel-enemy-bar'); if(pb)pb.style.width='100%'; if(eb)eb.style.width='100%';
   const t=document.getElementById('duel-title'); if(t)t.textContent='ГОТОВ К БОЮ';
@@ -5566,9 +5575,14 @@ function closeCasinoGame(){
 }
 
 function switchTab(tabId, btn){
+  if(tabId==='admin' && typeof isAdmin==='function' && !isAdmin()){
+    console.warn('[AT COIN] Admin access denied');
+    return false;
+  }
   const target=document.getElementById(`tab-${tabId}`);
   if(!target){console.error('[AT COIN] Missing tab:',tabId);return false;}
   document.querySelectorAll('#views-container .tab-view').forEach(v=>{const active=v===target;v.classList.toggle('active',active);v.setAttribute('aria-hidden',active?'false':'true');});
+  if(tabId==='admin') target.classList.add('admin-unlocked');
   document.querySelectorAll('#bottom-nav .nav-btn,#side-nav .side-nav-btn').forEach(b=>b.classList.remove('active'));
   if(btn&&btn.classList)btn.classList.add('active');
   if(tabId!=='games'&&typeof closeCasinoGame==='function')closeCasinoGame();
@@ -5584,9 +5598,7 @@ function switchTab(tabId, btn){
     else if(tabId==='clans')loadClan();
     else if(tabId==='games')updateCasinoBalance();
   }catch(e){console.error('[AT COIN] Tab render error:',tabId,e);}
-  const views=document.getElementById('views-container');
-  if(views)views.scrollTop=0;
-  target.scrollTop=0;
+  const views=document.getElementById('views-container'); if(views)views.scrollTop=0; target.scrollTop=0;
   return false;
 }
 
@@ -7652,7 +7664,7 @@ body > #side-nav.at-rail-mounted.side-shelf-collapsed .side-nav-btn{display:none
     try{await navigator.clipboard.writeText(id);log(`Скопирован Telegram ID: ${id}`)}catch(e){log(`Telegram ID: ${id}`)}
   }
   window.adminLoadUser=async function(){
-    if(!isAdmin()){log('Нет доступа к ADMIN');return}
+    if(!isAdmin() || !document.getElementById('tab-admin')?.classList.contains('admin-unlocked')){log('Нет доступа к ADMIN');return}
     const id=String($('admin-target-input')?.value||'').trim();
     if(!/^\d+$/.test(id)){log('Укажи числовой Telegram ID');return}
     if(!db){log('Supabase недоступен');return}
@@ -7672,7 +7684,7 @@ body > #side-nav.at-rail-mounted.side-shelf-collapsed .side-nav-btn{display:none
   }
   window.adminRefreshUser=async function(){if(adminTargetId){$('admin-target-input').value=adminTargetId;await adminLoadUser()}}
   async function updateTarget(patch){
-    if(!isAdmin()){log('Нет доступа к ADMIN');return false}
+    if(!isAdmin() || !document.getElementById('tab-admin')?.classList.contains('admin-unlocked')){log('Нет доступа к ADMIN');return false}
     if(!adminTargetId){log('Сначала выбери игрока');return false}
     if(!db){log('Supabase недоступен');return false}
     try{
@@ -7691,8 +7703,10 @@ body > #side-nav.at-rail-mounted.side-shelf-collapsed .side-nav-btn{display:none
     await updateTarget({coins:0,inventory:[],equipped:[],shields:0,stats:{clicks:0,crafts:0,upgrades:0,energy:1000,energyUpdatedAt:Date.now(),contracts:null,records:{}},claimed_achievements:[]});
   }
   window.renderAdminAccess=function(){
-    const ok=isAdmin();document.querySelectorAll('.admin-only-nav').forEach(el=>el.classList.toggle('admin-visible',ok));
-    const tab=$('tab-admin');if(tab)tab.style.display=ok?'':'none';
+    const ok=isAdmin();
+    document.querySelectorAll('.admin-only-nav').forEach(el=>el.classList.toggle('admin-visible',ok));
+    const tab=$('tab-admin');
+    if(tab){ tab.classList.toggle('admin-unlocked',ok); if(!ok) tab.classList.remove('active'); }
     setText('admin-auth-state', ok ? 'Доступ подтверждён для этого Telegram аккаунта.' : 'Доступ закрыт.');
     setText('admin-my-id',getUserId()||'—');
   }
