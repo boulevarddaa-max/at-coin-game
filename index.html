@@ -3551,7 +3551,7 @@ button{touch-action:manipulation}
 #side-nav #admin-nav-btn.admin-only-nav{display:none!important;visibility:hidden!important;pointer-events:none!important;}
 #views-container #tab-admin{display:none!important;visibility:hidden!important;pointer-events:none!important;}
 body.admin-authenticated #side-nav #admin-nav-btn.admin-only-nav{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
-body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
+body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
 </style>
 
 <style id="roulette-mines-final-polish">
@@ -3607,6 +3607,39 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex
 @media(max-width:700px){.roulette-stage .roulette-object{width:286px!important;height:286px!important}.roulette-stage .roulette-wheel{width:252px!important;height:252px!important}.roulette-stage .roulette-wheel:after{inset:66px!important}.roulette-stage .roulette-center{width:76px!important;height:76px!important}.roulette-stage .roulette-picks{gap:6px!important}.roulette-stage .roulette-pick{height:48px!important;font-size:8px!important}.roulette-stage .casino-row{grid-template-columns:minmax(0,1fr) auto!important;gap:7px!important}}
 </style>
 
+
+<style id="final-mines-roulette-polish">
+.roulette-stage .roulette-object{isolation:isolate;overflow:visible!important;position:relative!important}
+.roulette-stage .roulette-ball{display:none!important}
+.roulette-stage .roulette-pointer{top:1px!important;border-top-color:#ffd85a!important;border-left-width:9px!important;border-right-width:9px!important;border-top-width:18px!important;filter:drop-shadow(0 3px 5px rgba(0,0,0,.65))!important}
+.roulette-stage .roulette-wheel{border-radius:50%!important;overflow:visible!important;background:conic-gradient(from -90deg,
+ #c92d4f 0deg 32.7273deg,#111521 32.7273deg 65.4546deg,#c92d4f 65.4546deg 98.1819deg,#111521 98.1819deg 130.9092deg,
+ #c92d4f 130.9092deg 163.6365deg,#111521 163.6365deg 196.3638deg,#c92d4f 196.3638deg 229.0911deg,#111521 229.0911deg 261.8184deg,
+ #c92d4f 261.8184deg 294.5457deg,#111521 294.5457deg 327.273deg,#15956f 327.273deg 360deg)!important;
+}
+.roulette-stage .roulette-wheel:before{inset:12px!important;border:1px solid rgba(255,255,255,.10)!important;box-shadow:inset 0 0 0 12px rgba(0,0,0,.16),inset 0 0 35px rgba(0,0,0,.42)!important;z-index:1}
+.roulette-stage .roulette-wheel:after{inset:68px!important;border-color:rgba(255,255,255,.07)!important;z-index:2!important}
+.roulette-number-label{z-index:8!important;transform-origin:50% 50%!important}
+.roulette-stage .roulette-center{z-index:10!important}
+.mines-bomb-options{display:grid!important;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+.mines-bomb-options label{display:block;cursor:pointer}
+.mines-bomb-options input{position:absolute;opacity:0;pointer-events:none}
+.mines-bomb-options span{min-height:36px;display:grid;place-items:center;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);font-size:12px;font-weight:900;color:#abb6c9;transition:.16s}
+.mines-bomb-options input:checked+span{color:#fff;border-color:rgba(83,231,255,.36);background:linear-gradient(145deg,rgba(83,231,255,.16),rgba(155,92,255,.10));box-shadow:0 0 18px rgba(83,231,255,.06)}
+.mines-bomb-options input:disabled+span{opacity:.45;cursor:not-allowed}
+.mines-bomb-title{font-size:8px;letter-spacing:.12em;color:#71809a;font-weight:900}
+@media(max-width:700px){
+ .roulette-stage .roulette-object{width:min(300px,82vw)!important;height:min(300px,82vw)!important;margin:4px auto 10px!important}
+ .roulette-stage .roulette-wheel{width:min(268px,73vw)!important;height:min(268px,73vw)!important}
+ .roulette-stage .roulette-wheel:after{inset:60px!important}
+ .roulette-stage .roulette-center{width:72px!important;height:72px!important}
+ .roulette-stage .roulette-picks{grid-template-columns:repeat(3,1fr)!important;max-width:100%!important}
+ .roulette-stage .roulette-pick{min-height:44px!important;padding:8px 4px!important;font-size:8px!important}
+ .roulette-stage .casino-row{grid-template-columns:minmax(0,1fr) auto!important}
+ .mines-controls .casino-row{display:grid!important;grid-template-columns:minmax(0,1fr) 86px!important}
+ #mines-bombs-select{grid-column:1/-1!important}
+}
+</style>
 </head>
 <body>
 
@@ -5411,53 +5444,57 @@ function playCoinFlip(choice) {
 async function playRoulette(){
   if(casinoBusy) return;
   const bet=getCasinoBet('roulette-bet');
-  if(!bet) return;
   const balance=Math.floor(Number(state.coins)||0);
-  if(bet<=0 || bet>balance) return;
+  if(!Number.isFinite(bet) || bet<10 || bet>balance){
+    setCasinoResult('roulette-result','⚠️ Проверь ставку','lose');
+    return;
+  }
   casinoBusy=true;
   const oldCoins=balance;
+  const wheel=document.getElementById('roulette-wheel');
+  const center=document.getElementById('roulette-center-number');
+  const history=document.getElementById('roulette-history');
+  const resultNumber=Math.floor(Math.random()*11);
+  const resultColor=resultNumber===0?'green':(resultNumber%2===0?'red':'black');
+  const won=resultColor===rouletteColor;
+  const payout=won ? (resultColor==='green'?bet*9:Math.floor(bet*1.8)) : 0;
   try{
     state.coins=oldCoins-bet;
     state.stats=state.stats||{};
     state.stats.casinoPlayed=(Number(state.stats.casinoPlayed)||0)+1;
-    updateCasinoBalance(); updateUI(false);
+    updateUI(false); updateCasinoBalance();
 
-    const number=Math.floor(Math.random()*11);
-    const resultColor=number===0?'green':(number%2===0?'red':'black');
-    const wheel=document.getElementById('roulette-wheel');
-    const center=document.getElementById('roulette-center-number');
-    if(typeof renderRouletteWheelLabels==='function') renderRouletteWheelLabels();
-    if(center) center.textContent='…';
+    renderRouletteWheelLabels();
+    if(center) center.textContent='•';
     if(wheel){
-      const previous=Number(wheel.dataset.rotation||0);
-      const turns=5+Math.floor(Math.random()*2);
-      const seg=360/11;
-      const rotation=previous + turns*360 - number*seg;
-      wheel.dataset.rotation=String(rotation);
+      const current=Number(wheel.dataset.rotationDeg||0);
+      const segment=360/11;
+      // Pointer is at 12 o'clock. Land the center of the selected sector under it.
+      const targetOffset=-(resultNumber*segment + segment/2);
+      const extraTurns=(5+Math.floor(Math.random()*2))*360;
+      const rotation=current + extraTurns + targetOffset - (current%360);
+      wheel.dataset.rotationDeg=String(rotation);
       wheel.style.transform=`rotate(${rotation}deg)`;
+      wheel.style.transition='transform 3.2s cubic-bezier(.12,.72,.08,1)';
     }
-    await new Promise(r=>setTimeout(r,1900));
-    if(center) center.textContent=number;
-    const history=document.getElementById('roulette-history');
+    await new Promise(r=>setTimeout(r,3250));
+    if(center) center.textContent=String(resultNumber);
     if(history){
       const d=document.createElement('div');
       d.className=`casino-history-dot ${resultColor}`;
-      d.textContent=number;
+      d.textContent=String(resultNumber);
       history.prepend(d);
       while(history.children.length>8) history.lastElementChild.remove();
     }
-
-    const won=resultColor===rouletteColor;
-    const payout=won ? (resultColor==='green' ? bet*9 : Math.floor(bet*1.8)) : 0;
     const label=resultColor==='green'?'🟢 ЗЕЛЁНОЕ':resultColor==='red'?'🔴 КРАСНОЕ':'⚫ ЧЁРНОЕ';
     if(won){
       state.coins+=payout;
       state.stats.casinoWon=(Number(state.stats.casinoWon)||0)+(payout-bet);
-      setCasinoResult('roulette-result',`${label} · <b>${number}</b><br><span style="font-size:11px">Чистый выигрыш <b>+${(payout-bet).toLocaleString()} ⚡</b></span>`,'win');
+      setCasinoResult('roulette-result',`${label} · <b>${resultNumber}</b><br><span style="font-size:11px">Чистый выигрыш <b>+${(payout-bet).toLocaleString()} ⚡</b></span>`,'win');
       playSound('success');
     }else{
       state.stats.casinoLost=(Number(state.stats.casinoLost)||0)+bet;
-      setCasinoResult('roulette-result',`${label} · <b>${number}</b><br><span style="font-size:11px">Ставка проиграна: <b>-${bet.toLocaleString()} ⚡</b></span>`,'lose');
+      setCasinoResult('roulette-result',`${label} · <b>${resultNumber}</b><br><span style="font-size:11px">Ставка проиграна: <b>-${bet.toLocaleString()} ⚡</b></span>`,'lose');
       playSound('fail');
     }
     sanitizeState();
@@ -5469,8 +5506,8 @@ async function playRoulette(){
     setCasinoResult('roulette-result','Ошибка раунда. Баланс восстановлен.','lose');
   }finally{
     casinoBusy=false;
-    updateUI(false);
-    updateCasinoBalance();
+    if(wheel) wheel.style.transition='transform 3.2s cubic-bezier(.12,.72,.08,1)';
+    updateUI(false); updateCasinoBalance();
   }
 }
 
@@ -5496,6 +5533,11 @@ function updateMinesUI(){
   const mult=document.getElementById('mines-multiplier');
   const cash=document.getElementById('mines-cashout-btn');
   const start=document.getElementById('mines-start-btn');
+  const hero=document.querySelector('.mines-hero-stat b');
+  const active=Boolean(minesRound?.active);
+  const count=minesRound?.mineCount || getSelectedMinesCount();
+  if(hero) hero.textContent=String(count);
+  document.querySelectorAll('#mines-bombs-select input[name="mines-count"]').forEach(r=>r.disabled=active);
   if(!minesRound){
     if(bet)bet.textContent='0 ⚡';
     if(payout)payout.textContent='0 ⚡';
@@ -5508,82 +5550,122 @@ function updateMinesUI(){
   if(bet)bet.textContent=minesRound.bet.toLocaleString()+' ⚡';
   if(payout)payout.textContent=p.toLocaleString()+' ⚡';
   if(mult)mult.textContent=minesRound.multiplier.toFixed(2)+'×';
-  if(cash){cash.disabled=!minesRound.active||minesRound.safe===0;cash.textContent=`ЗАБРАТЬ ${p.toLocaleString()} ⚡`;}
-  if(start){start.disabled=minesRound.active;start.textContent=minesRound.active?'РАУНД ИДЁТ':'НАЧАТЬ';}
+  if(cash){cash.disabled=!active||minesRound.safe===0;cash.textContent=`ЗАБРАТЬ ${p.toLocaleString()} ⚡`;}
+  if(start){start.disabled=active||casinoBusy;start.textContent=active?'РАУНД ИДЁТ':'НАЧАТЬ';}
 }
 function getSelectedMinesCount(){
-  const el=document.querySelector('#mines-bombs-select input:checked');
+  const el=document.querySelector('#mines-bombs-select input[name="mines-count"]:checked');
   const n=Number(el?.value||3);
   return [3,5,7].includes(n)?n:3;
 }
 function renderMinesBombSelector(){
   const host=document.getElementById('mines-bombs-select'); if(!host)return;
-  if(host.dataset.ready==='1')return;
-  host.dataset.ready='1';
-  host.innerHTML=`<div class="mines-bomb-title">МИНЫ</div><div class="mines-bomb-options">
-    <label><input type="radio" name="mines-count" value="3" checked><span>3</span></label>
-    <label><input type="radio" name="mines-count" value="5"><span>5</span></label>
-    <label><input type="radio" name="mines-count" value="7"><span>7</span></label>
-  </div><small>Больше мин = выше риск и быстрее растёт множитель.</small>`;
+  if(host.dataset.ready!=='1'){
+    host.dataset.ready='1';
+    host.innerHTML=`<div class="mines-bomb-title">МИН НА ПОЛЕ</div><div class="mines-bomb-options">
+      <label><input type="radio" name="mines-count" value="3" checked><span>3</span></label>
+      <label><input type="radio" name="mines-count" value="5"><span>5</span></label>
+      <label><input type="radio" name="mines-count" value="7"><span>7</span></label>
+    </div><small>Выбирай до старта. Чем больше мин — тем выше риск.</small>`;
+    host.querySelectorAll('input').forEach(r=>r.addEventListener('change',()=>updateMinesUI()));
+  }
+  const active=Boolean(minesRound?.active);
+  host.querySelectorAll('input').forEach(r=>r.disabled=active);
 }
-function startMines(){
+async function startMines(){
   if(casinoBusy||minesRound?.active)return;
-  const bet=getCasinoBet('mines-bet'); if(!bet)return;
-  if(!Number.isFinite(bet)||bet<=0||bet>Math.floor(Number(state.coins)||0))return;
+  const bet=getCasinoBet('mines-bet');
+  const balance=Math.floor(Number(state.coins)||0);
+  if(!Number.isFinite(bet)||bet<10||bet>balance){
+    setCasinoResult('mines-result','⚠️ Проверь ставку','lose');
+    return;
+  }
   const mineCount=getSelectedMinesCount();
   casinoBusy=true;
-  const oldCoins=Math.floor(Number(state.coins)||0);
+  const oldCoins=balance;
   try{
+    const mines=new Set();
+    while(mines.size<mineCount) mines.add(Math.floor(Math.random()*25));
     state.coins=oldCoins-bet;
     state.stats=state.stats||{};
     state.stats.casinoPlayed=(Number(state.stats.casinoPlayed)||0)+1;
-    const mines=new Set();
-    while(mines.size<mineCount) mines.add(Math.floor(Math.random()*25));
     minesRound={bet,mines,mineCount,multiplier:1,safe:0,active:true};
     initMinesGrid();
     const grid=document.getElementById('mines-grid');
-    if(grid)[...grid.children].forEach(b=>b.disabled=false);
-    setCasinoResult('mines-result',`Поле готово · ${mineCount} мины. Открывай клетки или забирай банк.`,'');
-    updateMinesUI();
-    sanitizeState();
-    commitCasinoChange().finally(()=>{casinoBusy=false;});
+    if(grid)[...grid.children].forEach(b=>{b.disabled=false;b.classList.remove('revealed-mine','revealed-safe');b.querySelector('.mine-symbol').textContent='+';});
+    setCasinoResult('mines-result',`Поле готово · ${mineCount} мин. Открывай клетки или забирай банк.`,'');
+    updateMinesUI(); updateUI(false); updateCasinoBalance();
+    await commitCasinoChange();
   }catch(e){
-    state.coins=oldCoins; minesRound=null; casinoBusy=false; updateUI(false); updateCasinoBalance(); console.error('mines start:',e);
+    state.coins=oldCoins; minesRound=null; sanitizeState(); updateUI(false); updateCasinoBalance();
+    console.error('mines start:',e);
+    setCasinoResult('mines-result','Ошибка запуска. Баланс восстановлен.','lose');
+  }finally{
+    casinoBusy=false;
+    updateMinesUI();
   }
 }
 async function pickMineCell(index){
   if(!minesRound?.active||casinoBusy)return;
-  const grid=document.getElementById('mines-grid'); const cell=grid?.children[index]; if(!cell||cell.disabled)return;
+  const grid=document.getElementById('mines-grid');
+  const cell=grid?.children[index]; if(!cell||cell.disabled)return;
   casinoBusy=true;
-  cell.disabled=true;
-  if(minesRound.mines.has(index)){
-    cell.classList.add('revealed-mine');
-    cell.querySelector('.mine-symbol').textContent='✦';
-    [...grid.children].forEach((b,i)=>{b.disabled=true;if(minesRound.mines.has(i)){b.classList.add('revealed-mine');b.querySelector('.mine-symbol').textContent='✦';}});
-    state.stats=state.stats||{}; state.stats.casinoLost=(Number(state.stats.casinoLost)||0)+minesRound.bet;
-    minesRound.active=false;
-    setCasinoResult('mines-result',`МИНА 💥<br><span style="font-size:11px">Раунд проигран: <b>-${minesRound.bet.toLocaleString()} ⚡</b></span>`,'lose');
-    updateMinesUI(); sanitizeState(); await commitCasinoChange(); casinoBusy=false; return;
+  try{
+    cell.disabled=true;
+    if(minesRound.mines.has(index)){
+      cell.classList.add('revealed-mine');
+      const symbol=cell.querySelector('.mine-symbol'); if(symbol)symbol.textContent='✦';
+      [...grid.children].forEach((b,i)=>{b.disabled=true;if(minesRound.mines.has(i)){b.classList.add('revealed-mine');const s=b.querySelector('.mine-symbol');if(s)s.textContent='✦';}});
+      state.stats=state.stats||{}; state.stats.casinoLost=(Number(state.stats.casinoLost)||0)+minesRound.bet;
+      minesRound.active=false;
+      setCasinoResult('mines-result',`МИНА 💥<br><span style="font-size:11px">Раунд проигран: <b>-${minesRound.bet.toLocaleString()} ⚡</b></span>`,'lose');
+      updateMinesUI(); sanitizeState(); await commitCasinoChange();
+      return;
+    }
+    minesRound.safe++;
+    cell.classList.add('revealed-safe');
+    const symbol=cell.querySelector('.mine-symbol'); if(symbol)symbol.textContent='◆';
+    const riskFactor=25/minesRound.mineCount;
+    minesRound.multiplier=Math.min(10,1+minesRound.safe*(0.22+0.025*riskFactor)+Math.pow(minesRound.safe,1.12)*0.025*(1+minesRound.mineCount/10));
+    if(minesRound.safe>=25-minesRound.mineCount){
+      // Award the final safe-cell payout inline; don't recurse into cashout while busy.
+      const payout=Math.floor(minesRound.bet*minesRound.multiplier);
+      state.coins+=payout;
+      state.stats=state.stats||{}; state.stats.casinoWon=(Number(state.stats.casinoWon)||0)+(payout-minesRound.bet);
+      minesRound.active=false;
+      [...grid.children].forEach(b=>b.disabled=true);
+      setCasinoResult('mines-result',`ИДЕАЛЬНО · +${(payout-minesRound.bet).toLocaleString()} ⚡<br><span style="font-size:11px">Выплата <b>${payout.toLocaleString()} ⚡</b></span>`,'win');
+      updateMinesUI(); sanitizeState(); await commitCasinoChange();
+      return;
+    }
+    setCasinoResult('mines-result',`БЕЗОПАСНО ✓<br><span style="font-size:11px">Открыто <b>${minesRound.safe}</b> · ${minesRound.mineCount} мин · банк <b>${Math.floor(minesRound.bet*minesRound.multiplier).toLocaleString()} ⚡</b></span>`,'win');
+    updateMinesUI();
+  }catch(e){
+    console.error('mines cell:',e);
+    setCasinoResult('mines-result','Ошибка клетки. Повтори действие.','lose');
+  }finally{
+    casinoBusy=false;
+    updateMinesUI();
   }
-  minesRound.safe++;
-  cell.classList.add('revealed-safe'); cell.querySelector('.mine-symbol').textContent='◆';
-  const riskFactor=25/minesRound.mineCount;
-  minesRound.multiplier=Math.min(10,1+minesRound.safe*(0.22+0.025*riskFactor)+Math.pow(minesRound.safe,1.12)*0.025*(1+minesRound.mineCount/10));
-  if(minesRound.safe>=25-minesRound.mineCount){await cashoutMines(true);return;}
-  setCasinoResult('mines-result',`БЕЗОПАСНО ✓<br><span style="font-size:11px">Открыто <b>${minesRound.safe}</b> · ${minesRound.mineCount} мины · банк <b>${Math.floor(minesRound.bet*minesRound.multiplier).toLocaleString()} ⚡</b></span>`,'win');
-  updateMinesUI();
-  casinoBusy=false;
 }
 async function cashoutMines(auto=false){
   if(!minesRound?.active||minesRound.safe===0||casinoBusy)return;
   casinoBusy=true;
-  const payout=Math.floor(minesRound.bet*minesRound.multiplier);
-  state.coins+=payout;
-  state.stats=state.stats||{}; state.stats.casinoWon=(Number(state.stats.casinoWon)||0)+(payout-minesRound.bet);
-  minesRound.active=false;
-  const grid=document.getElementById('mines-grid'); if(grid)[...grid.children].forEach(b=>b.disabled=true);
-  setCasinoResult('mines-result',`${auto?'ИДЕАЛЬНО':'ЗАБРАЛ'} · +${(payout-minesRound.bet).toLocaleString()} ⚡<br><span style="font-size:11px">Выплата <b>${payout.toLocaleString()} ⚡</b></span>`,'win');
-  updateMinesUI(); sanitizeState(); await commitCasinoChange(); casinoBusy=false;
+  try{
+    const payout=Math.floor(minesRound.bet*minesRound.multiplier);
+    state.coins+=payout;
+    state.stats=state.stats||{}; state.stats.casinoWon=(Number(state.stats.casinoWon)||0)+(payout-minesRound.bet);
+    minesRound.active=false;
+    const grid=document.getElementById('mines-grid'); if(grid)[...grid.children].forEach(b=>b.disabled=true);
+    setCasinoResult('mines-result',`${auto?'ИДЕАЛЬНО':'ЗАБРАЛ'} · +${(payout-minesRound.bet).toLocaleString()} ⚡<br><span style="font-size:11px">Выплата <b>${payout.toLocaleString()} ⚡</b></span>`,'win');
+    updateMinesUI(); sanitizeState(); await commitCasinoChange();
+  }catch(e){
+    console.error('mines cashout:',e);
+    setCasinoResult('mines-result','Ошибка выплаты. Баланс не изменён.','lose');
+  }finally{
+    casinoBusy=false;
+    updateMinesUI(); updateUI(false); updateCasinoBalance();
+  }
 }
 
 
@@ -7228,7 +7310,7 @@ if (requireTelegramUser()) {
     window[name] = wrapped;
   }
   // Common names used by the existing casino implementation.
-  ['spinRoulette','startRoulette','playRoulette','rollRoulette'].forEach(n=>wrap(n,'spin'));
+  ['spinRoulette','startRoulette','rollRoulette'].forEach(n=>wrap(n,'spin')); // playRoulette owns its own deterministic animation
   ['flipCoin','tossCoin','playCoin','startCoin'].forEach(n=>wrap(n,'flip'));
 })();
 </script>
@@ -7800,31 +7882,29 @@ body > #side-nav.at-rail-mounted.side-shelf-collapsed .side-nav-btn{display:none
 </style>
 <script id="final-roulette-runtime">
 (function(){
-  const wheelAngles={labels:11};
   function renderRouletteWheelLabels(){
     const wheel=document.getElementById('roulette-wheel');
-    if(!wheel || wheel.dataset.labelsReady==='1') return;
-    wheel.dataset.labelsReady='1';
+    if(!wheel)return;
+    wheel.querySelectorAll('.roulette-number-label').forEach(x=>x.remove());
+    const size=wheel.getBoundingClientRect().width||250;
+    const radius=Math.max(70,Math.min(116,size*0.37));
     const seg=360/11;
-    for(let n=0;n<=10;n++){
+    for(let n=0;n<11;n++){
       const el=document.createElement('span');
       el.className='roulette-number-label'+(n===0?' zero':'');
       el.textContent=String(n);
       const a=n*seg;
-      el.style.transform=`rotate(${a}deg) translateY(-${Math.min(wheel.clientWidth||250,320)*0.37}px) rotate(${-a}deg)`;
+      el.style.transform=`translate(-50%,-50%) rotate(${a}deg) translateY(-${radius}px) rotate(${-a}deg)`;
       wheel.appendChild(el);
     }
+    wheel.dataset.labelsReady='1';
   }
   function refresh(){
-    const wheel=document.getElementById('roulette-wheel');
-    if(!wheel) return;
-    wheel.dataset.labelsReady='';
-    wheel.querySelectorAll('.roulette-number-label').forEach(x=>x.remove());
     renderRouletteWheelLabels();
   }
   window.renderRouletteWheelLabels=renderRouletteWheelLabels;
-  window.addEventListener('DOMContentLoaded',()=>setTimeout(renderRouletteWheelLabels,0),{once:true});
-  window.addEventListener('resize',()=>{clearTimeout(window.__rouletteLabelTimer);window.__rouletteLabelTimer=setTimeout(refresh,120);},{passive:true});
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(renderRouletteWheelLabels,60),{once:true});
+  window.addEventListener('resize',()=>{clearTimeout(window.__rouletteLabelTimer);window.__rouletteLabelTimer=setTimeout(refresh,100)},{passive:true});
 })();
 </script>
 
@@ -7832,14 +7912,14 @@ body > #side-nav.at-rail-mounted.side-shelf-collapsed .side-nav-btn{display:none
 #side-nav .admin-only-nav{display:none!important;visibility:hidden!important;pointer-events:none!important}
 #views-container #tab-admin{display:none!important;visibility:hidden!important;pointer-events:none!important}
 body.admin-authenticated #side-nav .admin-only-nav#admin-nav-btn{display:flex!important;visibility:visible!important;pointer-events:auto!important}
-body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{display:flex!important;visibility:visible!important;pointer-events:auto!important}
 </style>
 
 <style id="admin-final-visibility">
 #side-nav #admin-nav-btn{display:none!important;visibility:hidden!important;pointer-events:none!important}
 #views-container #tab-admin{display:none!important;visibility:hidden!important;pointer-events:none!important}
 body.admin-authenticated #side-nav #admin-nav-btn{display:flex!important;visibility:visible!important;pointer-events:auto!important}
-body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{display:flex!important;visibility:visible!important;pointer-events:auto!important}
 </style>
 <script id="admin-final-boot">
 (function(){
@@ -7850,7 +7930,7 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex
       const nav=document.getElementById('admin-nav-btn');
       const tab=document.getElementById('tab-admin');
       if(nav){nav.hidden=!ok;nav.setAttribute('aria-hidden',ok?'false':'true');nav.classList.toggle('admin-visible',ok);}
-      if(tab){tab.hidden=!ok;tab.setAttribute('aria-hidden',ok?'false':'true');tab.classList.toggle('admin-unlocked',ok);if(!ok)tab.classList.remove('active');}
+      if(tab){tab.hidden=!ok;tab.setAttribute('aria-hidden',ok?'false':'true');tab.classList.toggle('admin-unlocked',ok);tab.classList.remove('active');}
     }catch(e){
       const nav=document.getElementById('admin-nav-btn'); const tab=document.getElementById('tab-admin');
       if(nav){nav.hidden=true;nav.setAttribute('aria-hidden','true');}
