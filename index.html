@@ -3548,14 +3548,10 @@ button{touch-action:manipulation}
 
 
 <style id="admin-lock-final">
-/* Bulletproof ADMIN visibility: hidden until server-independent identity check approves. */
-[hidden].admin-only-nav,[hidden]#tab-admin{display:none!important;visibility:hidden!important;pointer-events:none!important;}
-#admin-nav-btn{display:none!important;visibility:hidden!important;pointer-events:none!important;}
-#tab-admin{display:none!important;visibility:hidden!important;pointer-events:none!important;}
-body.admin-authenticated #admin-nav-btn{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
-body.admin-authenticated #tab-admin{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
-body:not(.admin-authenticated) #admin-nav-btn{display:none!important;}
-body:not(.admin-authenticated) #tab-admin{display:none!important;}
+#side-nav #admin-nav-btn.admin-only-nav{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+#views-container #tab-admin{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+body.admin-authenticated #side-nav #admin-nav-btn.admin-only-nav{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
+body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
 </style>
 
 <style id="roulette-mines-final-polish">
@@ -3922,7 +3918,7 @@ body:not(.admin-authenticated) #tab-admin{display:none!important;}
 
 
     <!-- АДМИН-ПАНЕЛЬ -->
-    <div class="tab-view" id="tab-admin" hidden
+    <div class="tab-view" id="tab-admin">
       <div class="at-page-top">
         <button class="at-back" type="button" onclick="switchTab('mine', document.querySelector('#bottom-nav .nav-btn:first-child'))">
           <span>‹</span><span>Назад</span>
@@ -4037,7 +4033,7 @@ body:not(.admin-authenticated) #tab-admin{display:none!important;}
       <span class="nav-btn-icon">🛡️</span>
       <span>Кланы</span>
     </button>
-    <button class="side-nav-btn admin-only-nav" id="admin-nav-btn" hidden onclick="switchSideTab('admin', this)">
+    <button class="side-nav-btn admin-only-nav" id="admin-nav-btn" onclick="switchSideTab('admin', this)">
       <span class="nav-btn-icon">⚙️</span>
       <span>ADMIN</span>
     </button>
@@ -4110,10 +4106,10 @@ const MAX_EQUIPPED = 3;
 const MAX_ENERGY = 1000;
 
 // ADMIN: add your Telegram numeric ID here after copying it from the Profile page.
-const ADMIN_TELEGRAM_IDS = new Set(['5725332802']);
+const ADMIN_TELEGRAM_IDS = ['5725332802'];
 function isAdmin(){
   const uid = getUserId();
-  return typeof uid === 'string' && /^\d+$/.test(uid) && ADMIN_TELEGRAM_IDS.has(uid);
+  return !!uid && /^\d+$/.test(String(uid)) && ADMIN_TELEGRAM_IDS.includes(String(uid));
 }
 function isConfiguredAdmin(){ return ADMIN_TELEGRAM_IDS.some(id => /^\d+$/.test(String(id))); }
 if(!isConfiguredAdmin()) console.info('[AT COIN] ADMIN disabled: set one numeric Telegram ID in ADMIN_TELEGRAM_IDS.');
@@ -5622,14 +5618,14 @@ function closeCasinoGame(){
 }
 
 function switchTab(tabId, btn){
-  if(tabId==='admin' && typeof isAdmin==='function' && !isAdmin()){
+  if(tabId==='admin' && (typeof isAdmin!=='function' || !isAdmin())){
     console.warn('[AT COIN] Admin access denied');
     return false;
   }
   const target=document.getElementById(`tab-${tabId}`);
   if(!target){console.error('[AT COIN] Missing tab:',tabId);return false;}
   document.querySelectorAll('#views-container .tab-view').forEach(v=>{const active=v===target;v.classList.toggle('active',active);v.setAttribute('aria-hidden',active?'false':'true');});
-  if(tabId==='admin'){ if(typeof isAdmin!=='function' || !isAdmin()) return false; target.classList.add('admin-unlocked'); target.hidden=false; }
+  if(tabId==='admin') target.classList.add('admin-unlocked');
   document.querySelectorAll('#bottom-nav .nav-btn,#side-nav .side-nav-btn').forEach(b=>b.classList.remove('active'));
   if(btn&&btn.classList)btn.classList.add('active');
   if(tabId!=='games'&&typeof closeCasinoGame==='function')closeCasinoGame();
@@ -7751,19 +7747,9 @@ body > #side-nav.at-rail-mounted.side-shelf-collapsed .side-nav-btn{display:none
   }
   window.renderAdminAccess=function(){
     const ok=isAdmin();
-    document.body.classList.toggle('admin-authenticated', ok);
-    document.querySelectorAll('.admin-only-nav').forEach(el=>{
-      el.classList.toggle('admin-visible',ok);
-      el.hidden=!ok;
-      el.setAttribute('aria-hidden', ok ? 'false' : 'true');
-    });
+    document.querySelectorAll('.admin-only-nav').forEach(el=>el.classList.toggle('admin-visible',ok));
     const tab=$('tab-admin');
-    if(tab){
-      tab.classList.toggle('admin-unlocked',ok);
-      tab.hidden=!ok;
-      tab.setAttribute('aria-hidden', ok ? 'false' : 'true');
-      if(!ok) tab.classList.remove('active');
-    }
+    if(tab){ tab.classList.toggle('admin-unlocked',ok); if(!ok) tab.classList.remove('active'); }
     setText('admin-auth-state', ok ? 'Доступ подтверждён для этого Telegram аккаунта.' : 'Доступ закрыт.');
     setText('admin-my-id',getUserId()||'—');
   }
@@ -7830,24 +7816,40 @@ body > #side-nav.at-rail-mounted.side-shelf-collapsed .side-nav-btn{display:none
 })();
 </script>
 
+<style id="admin-visibility-final-lock">
+#side-nav .admin-only-nav{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#views-container #tab-admin{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.admin-authenticated #side-nav .admin-only-nav#admin-nav-btn{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+</style>
 
-<script id="admin-visibility-watchdog">
+<style id="admin-final-visibility">
+#side-nav #admin-nav-btn{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#views-container #tab-admin{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.admin-authenticated #side-nav #admin-nav-btn{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+</style>
+<script id="admin-final-boot">
 (function(){
-  const enforce=()=>{
-    const ok=typeof window.isAdmin==='function' && window.isAdmin();
-    document.body.classList.toggle('admin-authenticated',!!ok);
-    const nav=document.getElementById('admin-nav-btn');
-    const tab=document.getElementById('tab-admin');
-    if(nav){nav.hidden=!ok;nav.setAttribute('aria-hidden',ok?'false':'true');}
-    if(tab){tab.hidden=!ok;tab.setAttribute('aria-hidden',ok?'false':'true');if(!ok)tab.classList.remove('active','admin-unlocked');}
-  };
-  const run=()=>{try{enforce();}catch(e){}};
-  run();
-  document.addEventListener('DOMContentLoaded',run,{once:false});
-  window.addEventListener('load',run,{once:false});
-  const observer=new MutationObserver(run);
-  observer.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['class','style','hidden']});
+  function apply(){
+    try{
+      const ok=typeof window.isAdmin==='function' && window.isAdmin();
+      document.body.classList.toggle('admin-authenticated',ok);
+      const nav=document.getElementById('admin-nav-btn');
+      const tab=document.getElementById('tab-admin');
+      if(nav){nav.hidden=!ok;nav.setAttribute('aria-hidden',ok?'false':'true');nav.classList.toggle('admin-visible',ok);}
+      if(tab){tab.hidden=!ok;tab.setAttribute('aria-hidden',ok?'false':'true');tab.classList.toggle('admin-unlocked',ok);if(!ok)tab.classList.remove('active');}
+    }catch(e){
+      const nav=document.getElementById('admin-nav-btn'); const tab=document.getElementById('tab-admin');
+      if(nav){nav.hidden=true;nav.setAttribute('aria-hidden','true');}
+      if(tab){tab.hidden=true;tab.setAttribute('aria-hidden','true');tab.classList.remove('active');}
+      document.body.classList.remove('admin-authenticated');
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',apply,{once:true});
+  else apply();
+  window.addEventListener('load',apply,{once:true});
+  setTimeout(apply,50);
 })();
 </script>
-
 </body></html>
