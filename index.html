@@ -3674,7 +3674,6 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex
         <section class="home-section games-home">
           <div class="home-section-head"><div><b>ИГРЫ</b><small>Испытай удачу и умения</small></div><button onclick="switchSideTab('games', document.querySelectorAll('#side-nav .side-nav-btn')[3])">Все игры</button></div>
           <div class="home-games-grid">
-            <button onclick="openCasinoGame('roulette')"><span>🎰</span><b>КАЗИНО</b></button>
             <button onclick="openCasinoGame('mines')"><span>💣</span><b>МИНЫ</b></button>
             <button onclick="openCasinoGame('roulette')"><span>🎡</span><b>КОЛЕСО УДАЧИ</b></button>
             <button onclick="openCasinoGame('coinflip')"><span>🪙</span><b>МОНЕТКА</b></button>
@@ -3914,11 +3913,10 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex
         </div>
         <div class="cases-note">⚡ Кейсы используют только AT Coins. Реальные деньги не участвуют.</div>
       </div>
-    </div>
 
 
     <!-- АДМИН-ПАНЕЛЬ -->
-    <div class="tab-view" id="tab-admin">
+    <div class="tab-view" id="tab-admin" hidden aria-hidden="true">
       <div class="at-page-top">
         <button class="at-back" type="button" onclick="switchTab('mine', document.querySelector('#bottom-nav .nav-btn:first-child'))">
           <span>‹</span><span>Назад</span>
@@ -3977,6 +3975,7 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex
     </div>
 
   </div>
+  </div>
 
   <!-- НИЖНЕЕ МЕНЮ -->
   <div id="bottom-nav">
@@ -4033,18 +4032,17 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked{display:flex
       <span class="nav-btn-icon">🛡️</span>
       <span>Кланы</span>
     </button>
-    <button class="side-nav-btn admin-only-nav" id="admin-nav-btn" onclick="switchSideTab('admin', this)">
+    <button class="side-nav-btn admin-only-nav" id="admin-nav-btn" hidden onclick="switchSideTab('admin', this)">
       <span class="nav-btn-icon">⚙️</span>
       <span>ADMIN</span>
     </button>
   </div>
-</div>
 
 <!-- Модальное окно выставления цены -->
 <div id="modal-overlay">
   <div class="modal-box">
     <div class="form-title" id="modal-item-title">Продажа предмета</div>
-    <div style="font-size:12px; color:var(--textdim);">Укажи цену в AT Coins, за хочешь выставить предмет на биржу:</div>
+    <div style="font-size:12px; color:var(--textdim);">Укажи цену в AT Coins, за которую хочешь выставить предмет на биржу:</div>
     <input type="number" id="modal-price-input" class="market-input" placeholder="Цена в ⚡" />
     <div style="display:flex; gap:10px;">
       <button class="action-btn" style="flex:1; background:var(--border);" onclick="closeMarketModal()">Отмена</button>
@@ -4757,6 +4755,8 @@ let saveTimeout = null;
 let saveInFlight = false;
 let saveQueued = false;
 let dataLoaded = false;
+let offlineRecovery = false;
+let serverProfileExists = false;
 
 function getLocalSnapshotKey(){
   const uid=getUserId();
@@ -4810,7 +4810,7 @@ function applySnapshot(snapshot){
 }
 
 async function saveDataNow(){
-  if(!getUserId() || !dataLoaded) return false;
+  if(!getUserId() || !dataLoaded || offlineRecovery) return false;
   sanitizeState();
   syncEnergy();
   // Local snapshot is immediate and protects progress when Telegram closes the WebView
@@ -4833,8 +4833,12 @@ async function saveDataNow(){
       claimed_achievements:state.claimedAchievements,
       updated_at:new Date().toISOString()
     };
-    const {error}=await db.from('users').upsert(payload,{onConflict:'telegram_id'});
+    const request = serverProfileExists
+      ? db.from('users').update(payload).eq('telegram_id', getUserId())
+      : db.from('users').insert(payload);
+    const {error}=await request;
     if(error) throw error;
+    serverProfileExists=true;
     ok=true;
     persistLocalSnapshot();
   }catch(e){
@@ -4859,6 +4863,8 @@ function saveData(){
 async function loadData(){
   if(!requireTelegramUser()) return;
   dataLoaded=false;
+  offlineRecovery=false;
+  serverProfileExists=false;
   const localSnapshot=readLocalSnapshot();
   try{
     let data=null;
@@ -4870,22 +4876,12 @@ async function loadData(){
         .maybeSingle();
       if(result.error) throw result.error;
       data=result.data;
+      serverProfileExists=Boolean(data);
       serverUpdatedAt=Date.parse(data?.updated_at||'')||0;
     }
 
-    const localIsNewer=Boolean(localSnapshot && Number(localSnapshot.updatedAt)>serverUpdatedAt+500);
-    if(localIsNewer){
-      applySnapshot(localSnapshot);
-      dataLoaded=true;
-      ensureDailyContracts();
-      syncEnergy();
-      updateUI(false);
-      renderInventory(); renderCraft(); renderUpgrade(); renderProfile(); renderContracts();
-      // Reconcile the newer local state back to Supabase.
-      saveDataNow();
-      return;
-    }
-
+    // SECURITY/CORRECTNESS: once a server profile exists, the server is authoritative.
+    // A local cache may only be used as a recovery view when the server is unavailable.
     if(data){
       state.coins=Number(data.coins)||0;
       state.inventory=Array.isArray(data.inventory)?data.inventory:[];
@@ -4913,6 +4909,7 @@ async function loadData(){
   }catch(e){
     console.error('loadData:',e);
     if(localSnapshot){
+      offlineRecovery=true;
       applySnapshot(localSnapshot);
       dataLoaded=true;
       ensureDailyContracts();
@@ -4929,8 +4926,8 @@ async function loadData(){
 }
 
 // Надёжное сохранение при закрытии/сворачивании Mini App.
-window.addEventListener('pagehide', () => { if (dataLoaded) { clearTimeout(saveTimeout); saveDataNow(); } });
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && dataLoaded) { clearTimeout(saveTimeout); saveDataNow(); } });
+window.addEventListener('pagehide', () => { if (dataLoaded) { clearTimeout(saveTimeout); persistLocalSnapshot(); } });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && dataLoaded) { clearTimeout(saveTimeout); persistLocalSnapshot(); } });
 
 function getItemRole(item) {
   const n = Number(String(item.id).match(/\d+$/)?.[0] || 0);
@@ -5061,7 +5058,7 @@ function renderContracts() {
   });
 }
 
-function claimContract(contractId) {
+async function claimContract(contractId) {
   ensureDailyContracts();
   const contract = state.stats.contracts.items.find(x => x.id === contractId);
   if (!contract || contract.claimed) return;
@@ -5072,15 +5069,24 @@ function claimContract(contractId) {
     return;
   }
 
+  const previousClaimed = contract.claimed;
+  const previousCoins = state.coins;
   contract.claimed = true;
   state.coins += contract.reward;
   renderContracts();
   updateUI(false);
-  saveDataNow();
+  const saved = await saveDataNow();
+  if (!saved) {
+    contract.claimed = previousClaimed;
+    state.coins = previousCoins;
+    renderContracts();
+    updateUI(false);
+    showToast('⚠️ Не удалось сохранить награду');
+    return;
+  }
   playSound('success');
-  showToast(`🎯 Контракт выполнен! +${contract.reward.toLocaleString()} ⚡`);
   renderContracts();
-  updateUI();
+  updateUI(false);
 }
 
 function renderProfile() {
@@ -5105,7 +5111,8 @@ function renderProfile() {
   clicks.textContent = Math.floor(state.stats.clicks || 0).toLocaleString();
   crafts.textContent = Math.floor(state.stats.crafts || 0).toLocaleString();
   upgrades.textContent = Math.floor(state.stats.upgrades || 0).toLocaleString();
-  collection.textContent = `${uniqueIds.size}/40`;
+  const collectionTotal = LOOT_ITEMS.filter(i => !i.isCraftPart && i.type !== 'craft_material').length;
+  collection.textContent = `${uniqueIds.size}/${collectionTotal}`;
   equipped.textContent = `${state.equipped.length} / ${MAX_EQUIPPED} слота занято`;
 
   loadProfileRank();
@@ -5270,22 +5277,7 @@ async function loadHomeClanPreview(force=false){
 }
 
 function renderMineDashboard(){
-  const refCoins = document.getElementById('ref-coins');
-  const refEnergy = document.getElementById('ref-energy');
-  const refPower = document.getElementById('ref-power');
-  const refMined = document.getElementById('ref-mined');
-  const refDefense = document.getElementById('ref-defense');
-  const refLevel = document.getElementById('ref-level-text');
-  const currentPower = calculateClickPower();
   syncEnergy();
-  const currentEnergy = Math.max(0, Math.floor(Number(state.energy ?? MAX_ENERGY)));
-  const maxEnergy = MAX_ENERGY;
-  if(refCoins) refCoins.textContent = Math.floor(state.coins).toLocaleString();
-  if(refEnergy) refEnergy.textContent = `${currentEnergy.toLocaleString()} / ${maxEnergy.toLocaleString()}`;
-  if(refPower) refPower.textContent = '+' + currentPower.toFixed(1);
-  if(refMined) refMined.textContent = Number(state.inventory.length || 0).toLocaleString();
-  if(refDefense) refDefense.textContent = Number(state.shields || 0).toLocaleString();
-  if(refLevel) refLevel.textContent = `LVL ${Math.floor(Math.log10(state.coins + 1)) + 1}`;
   const energy = document.getElementById('mine-energy-value');
   if(energy){
     syncEnergy();
@@ -5562,6 +5554,7 @@ function startMines(){
 async function pickMineCell(index){
   if(!minesRound?.active||casinoBusy)return;
   const grid=document.getElementById('mines-grid'); const cell=grid?.children[index]; if(!cell||cell.disabled)return;
+  casinoBusy=true;
   cell.disabled=true;
   if(minesRound.mines.has(index)){
     cell.classList.add('revealed-mine');
@@ -5570,7 +5563,7 @@ async function pickMineCell(index){
     state.stats=state.stats||{}; state.stats.casinoLost=(Number(state.stats.casinoLost)||0)+minesRound.bet;
     minesRound.active=false;
     setCasinoResult('mines-result',`МИНА 💥<br><span style="font-size:11px">Раунд проигран: <b>-${minesRound.bet.toLocaleString()} ⚡</b></span>`,'lose');
-    updateMinesUI(); sanitizeState(); await commitCasinoChange(); return;
+    updateMinesUI(); sanitizeState(); await commitCasinoChange(); casinoBusy=false; return;
   }
   minesRound.safe++;
   cell.classList.add('revealed-safe'); cell.querySelector('.mine-symbol').textContent='◆';
@@ -5579,16 +5572,18 @@ async function pickMineCell(index){
   if(minesRound.safe>=25-minesRound.mineCount){await cashoutMines(true);return;}
   setCasinoResult('mines-result',`БЕЗОПАСНО ✓<br><span style="font-size:11px">Открыто <b>${minesRound.safe}</b> · ${minesRound.mineCount} мины · банк <b>${Math.floor(minesRound.bet*minesRound.multiplier).toLocaleString()} ⚡</b></span>`,'win');
   updateMinesUI();
+  casinoBusy=false;
 }
 async function cashoutMines(auto=false){
-  if(!minesRound?.active||minesRound.safe===0)return;
+  if(!minesRound?.active||minesRound.safe===0||casinoBusy)return;
+  casinoBusy=true;
   const payout=Math.floor(minesRound.bet*minesRound.multiplier);
   state.coins+=payout;
   state.stats=state.stats||{}; state.stats.casinoWon=(Number(state.stats.casinoWon)||0)+(payout-minesRound.bet);
   minesRound.active=false;
   const grid=document.getElementById('mines-grid'); if(grid)[...grid.children].forEach(b=>b.disabled=true);
   setCasinoResult('mines-result',`${auto?'ИДЕАЛЬНО':'ЗАБРАЛ'} · +${(payout-minesRound.bet).toLocaleString()} ⚡<br><span style="font-size:11px">Выплата <b>${payout.toLocaleString()} ⚡</b></span>`,'win');
-  updateMinesUI(); sanitizeState(); await commitCasinoChange();
+  updateMinesUI(); sanitizeState(); await commitCasinoChange(); casinoBusy=false;
 }
 
 
@@ -7747,9 +7742,9 @@ body > #side-nav.at-rail-mounted.side-shelf-collapsed .side-nav-btn{display:none
   }
   window.renderAdminAccess=function(){
     const ok=isAdmin();
-    document.querySelectorAll('.admin-only-nav').forEach(el=>el.classList.toggle('admin-visible',ok));
+    document.querySelectorAll('.admin-only-nav').forEach(el=>{ el.classList.toggle('admin-visible',ok); el.hidden=!ok; el.setAttribute('aria-hidden',ok?'false':'true'); });
     const tab=$('tab-admin');
-    if(tab){ tab.classList.toggle('admin-unlocked',ok); if(!ok) tab.classList.remove('active'); }
+    if(tab){ tab.hidden=!ok; tab.classList.toggle('admin-unlocked',ok); tab.setAttribute('aria-hidden',ok?'false':'true'); if(!ok) tab.classList.remove('active'); }
     setText('admin-auth-state', ok ? 'Доступ подтверждён для этого Telegram аккаунта.' : 'Доступ закрыт.');
     setText('admin-my-id',getUserId()||'—');
   }
@@ -7764,6 +7759,23 @@ body > #side-nav.at-rail-mounted.side-shelf-collapsed .side-nav-btn{display:none
 </script>
 
 
+<style id="roulette-wheel-11-sector-fix">
+.roulette-stage .roulette-wheel{
+  background:conic-gradient(from -16.3636deg,
+    #0b0c13 0deg 32.7273deg,
+    #c92d4f 32.7273deg 65.4546deg,
+    #0b0c13 65.4546deg 98.1819deg,
+    #c92d4f 98.1819deg 130.9092deg,
+    #0b0c13 130.9092deg 163.6365deg,
+    #c92d4f 163.6365deg 196.3638deg,
+    #0b0c13 196.3638deg 229.0911deg,
+    #c92d4f 229.0911deg 261.8184deg,
+    #0b0c13 261.8184deg 294.5457deg,
+    #c92d4f 294.5457deg 327.273deg,
+    #138f6d 327.273deg 360deg)!important;
+}
+.roulette-stage .roulette-wheel::after{inset:62px!important}
+</style>
 <style id="final-games-stability">
 /* ===== FINAL GAMES STABILITY ===== */
 #coinflip-modes,#roulette-modes,#roulette-number-pick{display:none!important}
