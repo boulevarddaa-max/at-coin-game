@@ -3640,6 +3640,32 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{displ
  #mines-bombs-select{grid-column:1/-1!important}
 }
 </style>
+
+<style id="final-games-polish">
+/* Final gameplay polish: one roulette animation, no detached ball. */
+.roulette-ball{display:none!important;animation:none!important}
+.roulette-wheel{will-change:transform;transform-origin:50% 50%;backface-visibility:hidden}
+.roulette-number-label{pointer-events:none!important;user-select:none!important}
+.mines-controls{display:flex!important;flex-direction:column!important;gap:9px!important}
+.mines-bombs-select{width:100%;display:flex;flex-direction:column;gap:7px;padding:9px 10px;border:1px solid rgba(109,136,190,.12);border-radius:13px;background:rgba(255,255,255,.018)}
+.mines-bomb-title{font-size:8px;font-weight:900;letter-spacing:.12em;color:#7d8aa5}
+.mines-bomb-options{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mines-bomb-options label{position:relative;display:flex;align-items:center;justify-content:center;height:40px;border-radius:11px;border:1px solid rgba(109,136,190,.12);background:rgba(255,255,255,.025);color:#9aa8c1;font-size:11px;font-weight:900;cursor:pointer}
+.mines-bomb-options input{position:absolute;opacity:0;pointer-events:none}
+.mines-bomb-options label:has(input:checked){border-color:rgba(83,231,255,.38);background:linear-gradient(145deg,rgba(83,231,255,.10),rgba(139,85,255,.07));color:#fff;box-shadow:0 0 18px rgba(83,231,255,.07) inset}
+.mines-bomb-options small{display:block}
+.mines-bombs-select small{font-size:7px;color:#687590;text-align:center}
+@media(max-width:700px){.mines-bombs-select{padding:8px}.mines-bomb-options label{height:38px}.roulette-stage .roulette-number-label{font-size:8px}}
+</style>
+<style id="inventory-final-polish">
+.inventory-heading-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}.inventory-heading-row .inventory-title-v2{margin:0!important}.inventory-count-v2{font-size:8px;color:#6d7b96;padding:4px 7px;border:1px solid rgba(109,136,190,.14);border-radius:8px;background:rgba(255,255,255,.018)}
+@media(max-width:520px){.inventory-count-v2{font-size:7px}}
+</style>
+<style id="final-consistency-lock">
+/* Final consistency hardening */
+#views-container #tab-admin:not(.active){display:none!important;visibility:hidden!important;pointer-events:none!important}
+.mines-bomb-options input:disabled + span{opacity:.45}
+</style>
 </head>
 <body>
 
@@ -3733,7 +3759,7 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{displ
           <div class="equip-slot-name">Пусто</div>
         </div>
       </div>
-      <div class="form-title inventory-title-v2">🎒 ТВОЙ ИНВЕНТАРЬ:</div>
+      <div class="inventory-heading-row"><div class="form-title inventory-title-v2">🎒 ТВОЙ ИНВЕНТАРЬ:</div><span id="inventory-count" class="inventory-count-v2">0</span></div>
       <div class="inventory-tools-v2">
         <div class="inventory-search-v2">
           <span class="inventory-search-icon-v2">⌕</span>
@@ -3894,7 +3920,7 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{displ
         <div class="games-gamebar"><div><div class="games-kicker">ROULETTE</div><div class="games-page-title">🎡 МИНИ-РУЛЕТКА</div></div><div class="games-wallet"><span>БАЛАНС</span><b id="casino-balance-roulette">0 ⚡</b></div></div>
         <div class="casino-game-stage premium-stage roulette-stage games-stage">
           <div class="games-mode-info">КРАСНОЕ 1.8× · ЧЁРНОЕ 1.8× · ЗЕЛЁНОЕ 9×</div>
-          <div class="roulette-object"><div class="roulette-halo"></div><div class="roulette-pointer"></div><div class="roulette-ball"></div><div class="roulette-wheel" id="roulette-wheel"></div><div class="roulette-center"><div class="num" id="roulette-center-number">?</div><div class="label">RESULT</div></div></div>
+          <div class="roulette-object"><div class="roulette-halo"></div><div class="roulette-pointer"></div><div class="roulette-wheel" id="roulette-wheel"></div><div class="roulette-center"><div class="num" id="roulette-center-number">?</div><div class="label">RESULT</div></div></div>
           <div class="casino-stage-title">РУЛЕТКА</div>
           <div class="casino-stage-sub">Выбери цвет. Зелёный 0 — редкий результат с высокой выплатой.</div>
           <div class="casino-mini-history" id="roulette-history"></div>
@@ -3918,7 +3944,8 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{displ
           </div>
           <div class="mines-grid" id="mines-grid"></div>
           <div class="mines-controls">
-            <div class="casino-row"><input id="mines-bet" class="casino-input" type="number" min="10" step="10" value="100" inputmode="numeric" placeholder="Ставка"><button class="casino-btn primary" id="mines-start-btn" onclick="startMines()">НАЧАТЬ</button><div id="mines-bombs-select" class="mines-bombs-select"></div></div>
+            <div id="mines-bombs-select" class="mines-bombs-select"></div>
+            <div class="casino-row"><input id="mines-bet" class="casino-input" type="number" min="10" step="10" value="100" inputmode="numeric" placeholder="Ставка"><button class="casino-btn primary" id="mines-start-btn" onclick="startMines()">НАЧАТЬ</button></div>
             <button class="casino-btn mines-cashout" id="mines-cashout-btn" onclick="cashoutMines()" disabled>ЗАБРАТЬ 0 ⚡</button>
           </div>
           <div id="mines-result" class="casino-result">Сделай ставку и начни раунд</div>
@@ -4155,15 +4182,19 @@ function newInstanceId() {
 
 function normalizeItem(item) {
   if (!item || typeof item !== 'object' || !item.id) return null;
-  const base = LOOT_ITEMS.find(x => x.id === item.id);
+  const base = LOOT_ITEMS.find(x => String(x.id) === String(item.id));
   if (!base) return null;
+  const canonicalCraftPart = Boolean(base.isCraftPart || /^(c|m)\d+$/.test(String(base.id)));
   return {
     ...base,
+    // Only instance-specific progression is accepted from saved state.
     instanceId: String(item.instanceId || newInstanceId()),
     level: Math.min(15, Math.max(0, Math.floor(Number(item.level) || 0))),
-    qualityMultiplier: Math.min(2, Math.max(0.5, Number(item.qualityMultiplier) || 1)),
-    type: item.type || (/^(c|m)\d+$/.test(base.id) ? 'craft_part' : 'item'),
-    isCraftPart: Boolean(item.isCraftPart || /^(c|m)\d+$/.test(base.id))
+    // Gameplay quality is intentionally limited to the range produced by the game.
+    qualityMultiplier: Math.min(1.10, Math.max(0.90, Number(item.qualityMultiplier) || 1)),
+    // NEVER trust type/isCraftPart from local/server JSON; derive both from the canonical catalog.
+    type: base.type || (canonicalCraftPart ? 'craft_part' : 'item'),
+    isCraftPart: canonicalCraftPart
   };
 }
 
@@ -4196,9 +4227,14 @@ function sanitizeState() {
   state.energy = Math.min(MAX_ENERGY, Math.max(0, Math.floor(Number.isFinite(storedEnergy) ? storedEnergy : MAX_ENERGY)));
   state.energyUpdatedAt = Number.isFinite(storedEnergyAt) && storedEnergyAt > 0 ? storedEnergyAt : Date.now();
   state.stats = {
+    // Keep every supported stat instead of accidentally deleting casino history.
+    ...oldStats,
     clicks: Math.max(0, Math.floor(Number(oldStats.clicks) || 0)),
     crafts: Math.max(0, Math.floor(Number(oldStats.crafts) || 0)),
     upgrades: Math.max(0, Math.floor(Number(oldStats.upgrades) || 0)),
+    casinoPlayed: Math.max(0, Math.floor(Number(oldStats.casinoPlayed) || 0)),
+    casinoWon: Math.max(0, Math.floor(Number(oldStats.casinoWon) || 0)),
+    casinoLost: Math.max(0, Math.floor(Number(oldStats.casinoLost) || 0)),
     energy: state.energy,
     energyUpdatedAt: state.energyUpdatedAt,
     contracts: (oldStats.contracts && typeof oldStats.contracts === 'object')
@@ -5151,12 +5187,27 @@ function renderProfile() {
   loadProfileRank();
 }
 
+async function fetchAllRows(table, columns, pageSize=500) {
+  if (!db) return [];
+  const all=[];
+  for(let from=0;;from+=pageSize){
+    const to=from+pageSize-1;
+    const {data,error}=await db.from(table).select(columns).range(from,to);
+    if(error) throw error;
+    const rows=Array.isArray(data)?data:[];
+    all.push(...rows);
+    if(rows.length<pageSize) break;
+    if(all.length>20000) break; // defensive ceiling against an accidental endless pagination loop
+  }
+  return all;
+}
+
 async function loadProfileRank() {
   const level = document.getElementById('profile-level');
   if (!level || !db || !getUserId()) return;
   try {
-    const { data: users, error } = await db.from('users').select('telegram_id,coins').order('coins',{ascending:false});
-    if (error) throw error;
+    const users = await fetchAllRows('users','telegram_id,coins');
+    users.sort((a,b)=>(Number(b.coins)||0)-(Number(a.coins)||0));
     const myId = String(getUserId());
     const idx = (users || []).findIndex(u => String(u.telegram_id) === myId);
     const lvl = Math.floor(Math.log10(state.coins + 1)) + 1;
@@ -5403,42 +5454,56 @@ function selectRouletteColor(color) {
 async function commitCasinoChange() {
   updateUI(false);
   updateCasinoBalance();
-  try { await saveDataNow(); } catch(e) { console.error('casino save:', e); }
+  try { return await saveDataNow(); } catch(e) { console.error('casino save:', e); return false; }
 }
 
 
 let minesRound = null;
+let minesSafeCells = new Set();
 
-function playCoinFlip(choice) {
+async function playCoinFlip(choice) {
   if (casinoBusy) return;
   const bet = getCasinoBet('coinflip-bet');
   if (!bet) return;
   casinoBusy = true;
-  state.coins -= bet;
-  state.stats = state.stats || {};
-  state.stats.casinoPlayed = (Number(state.stats.casinoPlayed) || 0) + 1;
-  const result = Math.random() < 0.5 ? 'heads' : 'tails';
-  const won = result === choice;
-  const payout = won ? Math.floor(bet * 1.9) : 0;
-  const coinEl = document.getElementById('coinflip-coin');
-  if (coinEl) {
-    coinEl.classList.remove('flip');
-    void coinEl.offsetWidth;
-    coinEl.classList.add('flip');
-    setTimeout(() => { coinEl.style.transform = result === 'heads' ? 'rotateY(1800deg)' : 'rotateY(1980deg)'; }, 1150);
+  const oldState = {coins: state.coins, stats: {...(state.stats||{})}};
+  try {
+    state.coins -= bet;
+    state.stats = state.stats || {};
+    state.stats.casinoPlayed = (Number(state.stats.casinoPlayed) || 0) + 1;
+    const result = Math.random() < 0.5 ? 'heads' : 'tails';
+    const won = result === choice;
+    const payout = won ? Math.floor(bet * 1.9) : 0;
+    const coinEl = document.getElementById('coinflip-coin');
+    if (coinEl) {
+      coinEl.classList.remove('flip');
+      void coinEl.offsetWidth;
+      coinEl.classList.add('flip');
+      setTimeout(() => { coinEl.style.transform = result === 'heads' ? 'rotateY(1800deg)' : 'rotateY(1980deg)'; }, 1150);
+    }
+    if (won) {
+      state.coins += payout;
+      state.stats.casinoWon = (Number(state.stats.casinoWon) || 0) + (payout - bet);
+      setCasinoResult('coinflip-result', `${result === 'heads' ? '🪙 ОРЁЛ' : '⚡ РЕШКА'} · выигрыш <b>+${(payout-bet).toLocaleString()} ⚡</b>`, 'win');
+      playSound('success');
+    } else {
+      state.stats.casinoLost = (Number(state.stats.casinoLost) || 0) + bet;
+      setCasinoResult('coinflip-result', `${result === 'heads' ? '🪙 ОРЁЛ' : '⚡ РЕШКА'} · ставка проиграна <b>-${bet.toLocaleString()} ⚡</b>`, 'lose');
+      playSound('fail');
+    }
+    sanitizeState();
+    const saved = await commitCasinoChange();
+    if (!saved) {
+      state.coins = oldState.coins; state.stats = oldState.stats; sanitizeState(); updateUI(false); updateCasinoBalance();
+      setCasinoResult('coinflip-result','Раунд не сохранён. Баланс восстановлен.','lose');
+    }
+  } catch(e) {
+    state.coins = oldState.coins; state.stats = oldState.stats; sanitizeState(); updateUI(false); updateCasinoBalance();
+    console.error('coinflip:', e);
+    setCasinoResult('coinflip-result','Ошибка раунда. Баланс восстановлен.','lose');
+  } finally {
+    casinoBusy = false;
   }
-  if (won) {
-    state.coins += payout;
-    state.stats.casinoWon = (Number(state.stats.casinoWon) || 0) + (payout - bet);
-    playSound('success');
-    setCasinoResult('coinflip-result', `${result === 'heads' ? '🪙 ОРЁЛ' : '⚡ РЕШКА'} · выигрыш <b>+${(payout-bet).toLocaleString()} ⚡</b>`, 'win');
-  } else {
-    state.stats.casinoLost = (Number(state.stats.casinoLost) || 0) + bet;
-    playSound('fail');
-    setCasinoResult('coinflip-result', `${result === 'heads' ? '🪙 ОРЁЛ' : '⚡ РЕШКА'} · ставка проиграна <b>-${bet.toLocaleString()} ⚡</b>`, 'lose');
-  }
-  sanitizeState();
-  commitCasinoChange().finally(() => { casinoBusy = false; });
 }
 
 async function playRoulette(){
@@ -5474,8 +5539,11 @@ async function playRoulette(){
       const extraTurns=(5+Math.floor(Math.random()*2))*360;
       const rotation=current + extraTurns + targetOffset - (current%360);
       wheel.dataset.rotationDeg=String(rotation);
-      wheel.style.transform=`rotate(${rotation}deg)`;
+      wheel.style.transition='none';
+      wheel.style.transform=`rotate(${current}deg)`;
+      void wheel.offsetWidth;
       wheel.style.transition='transform 3.2s cubic-bezier(.12,.72,.08,1)';
+      wheel.style.transform=`rotate(${rotation}deg)`;
     }
     await new Promise(r=>setTimeout(r,3250));
     if(center) center.textContent=String(resultNumber);
@@ -5498,7 +5566,8 @@ async function playRoulette(){
       playSound('fail');
     }
     sanitizeState();
-    await commitCasinoChange();
+    const saved = await commitCasinoChange();
+    if (!saved) throw new Error('Не удалось сохранить результат рулетки');
   }catch(e){
     state.coins=oldCoins;
     sanitizeState(); updateUI(false); updateCasinoBalance();
@@ -5514,6 +5583,7 @@ async function playRoulette(){
 function initMinesGrid(){
   const grid=document.getElementById('mines-grid');
   if(!grid)return;
+  if(grid.children.length===25)return;
   grid.innerHTML='';
   for(let i=0;i<25;i++){
     const b=document.createElement('button');
@@ -5534,10 +5604,19 @@ function updateMinesUI(){
   const cash=document.getElementById('mines-cashout-btn');
   const start=document.getElementById('mines-start-btn');
   const hero=document.querySelector('.mines-hero-stat b');
+  initMinesGrid();
   const active=Boolean(minesRound?.active);
   const count=minesRound?.mineCount || getSelectedMinesCount();
   if(hero) hero.textContent=String(count);
   document.querySelectorAll('#mines-bombs-select input[name="mines-count"]').forEach(r=>r.disabled=active);
+  const grid=document.getElementById('mines-grid');
+  if(grid){
+    [...grid.children].forEach((b,i)=>{
+      b.disabled=!active || minesSafeCells.has(i);
+      b.classList.toggle('revealed-safe',active && minesSafeCells.has(i));
+      if(active && minesSafeCells.has(i)){ const sm=b.querySelector('.mine-symbol'); if(sm) sm.textContent='◆'; }
+    });
+  }
   if(!minesRound){
     if(bet)bet.textContent='0 ⚡';
     if(payout)payout.textContent='0 ⚡';
@@ -5589,15 +5668,17 @@ async function startMines(){
     state.coins=oldCoins-bet;
     state.stats=state.stats||{};
     state.stats.casinoPlayed=(Number(state.stats.casinoPlayed)||0)+1;
+    minesSafeCells=new Set();
     minesRound={bet,mines,mineCount,multiplier:1,safe:0,active:true};
     initMinesGrid();
     const grid=document.getElementById('mines-grid');
     if(grid)[...grid.children].forEach(b=>{b.disabled=false;b.classList.remove('revealed-mine','revealed-safe');b.querySelector('.mine-symbol').textContent='+';});
     setCasinoResult('mines-result',`Поле готово · ${mineCount} мин. Открывай клетки или забирай банк.`,'');
     updateMinesUI(); updateUI(false); updateCasinoBalance();
-    await commitCasinoChange();
+    const saved=await commitCasinoChange();
+    if(!saved) throw new Error('Не удалось сохранить начало раунда');
   }catch(e){
-    state.coins=oldCoins; minesRound=null; sanitizeState(); updateUI(false); updateCasinoBalance();
+    state.coins=oldCoins; minesRound=null; minesSafeCells.clear(); sanitizeState(); updateUI(false); updateCasinoBalance();
     console.error('mines start:',e);
     setCasinoResult('mines-result','Ошибка запуска. Баланс восстановлен.','lose');
   }finally{
@@ -5618,11 +5699,15 @@ async function pickMineCell(index){
       [...grid.children].forEach((b,i)=>{b.disabled=true;if(minesRound.mines.has(i)){b.classList.add('revealed-mine');const s=b.querySelector('.mine-symbol');if(s)s.textContent='✦';}});
       state.stats=state.stats||{}; state.stats.casinoLost=(Number(state.stats.casinoLost)||0)+minesRound.bet;
       minesRound.active=false;
+      minesSafeCells.clear();
       setCasinoResult('mines-result',`МИНА 💥<br><span style="font-size:11px">Раунд проигран: <b>-${minesRound.bet.toLocaleString()} ⚡</b></span>`,'lose');
-      updateMinesUI(); sanitizeState(); await commitCasinoChange();
+      updateMinesUI(); sanitizeState();
+      const saved=await commitCasinoChange();
+      if(!saved){ state.stats.casinoLost=Math.max(0,(Number(state.stats.casinoLost)||0)-minesRound.bet); sanitizeState(); updateUI(false); updateCasinoBalance(); setCasinoResult('mines-result','Результат не сохранён. Повтори после восстановления сети.','lose'); }
       return;
     }
     minesRound.safe++;
+    minesSafeCells.add(index);
     cell.classList.add('revealed-safe');
     const symbol=cell.querySelector('.mine-symbol'); if(symbol)symbol.textContent='◆';
     const riskFactor=25/minesRound.mineCount;
@@ -5633,9 +5718,18 @@ async function pickMineCell(index){
       state.coins+=payout;
       state.stats=state.stats||{}; state.stats.casinoWon=(Number(state.stats.casinoWon)||0)+(payout-minesRound.bet);
       minesRound.active=false;
+      minesSafeCells.clear();
       [...grid.children].forEach(b=>b.disabled=true);
       setCasinoResult('mines-result',`ИДЕАЛЬНО · +${(payout-minesRound.bet).toLocaleString()} ⚡<br><span style="font-size:11px">Выплата <b>${payout.toLocaleString()} ⚡</b></span>`,'win');
-      updateMinesUI(); sanitizeState(); await commitCasinoChange();
+      updateMinesUI(); sanitizeState();
+      const saved=await commitCasinoChange();
+      if(!saved){
+        state.coins=Math.max(0,state.coins-payout);
+        state.stats.casinoWon=Math.max(0,(Number(state.stats.casinoWon)||0)-(payout-minesRound.bet));
+        minesRound.active=true; minesSafeCells=new Set([...minesSafeCells, index]);
+        updateUI(false); updateCasinoBalance(); updateMinesUI();
+        setCasinoResult('mines-result','Выплата не сохранена. Раунд восстановлен — попробуй ещё раз.','lose');
+      }
       return;
     }
     setCasinoResult('mines-result',`БЕЗОПАСНО ✓<br><span style="font-size:11px">Открыто <b>${minesRound.safe}</b> · ${minesRound.mineCount} мин · банк <b>${Math.floor(minesRound.bet*minesRound.multiplier).toLocaleString()} ⚡</b></span>`,'win');
@@ -5656,9 +5750,12 @@ async function cashoutMines(auto=false){
     state.coins+=payout;
     state.stats=state.stats||{}; state.stats.casinoWon=(Number(state.stats.casinoWon)||0)+(payout-minesRound.bet);
     minesRound.active=false;
+    minesSafeCells.clear();
     const grid=document.getElementById('mines-grid'); if(grid)[...grid.children].forEach(b=>b.disabled=true);
     setCasinoResult('mines-result',`${auto?'ИДЕАЛЬНО':'ЗАБРАЛ'} · +${(payout-minesRound.bet).toLocaleString()} ⚡<br><span style="font-size:11px">Выплата <b>${payout.toLocaleString()} ⚡</b></span>`,'win');
-    updateMinesUI(); sanitizeState(); await commitCasinoChange();
+    updateMinesUI(); sanitizeState();
+    const saved=await commitCasinoChange();
+    if(!saved) throw new Error('Не удалось сохранить выплату');
   }catch(e){
     console.error('mines cashout:',e);
     setCasinoResult('mines-result','Ошибка выплаты. Баланс не изменён.','lose');
@@ -5682,7 +5779,7 @@ function openCasinoGame(game){
   if(page)page.classList.add('active');
   updateCasinoBalance();
   if(normalized==='cases'&&!selectedCase)selectCase('miner');
-  if(normalized==='mines'){minesRound=null;initMinesGrid();updateMinesUI();}
+  if(normalized==='mines'){initMinesGrid();if(!minesRound){minesSafeCells.clear();[...document.querySelectorAll('#mines-grid .mine-cell')].forEach(b=>{b.disabled=true;b.classList.remove('revealed-safe','revealed-mine');const sm=b.querySelector('.mine-symbol');if(sm)sm.textContent='+';});}updateMinesUI();}
   return false;
 }
 function closeCasinoGame(){
@@ -5898,6 +5995,7 @@ async function openSelectedCase(){
   if(state.inventory.length>=MAX_INVENTORY_SIZE){showToast('⚠️ Инвентарь заполнен');return;}
 
   caseBusy=true;
+  const oldState={coins:state.coins,inventory:state.inventory.slice(),stats:{...(state.stats||{})}};
   state.coins-=c.cost; updateUI(false); updateCasinoBalance();
   const stage=document.getElementById('case-opening-stage');
   const result=document.getElementById('case-result-card');
@@ -5955,7 +6053,15 @@ async function openSelectedCase(){
   playSound('success'); showToast(`📦 КЕЙС: ${item.icon} ${item.name} [+${item.power}]`);
   if(btn){btn.disabled=false;btn.textContent=`📦 ЕЩЁ РАЗ · ${c.cost.toLocaleString('ru-RU')} ⚡`;}
   if(label) label.textContent=`${c.name} · ПРЕДМЕТ ПОЛУЧЕН`;
-  await commitCasinoChange(); caseBusy=false;
+  const saved=await commitCasinoChange();
+  if(!saved){
+    state.coins=oldState.coins; state.inventory=oldState.inventory; state.stats=oldState.stats; sanitizeState();
+    stage?.classList.remove('opening'); result?.classList.remove('show'); updateUI(false); updateCasinoBalance();
+    if(btn){btn.disabled=false;btn.textContent=`📦 ОТКРЫТЬ ЗА ${c.cost.toLocaleString('ru-RU')} ⚡`;}
+    if(label) label.textContent=`${c.name} · ОШИБКА СОХРАНЕНИЯ`;
+    setCasinoResult('case-result','Кейс не сохранён. Баланс и предмет восстановлены.','lose');
+  }
+  caseBusy=false;
 }
 
 function switchSideTab(tabId, btn) {
@@ -7160,8 +7266,7 @@ async function fetchLeaderboard() {
   list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--textdim);">Загрузка топа...</div>';
   if (!db) { list.innerHTML='<div style="text-align:center;padding:20px;color:var(--textdim);">База данных недоступна</div>'; return; }
   try {
-    const { data: users, error } = await db.from('users').select('telegram_id,username,coins,inventory,stats');
-    if (error) throw error;
+    const users = await fetchAllRows('users','telegram_id,username,coins,inventory,stats');
     if (!users || users.length === 0) { list.innerHTML='<div style="text-align:center;padding:20px;color:var(--textdim);">Топ пуст</div>'; return; }
 
     let rows = users.map(u => {
@@ -7291,29 +7396,6 @@ if (requireTelegramUser()) {
 </script>
 
 
-<script id="casino-inertia-hooks">
-(function(){
-  function wrap(name, inertiaName){
-    const original = window[name];
-    if(typeof original !== 'function' || original.__inertiaWrapped) return;
-    function wrapped(){
-      const args = arguments;
-      const result = original.apply(this,args);
-      const el = document.querySelector('.roulette-wheel, .casino-wheel, .casino-coin, .coin-visual');
-      if(el){
-        if(inertiaName === 'spin') playInertiaSpin(el, 7, 2600);
-        else playInertiaFlip(el, 1800);
-      }
-      return result;
-    }
-    wrapped.__inertiaWrapped = true;
-    window[name] = wrapped;
-  }
-  // Common names used by the existing casino implementation.
-  ['spinRoulette','startRoulette','rollRoulette'].forEach(n=>wrap(n,'spin')); // playRoulette owns its own deterministic animation
-  ['flipCoin','tossCoin','playCoin','startCoin'].forEach(n=>wrap(n,'flip'));
-})();
-</script>
 
 
 <script id="telegram-mobile-init">
@@ -7945,3 +8027,5 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{displ
 })();
 </script>
 </body></html>
+
+<style id="roulette-clean-final">.roulette-ball{display:none!important;animation:none!important}</style>
