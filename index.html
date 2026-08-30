@@ -6487,13 +6487,13 @@ function closeMarketModal() {
 async function confirmSellItem() {
   if (!selectedItemToSell || !db || !requireTelegramUser()) return;
 
-  const price = Number.parseInt(document.getElementById('modal-price-input').value, 10);
+  const price = Number.parseInt(document.getElementById('modal-price-input')?.value, 10);
   if (!Number.isSafeInteger(price) || price <= 0 || price > MAX_MARKET_PRICE) {
     showToast(`⚠️ Цена должна быть от 1 до ${MAX_MARKET_PRICE.toLocaleString()}`);
     return;
   }
 
-  const instanceId = String(selectedItemToSell.instanceId);
+  const instanceId = String(selectedItemToSell.instanceId || '');
   const localItem = state.inventory.find(i => String(i.instanceId) === instanceId);
   if (!localItem) {
     closeMarketModal();
@@ -6503,49 +6503,34 @@ async function confirmSellItem() {
 
   try {
     const normalizedForMarket = normalizeItem(localItem);
-    const { data: createdLot, error } = await db.from('market_lots').insert({
-      seller_id: getUserId(),
-      seller_name: getUserName(),
-      item: normalizedForMarket,
-      price,
-      created_at: new Date().toISOString()
-    }).select('id').maybeSingle();
-
-    if (error) throw error;
-
-    const previousInventory = state.inventory.map(x => ({ ...x }));
-    const previousEquipped = [...state.equipped];
-
-    const eqIdx = state.equipped.findIndex(id => String(id) === instanceId);
-    if (eqIdx !== -1) state.equipped.splice(eqIdx, 1);
-    state.inventory = state.inventory.filter(i => String(i.instanceId) !== instanceId);
-    sanitizeState();
-
-    // Лот и профиль должны измениться вместе. Если профиль не сохранился,
-    // возвращаем предмет в локальное состояние и удаляем созданный лот.
-    const saved = await saveDataNow();
-    if (!saved) {
-      state.inventory = previousInventory;
-      state.equipped = previousEquipped;
-      sanitizeState();
-      if (createdLot?.id) {
-        await db.from('market_lots').delete().eq('id', createdLot.id);
-      }
-      showToast('⚠️ Продажа отменена: прогресс не сохранён');
-      renderInventory();
-      updateUI(false);
+    if (!normalizedForMarket || !normalizedForMarket.id || !normalizedForMarket.instanceId) {
+      showToast('⚠️ Предмет поврежден');
       return;
     }
+
+    const { data, error } = await db.rpc('create_market_lot', {
+      p_telegram_id: String(getUserId()),
+      p_item_id: String(normalizedForMarket.id),
+      p_item: normalizedForMarket,
+      p_price: price
+    });
+
+    if (error) throw error;
 
     closeMarketModal();
     updateContractProgress('market', 1);
     playSound('success');
     showToast('✅ Предмет выставлен!');
+
+    // Сервер уже изменил inventory атомарно — получаем каноническое состояние.
+    await loadData();
+    await fetchMarketLots();
     renderInventory();
     updateUI(false);
+    return data;
   } catch (e) {
     console.error('confirmSellItem:', e);
-    showToast('⚠️ Не удалось выставить предмет');
+    showToast('⚠️ Не удалось выставить предмет: ' + (e?.message || 'ошибка сервера'));
   }
 }
 
@@ -6908,226 +6893,54 @@ async function rollbackUserCoins(userId, expectedCoins, restoreCoins) {
   return Boolean(data?.length);
 }
 
-async function restoreMarketLot(lot) {
-  const { error } = await db.from('market_lots').insert({
-    id: lot.id,
-    seller_id: lot.seller_id,
-    seller_name: lot.seller_name,
-    item: lot.item,
-    price: lot.price,
-    created_at: lot.created_at || new Date().toISOString()
-  });
-  if (error) {
-    console.error('restoreMarketLot:', error);
-    return false;
-  }
-  return true;
-}
-
 async function buyLot(lotId) {
-  if (!db || !requireTelegramUser()) return;
+  if (!db || !requireTelegramUser() || !lotId) return;
 
   try {
-    const { data: lot, error } = await db
-      .from('market_lots')
-      .select('id,seller_id,seller_name,item,price,created_at')
-      .eq('id', lotId)
-      .maybeSingle();
+    const { data, error } = await db.rpc('buy_market_lot_v2', {
+      p_telegram_id: String(getUserId()),
+      p_lot_id: lotId
+    });
 
     if (error) throw error;
-    if (!lot) {
-      showToast('⚠️ Лот уже продан или снят');
-      fetchMarketLots();
-      return;
-    }
-
-    const price = Number(lot.price);
-    if (!Number.isSafeInteger(price) || price <= 0 || price > MAX_MARKET_PRICE) {
-      showToast('⚠️ Некорректная цена лота');
-      return;
-    }
-
-    if (String(lot.seller_id) === String(getUserId())) {
-      showToast('⚠️ Нельзя купить свой лот');
-      return;
-    }
-
-    if (state.coins < price) {
-      showToast('⚠️ Недостаточно монет!');
-      return;
-    }
-
-    if (state.inventory.length >= MAX_INVENTORY_SIZE) {
-      showToast('⚠️ Инвентарь заполнен!');
-      return;
-    }
-
-    const item = normalizeItem(lot.item);
-    if (!item) {
-      showToast('⚠️ Лот содержит поврежденный предмет');
-      return;
-    }
-
-    // Удаляем конкретный лот и только затем меняем балансы.
-    // Это все еще не замена серверной транзакции, но исключает
-    // ложный успех при проблеме сохранения и начисляет продавцу цену.
-    const { data: deleted, error: deleteError } = await db
-      .from('market_lots')
-      .delete()
-      .eq('id', lotId)
-      .select('id');
-
-    if (deleteError) throw deleteError;
-    if (!deleted?.length) {
-      showToast('⚠️ Лот уже купил другой игрок');
-      fetchMarketLots();
-      return;
-    }
-
-    const previousState = {
-      coins: state.coins,
-      inventory: state.inventory.map(x => ({ ...x })),
-      equipped: [...state.equipped],
-      shields: state.shields,
-      stats: { ...state.stats },
-      claimedAchievements: [...state.claimedAchievements]
-    };
-
-    let sellerCredit = null;
-    try {
-      sellerCredit = await adjustUserCoinsOptimistic(lot.seller_id, price);
-      if (!sellerCredit.success) throw new Error('Не удалось начислить монеты продавцу');
-
-      state.coins -= price;
-      state.inventory.push({
-        ...item,
-        instanceId: newInstanceId()
-      });
-      sanitizeState();
-
-      const saved = await saveDataNow();
-      if (!saved) throw new Error('Не удалось сохранить данные покупателя');
-    } catch (transactionError) {
-      // Откатываем локальное состояние.
-      state.coins = previousState.coins;
-      state.inventory = previousState.inventory;
-      state.equipped = previousState.equipped;
-      state.shields = previousState.shields;
-      state.stats = previousState.stats;
-      state.claimedAchievements = previousState.claimedAchievements;
-      sanitizeState();
-
-      // Откатываем начисление продавцу, если оно уже прошло.
-      if (sellerCredit?.success) {
-        try {
-          const reversed = await rollbackUserCoins(
-            lot.seller_id,
-            sellerCredit.nextCoins,
-            sellerCredit.previousCoins
-          );
-          if (!reversed) console.error('buyLot: баланс продавца изменился, автоматический откат невозможен');
-        } catch (rollbackError) {
-          console.error('buyLot seller rollback:', rollbackError);
-        }
-      }
-
-      // Возвращаем лот на рынок.
-      const restored = await restoreMarketLot(lot);
-      if (!restored) {
-        showToast('⚠️ Ошибка покупки: лот удалён и не смог восстановиться');
-      } else {
-        showToast('⚠️ Покупка отменена: не удалось сохранить прогресс');
-      }
-      updateUI(false);
-      fetchMarketLots();
-      return;
-    }
 
     playSound('success');
-    showToast(`🎉 Куплено за ${price.toLocaleString()} ⚡`);
-    fetchMarketLots();
+    showToast(`🎉 Куплено за ${Number(data?.price || 0).toLocaleString()} ⚡`);
+
+    // Сервер атомарно изменил buyer/seller/lot. Только после успеха синхронизируем UI.
+    await loadData();
+    await fetchMarketLots();
+    renderInventory();
     updateUI(false);
   } catch (e) {
     console.error('buyLot:', e);
-    showToast('⚠️ Ошибка покупки');
+    const msg = String(e?.message || 'Ошибка покупки');
+    showToast('⚠️ ' + msg);
+    try { await fetchMarketLots(); } catch (_) {}
   }
 }
 
 async function cancelLot(lotId) {
-  if (!db || !requireTelegramUser()) return;
+  if (!db || !requireTelegramUser() || !lotId) return;
 
   try {
-    const { data: lot, error } = await db
-      .from('market_lots')
-      .select('id,seller_id,seller_name,item,price,created_at')
-      .eq('id', lotId)
-      .maybeSingle();
+    const { error } = await db.rpc('cancel_market_lot', {
+      p_telegram_id: String(getUserId()),
+      p_lot_id: lotId
+    });
 
     if (error) throw error;
-    if (!lot) {
-      showToast('⚠️ Лот уже снят');
-      fetchMarketLots();
-      return;
-    }
-
-    if (String(lot.seller_id) !== String(getUserId())) {
-      showToast('⚠️ Это не ваш лот');
-      return;
-    }
-
-    const item = normalizeItem(lot.item);
-    if (!item) {
-      showToast('⚠️ Поврежденный предмет');
-      return;
-    }
-
-    if (state.inventory.length >= MAX_INVENTORY_SIZE) {
-      showToast('⚠️ Инвентарь заполнен!');
-      return;
-    }
-
-    const { data: deleted, error: deleteError } = await db
-      .from('market_lots')
-      .delete()
-      .eq('id', lotId)
-      .eq('seller_id', getUserId())
-      .select('id');
-
-    if (deleteError) throw deleteError;
-    if (!deleted?.length) {
-      showToast('⚠️ Лот уже изменен');
-      fetchMarketLots();
-      return;
-    }
-
-    const previousInventory = state.inventory.map(x => ({ ...x }));
-    const previousEquipped = [...state.equipped];
-    state.inventory.push({
-      ...item,
-      instanceId: newInstanceId()
-    });
-    sanitizeState();
-
-    const saved = await saveDataNow();
-    if (!saved) {
-      state.inventory = previousInventory;
-      state.equipped = previousEquipped;
-      sanitizeState();
-      const restored = await restoreMarketLot(lot);
-      showToast(restored
-        ? '⚠️ Снятие отменено: прогресс не сохранён'
-        : '⚠️ Ошибка: лот удалён и не смог восстановиться');
-      updateUI(false);
-      fetchMarketLots();
-      return;
-    }
 
     showToast('📦 Снято с продажи');
-    fetchMarketLots();
+    await loadData();
+    await fetchMarketLots();
+    renderInventory();
     updateUI(false);
   } catch (e) {
     console.error('cancelLot:', e);
-    showToast('⚠️ Ошибка снятия лота');
+    const msg = String(e?.message || 'Ошибка снятия лота');
+    showToast('⚠️ ' + msg);
+    try { await fetchMarketLots(); } catch (_) {}
   }
 }
 
