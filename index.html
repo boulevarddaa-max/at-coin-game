@@ -3900,7 +3900,6 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{displ
           <button class="casino-game-tile games-tile mines-tile" onclick="openCasinoGame('mines')"><div class="games-tile-top"><div class="casino-game-icon">💠</div><span class="games-pill">NEW</span></div><div class="casino-game-name">МИНЫ</div><div class="casino-game-desc">Открывай клетки, повышай множитель и забирай банк до ловушки.</div><div class="games-tile-bottom"><span>от 10 ⚡</span><b>ИГРАТЬ →</b></div></button>
         </div>
         <div class="games-footer-note">⚡ Все ставки используют только игровую валюту. Реальные деньги не участвуют.</div>
-      </div>
 
       <div id="casino-page-coinflip" class="casino-page">
         <button class="casino-back" onclick="closeCasinoGame()">‹ Все игры</button>
@@ -3973,7 +3972,7 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{displ
         </div>
         <div class="cases-note">⚡ Кейсы используют только AT Coins. Реальные деньги не участвуют.</div>
       </div>
-
+      </div><!-- /tab-games -->
 
     <!-- АДМИН-ПАНЕЛЬ -->
     <div class="tab-view" id="tab-admin" hidden aria-hidden="true">
@@ -4035,7 +4034,6 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{displ
     </div>
 
   </div>
-  </div>
 
   <!-- НИЖНЕЕ МЕНЮ -->
   <div id="bottom-nav">
@@ -4060,6 +4058,8 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{displ
       <span>Биржа</span>
     </button>
   </div>
+
+  </div><!-- /app -->
 
   <!-- СВОРАЧИВАЕМАЯ ПЛАВАЮЩАЯ ПОЛКА -->
   <div id="side-nav" class="side-shelf-open">
@@ -5773,7 +5773,7 @@ function openCasinoGame(game){
   const pages={coinflip:document.getElementById('casino-page-coinflip'),roulette:document.getElementById('casino-page-roulette'),mines:document.getElementById('casino-page-mines'),cases:document.getElementById('casino-page-cases')};
   if(!home)return switchTab('games',document.querySelector('#side-nav .side-nav-btn'));
   const page=pages[normalized]||pages.coinflip;
-  switchTab('games',document.querySelector('#side-nav .side-nav-btn:nth-of-type(4)'));
+  switchTab('games',document.querySelectorAll('#side-nav .side-nav-btn')[3]);
   home.style.display='none';
   Object.values(pages).forEach(p=>p&&p.classList.remove('active'));
   if(page)page.classList.add('active');
@@ -8026,6 +8026,140 @@ body.admin-authenticated #views-container #tab-admin.admin-unlocked.active{displ
   setTimeout(apply,50);
 })();
 </script>
-</body></html>
 
-<style id="roulette-clean-final">.roulette-ball{display:none!important;animation:none!important}</style>
+
+<style id="final-navigation-and-games-repair">
+/* FINAL STABLE NAVIGATION */
+#views-container{position:relative!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;width:100%!important}
+#views-container > .tab-view{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:none!important;flex-direction:column!important;overflow-x:hidden!important;overflow-y:auto!important;min-width:0!important;min-height:0!important;box-sizing:border-box!important;padding-bottom:90px!important;z-index:1!important}
+#views-container > .tab-view.active{display:flex!important;z-index:2!important}
+#views-container > #tab-admin{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#views-container > #tab-admin.active.admin-unlocked{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+#bottom-nav{position:relative!important;display:flex!important;flex:0 0 auto!important;z-index:5000!important;width:100%!important}
+#bottom-nav .nav-btn{flex:1 1 0!important;min-width:0!important}
+#side-nav{z-index:6000!important}
+/* Admin must never appear as a content overlay unless it is the active tab. */
+#side-nav #admin-nav-btn{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.admin-authenticated #side-nav #admin-nav-btn{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+/* No game subpage can leak into the normal Games tab. */
+#tab-games .casino-page{display:none!important}
+#tab-games .casino-page.active{display:flex!important}
+/* Make casino controls tappable and consistent. */
+.case-card,.home-case,.casino-game-tile,.roulette-pick,.mines-bomb-options label,.casino-btn,.action-btn{touch-action:manipulation!important}
+@media(max-width:700px){
+  #views-container > .tab-view{padding:10px 9px calc(82px + env(safe-area-inset-bottom))!important}
+  #tab-mine{padding-bottom:calc(82px + env(safe-area-inset-bottom))!important}
+  #bottom-nav{height:66px!important;min-height:66px!important}
+  #bottom-nav .nav-btn{height:58px!important;min-height:58px!important}
+  #bottom-nav .nav-btn-icon{font-size:20px!important}
+  #side-nav{z-index:7000!important}
+}
+</style>
+<script id="final-stable-runtime">
+(function(){
+  const ADMIN_ID='5725332802';
+  const TAB_IDS=['mine','inventory','craft','upgrade','market','achievements','leaderboard','profile','contracts','clans','games','admin'];
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+
+  function isAdminFinal(){
+    try{ return String(window.getUserId?.() || '')===ADMIN_ID; }catch(e){ return false; }
+  }
+
+  function syncAdminFinal(){
+    const ok=isAdminFinal();
+    document.body.classList.toggle('admin-authenticated',ok);
+    const nav=$('#admin-nav-btn'), tab=$('#tab-admin');
+    if(nav){ nav.hidden=!ok; nav.classList.toggle('admin-visible',ok); nav.setAttribute('aria-hidden',ok?'false':'true'); }
+    if(tab){
+      tab.classList.toggle('admin-unlocked',ok);
+      if(!ok){ tab.hidden=true; tab.classList.remove('active'); tab.setAttribute('aria-hidden','true'); }
+      else if(!tab.classList.contains('active')) { tab.hidden=true; tab.setAttribute('aria-hidden','true'); }
+    }
+  }
+
+  function stableOpenTab(tabId, btn){
+    if(!TAB_IDS.includes(tabId)) return false;
+    if(tabId==='admin' && !isAdminFinal()) return false;
+    const target=$(`#tab-${tabId}`); if(!target) return false;
+    // Always close casino sub-pages when leaving Games.
+    if(tabId!=='games' && typeof window.closeCasinoGame==='function'){
+      try{ window.closeCasinoGame(); }catch(e){}
+    }
+    $$('#views-container .tab-view').forEach(v=>{
+      const active=v===target;
+      v.classList.toggle('active',active);
+      v.setAttribute('aria-hidden',active?'false':'true');
+      if(v.id==='tab-admin') v.hidden=!(active && isAdminFinal());
+    });
+    $$('#bottom-nav .nav-btn').forEach(b=>b.classList.remove('active'));
+    $$('#side-nav .side-nav-btn').forEach(b=>b.classList.remove('active'));
+    if(btn?.classList) btn.classList.add('active');
+    if(tabId==='inventory') window.renderInventory?.();
+    else if(tabId==='craft') window.renderCraft?.();
+    else if(tabId==='upgrade') window.renderUpgrade?.();
+    else if(tabId==='achievements') window.renderAchievements?.();
+    else if(tabId==='market') window.fetchMarketLots?.();
+    else if(tabId==='leaderboard') window.fetchLeaderboard?.();
+    else if(tabId==='profile') window.renderProfile?.();
+    else if(tabId==='contracts') window.renderContracts?.();
+    else if(tabId==='clans') window.loadClan?.();
+    else if(tabId==='games') window.updateCasinoBalance?.();
+    target.scrollTop=0;
+    syncAdminFinal();
+    return false;
+  }
+  window.stableOpenTab=stableOpenTab;
+
+  function bindBottomNav(){
+    const map=['mine','inventory','craft','upgrade','market'];
+    $$('#bottom-nav .nav-btn').forEach((b,i)=>{
+      if(!map[i]) return;
+      b.onclick=(e)=>{e.preventDefault(); stableOpenTab(map[i],b);};
+      b.type='button';
+    });
+  }
+
+  function bindSideNav(){
+    const map=['achievements','leaderboard',null,'games','profile','contracts','clans','admin'];
+    const buttons=$$('#side-nav .side-nav-btn');
+    buttons.forEach((b,i)=>{
+      if(b.id==='admin-nav-btn'){
+        b.onclick=(e)=>{e.preventDefault(); if(isAdminFinal()) stableOpenTab('admin',b);};
+        return;
+      }
+      const tab=map[i];
+      if(!tab) return; // transfer button keeps its native handler
+      b.onclick=(e)=>{e.preventDefault(); stableOpenTab(tab,b);};
+    });
+  }
+
+  function stabilizeGames(){
+    const pages=['coinflip','roulette','mines','cases'];
+    pages.forEach(n=>{
+      const el=$(`#casino-page-${n}`); if(!el) return;
+      el.classList.remove('active');
+    });
+    const home=$('#casino-home'); if(home) home.style.display='';
+  }
+
+  function init(){
+    bindBottomNav(); bindSideNav(); syncAdminFinal();
+    // Force a clean start state: never boot inside Admin or a stale casino page.
+    stabilizeGames();
+    const active=$('#views-container .tab-view.active');
+    if(!active || active.id==='tab-admin') stableOpenTab('mine',$('#bottom-nav .nav-btn:first-child'));
+    else syncAdminFinal();
+    // Re-apply after legacy boot scripts finish their own startup work.
+    setTimeout(()=>{
+      bindBottomNav(); bindSideNav();
+      const current=$('#views-container .tab-view.active');
+      if(!current || current.id==='tab-admin') stableOpenTab('mine',$('#bottom-nav .nav-btn:first-child'));
+      syncAdminFinal();
+    },250);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
+  window.addEventListener('load',()=>{bindBottomNav();bindSideNav();syncAdminFinal();}, {once:true});
+})();
+</script>
+
+</body></html>
